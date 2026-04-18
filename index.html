@@ -8,16 +8,15 @@
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
         .content-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
         
-        /* Ajuste de Precisión: -10px */
         .logo-container { margin-bottom: 30px; align-self: flex-start; margin-left: -10px; } 
         .logo-container img { height: 60px; width: auto; display: block; }
 
         .indicator { color: #878787; font-size: 11px; font-weight: 600; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
         .title { color: #333333; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; letter-spacing: -0.8px; }
+        .description { color: #878787; font-size: 16px; line-height: 1.5; margin: 0 0 32px 0; }
         
-        .description, input { color: #878787; font-size: 16px; line-height: 1.5; margin: 0; }
-        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; color: #333333; outline: none; background: transparent; margin-bottom: 12px; font-family: inherit; }
-        input::placeholder { color: #878787; opacity: 1; font-size: 16px; }
+        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; color: #333333; outline: none; background: transparent; margin-bottom: 12px; font-size: 16px; font-family: inherit; }
+        input::placeholder { color: #878787; opacity: 1; }
         input:focus { border-bottom: 1px solid #333333; }
 
         .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; -webkit-appearance: none; margin-top: 30px; }
@@ -37,7 +36,6 @@
         <p class="indicator">Acceso / Registro</p>
         <h1 class="title">Iniciar expedición.</h1>
         <p class="description">Crea tus credenciales de acceso para entrar al búnker.</p>
-        <div style="height: 24px;"></div>
         <input type="text" placeholder="Nombre completo">
         <input type="email" placeholder="Correo electrónico">
         <input type="password" placeholder="Contraseña">
