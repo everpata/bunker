@@ -6,31 +6,26 @@
     <title>Deepmersion / Perfil</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
-        .logo-container { position: absolute; top: 45px; left: 45px; z-index: 10; }
-        .logo-container img { height: 60px; width: auto; display: block; }
-        .content-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; box-sizing: border-box; display: flex; flex-direction: column; }
-        .indicator { color: #878787; font-size: 11px; font-weight: 600; margin-bottom: 16px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .title { color: #333333; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; letter-spacing: -0.8px; }
-        .description { color: #878787; font-size: 16px; line-height: 1.5; margin: 0 0 32px 0; }
-        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 17px; color: #333333; font-family: inherit; outline: none; background: transparent; border-radius: 0; margin-bottom: 20px; }
-        input::placeholder { color: #878787; opacity: 0.5; }
-        input:focus { border-bottom: 1px solid #333333; }
-        .iti { width: 100%; margin-bottom: 10px; }
-        .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; padding-bottom: 12px !important; }
-        .iti__input:focus { border-bottom: 1px solid #333333 !important; }
-        
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; -webkit-appearance: none; margin-top: 40px; }
-        
-        @media (max-width: 480px) { .logo-container { top: 35px; left: 38px; } .logo-container img { height: 45px; } .title { font-size: 26px; .btn-mando { margin-top: 32px; } }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .logo-container { position: absolute; top: 50px; left: 0; width: 100%; text-align: center; }
+        .logo-container img { height: 60px; }
+        .content-block { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; box-sizing: border-box; display: flex; flex-direction: column; text-align: center; }
+        .indicator { color: #878787; font-size: 11px; font-weight: 600; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .title { color: #333333; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; }
+        .description { color: #878787; font-size: 16px; line-height: 1.5; margin: 0 0 40px 0; }
+        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; text-align: center; margin-bottom: 20px; }
+        .iti { width: 100%; margin-bottom: 20px; }
+        .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; text-align: center !important; }
+        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; margin-top: 40px; }
+        @media (max-width: 480px) { .logo-container img { height: 45px; } .title { font-size: 26px; } }
     </style>
 </head>
 <body>
-    <div class="logo-container"><img src="deepmersion.jpeg" alt="deepmersion"></div>
+    <div class="logo-container"><img src="deepmersion.jpeg" alt="logo"></div>
     <div class="content-block">
         <p class="indicator">Paso 01 / Perfil</p>
         <h1 class="title">Datos de contacto.</h1>
-        <p class="description">Establece tus coordenadas de enlace para iniciar la inmersión.</p>
+        <p class="description">Establece tus coordenadas de enlace.</p>
         <input type="number" placeholder="Edad">
         <input type="text" placeholder="Ocupación">
         <input id="phone" type="tel">
@@ -39,11 +34,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <script>
         const phoneInputField = document.querySelector("#phone");
-        const phoneInput = window.intlTelInput(phoneInputField, {
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-            preferredCountries: ["es", "mx", "co", "ar"],
-            separateDialCode: true
-        });
+        window.intlTelInput(phoneInputField, { preferredCountries: ["es", "mx", "co", "ar"], separateDialCode: true });
     </script>
 </body>
 </html>
