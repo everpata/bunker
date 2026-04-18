@@ -16,18 +16,24 @@
         textarea::placeholder { color: #878787; opacity: 0.6; }
         textarea:focus { border-bottom: 1px solid #333333; }
         .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; -webkit-appearance: none; }
-        @media (max-width: 480px) { .logo-container { top: 35px; left: 45px; } .logo-container img { height: 45px; } .title { font-size: 26px; } .description { font-size: 15px; } }
+        
+        @media (max-width: 480px) { 
+            .logo-container { top: 35px; left: 38px; } 
+            .logo-container img { height: 45px; } 
+            .title { font-size: 26px; } 
+            .description { font-size: 15px; } 
+        }
         @media (max-height: 670px) { .title { font-size: 22px; } .description { margin-bottom: 20px; } textarea { margin-bottom: 20px; } }
     </style>
 </head>
 <body>
-    <div class="logo-container"><img src="deepmersion.jpeg" alt="deepmersion logo"></div>
+    <div class="logo-container"><img src="deepmersion.jpeg" alt="deepmersion"></div>
     <div class="content-block">
         <p class="indicator">Misión 01 / Fase de destino</p>
         <h1 class="title">La situación de éxito.</h1>
         <p class="description">Describe la situación específica en la que tendrías que estar para confirmar el éxito total.</p>
         <textarea rows="1" placeholder="Describe tu escenario aquí..."></textarea>
-        <button onclick="alert('Reporte sincronizado con el Mando Central.')" class="btn-mando">Finalizar reporte &#8594;</button>
+        <button onclick="alert('Reporte sincronizado')" class="btn-mando">Finalizar reporte &#8594;</button>
     </div>
 </body>
 </html>
