@@ -5,24 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepmersion / Misión 02</title>
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
         .content-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
-        .logo-container { align-self: center; margin-bottom: 40px; }
-        .logo-container img { height: 60px; width: auto; }
+        .logo-container { margin-bottom: 30px; align-self: flex-start; }
+        .logo-container img { height: 60px; width: auto; display: block; }
         .indicator { color: #878787; font-size: 11px; font-weight: 600; margin-bottom: 16px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .title { color: #333333; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; }
+        .title { color: #333333; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; letter-spacing: -0.8px; }
         .description { color: #878787; font-size: 16px; line-height: 1.5; margin: 0 0 32px 0; }
-        textarea { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 10px 0; font-size: 17px; color: #333333; font-family: inherit; resize: none; outline: none; background: transparent; margin-bottom: 8px; }
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; margin-top: 40px; }
-        @media (max-width: 480px) { .logo-container img { height: 45px; } .title { font-size: 26px; } .logo-container { margin-bottom: 30px; } }
+        textarea { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 10px 0; font-size: 17px; color: #333333; font-family: inherit; resize: none; outline: none; background: transparent; border-radius: 0; margin-bottom: 8px; text-align: left; }
+        textarea:focus { border-bottom: 1px solid #333333; }
+        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; -webkit-appearance: none; margin-top: 40px; }
+        @media (max-width: 480px) { .logo-container img { height: 45px; } .title { font-size: 26px; } .logo-container { margin-bottom: 25px; } .btn-mando { margin-top: 32px; } }
+        @media (max-height: 670px) { .title { font-size: 22px; } .logo-container { margin-bottom: 20px; } }
     </style>
 </head>
 <body>
     <div class="content-block">
-        <div class="logo-container"><img src="deepmersion.jpeg" alt="logo"></div>
-        <p class="indicator">Misión 01 / Verdad</p>
+        <div class="logo-container"><img src="deepmersion.jpeg" alt="logo deepmersion"></div>
+        <p class="indicator">Misión 01 / Fase de verdad</p>
         <h1 class="title">La máscara.</h1>
-        <p class="description">Identifica el patrón que ha estado operando por ti. ¿Cuál es la máscara?</p>
+        <p class="description">Identifica el patrón que ha estado operando por ti. ¿Cuál es la máscara que detectaste?</p>
         <textarea rows="1" placeholder="Escribe tu reporte..."></textarea>
         <button onclick="window.location.href='mision3.html'" class="btn-mando">Sincronizar reporte &#8594;</button>
     </div>
