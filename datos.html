@@ -6,26 +6,28 @@
     <title>Deepmersion / Perfil</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
         .content-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
-        .logo-container { align-self: center; margin-bottom: 40px; }
-        .logo-container img { height: 60px; width: auto; }
+        .logo-container { margin-bottom: 30px; align-self: flex-start; }
+        .logo-container img { height: 60px; width: auto; display: block; }
         .indicator { color: #878787; font-size: 11px; font-weight: 600; margin-bottom: 16px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .title { color: #333333; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; }
+        .title { color: #333333; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; letter-spacing: -0.8px; }
         .description { color: #878787; font-size: 16px; line-height: 1.5; margin: 0 0 32px 0; }
-        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 17px; color: #333333; outline: none; background: transparent; margin-bottom: 20px; }
+        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 17px; color: #333333; font-family: inherit; outline: none; background: transparent; border-radius: 0; margin-bottom: 20px; text-align: left; }
+        input:focus { border-bottom: 1px solid #333333; }
         .iti { width: 100%; margin-bottom: 20px; }
         .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; }
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; margin-top: 40px; }
-        @media (max-width: 480px) { .logo-container img { height: 45px; } .title { font-size: 26px; } .logo-container { margin-bottom: 30px; } }
+        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; -webkit-appearance: none; margin-top: 40px; }
+        @media (max-width: 480px) { .logo-container img { height: 45px; } .title { font-size: 26px; } .logo-container { margin-bottom: 25px; } .btn-mando { margin-top: 32px; } }
+        @media (max-height: 670px) { .title { font-size: 22px; } .logo-container { margin-bottom: 20px; } }
     </style>
 </head>
 <body>
     <div class="content-block">
-        <div class="logo-container"><img src="deepmersion.jpeg" alt="logo"></div>
+        <div class="logo-container"><img src="deepmersion.jpeg" alt="logo deepmersion"></div>
         <p class="indicator">Paso 01 / Perfil</p>
         <h1 class="title">Datos de contacto.</h1>
-        <p class="description">Establece tus coordenadas de enlace.</p>
+        <p class="description">Establece tus coordenadas de enlace para iniciar la inmersión.</p>
         <input type="number" placeholder="Edad">
         <input type="text" placeholder="Ocupación">
         <input id="phone" type="tel">
