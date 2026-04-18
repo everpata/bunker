@@ -7,21 +7,22 @@
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
         .logo-container { position: absolute; top: 45px; left: 45px; z-index: 10; }
-        .logo-container img { height: 22px; width: auto; display: block; }
+        .logo-container img { height: 60px; width: auto; display: block; }
         .content-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; box-sizing: border-box; display: flex; flex-direction: column; }
         .indicator { color: #878787; font-size: 11px; font-weight: 600; margin-bottom: 16px; letter-spacing: 1.5px; text-transform: uppercase; }
         .title { color: #333333; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; letter-spacing: -0.8px; }
         .description { color: #878787; font-size: 16px; line-height: 1.5; margin: 0 0 32px 0; }
+        /* Input Táctico: Texto a escribir en #333333, Placeholder en #878787 */
         textarea { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 10px 0; font-size: 17px; color: #333333; font-family: inherit; resize: none; outline: none; margin-bottom: 32px; background: transparent; border-radius: 0; }
         textarea::placeholder { color: #878787; opacity: 0.6; }
         textarea:focus { border-bottom: 1px solid #333333; }
         .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; -webkit-appearance: none; }
-        @media (max-width: 480px) { .logo-container { top: 35px; left: 45px; } .logo-container img { height: 18px; } .title { font-size: 26px; } .description { font-size: 15px; } }
+        @media (max-width: 480px) { .logo-container { top: 35px; left: 45px; } .logo-container img { height: 45px; } .title { font-size: 26px; } .description { font-size: 15px; } }
         @media (max-height: 670px) { .title { font-size: 22px; } .description { margin-bottom: 20px; } textarea { margin-bottom: 20px; } }
     </style>
 </head>
 <body>
-    <div class="logo-container"><img src="deepmersion.jpeg" alt="deepmersion"></div>
+    <div class="logo-container"><img src="deepmersion.jpeg" alt="deepmersion logo"></div>
     <div class="content-block">
         <p class="indicator">Misión 01 / Fase de verdad</p>
         <h1 class="title">La máscara.</h1>
