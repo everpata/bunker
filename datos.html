@@ -8,21 +8,17 @@
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         .content-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; }
-        .logo-container { margin-bottom: 30px; align-self: flex-start; }
+        .logo-container { margin-bottom: 30px; align-self: flex-start; margin-left: -10px; }
         .logo-container img { height: 60px; width: auto; }
         .indicator { color: #878787; font-size: 11px; font-weight: 600; margin-bottom: 16px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .title { color: #333333; font-size: 28px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; }
-        .description { color: #878787; font-size: 16px; line-height: 1.5; margin: 0 0 24px 0; }
-        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 17px; color: #333333; outline: none; background: transparent; margin-bottom: 15px; }
+        .title { color: #333333; font-size: 30px; font-weight: 700; line-height: 1.1; margin: 0 0 16px 0; }
+        .description, input, .iti input { color: #878787; font-size: 16px; line-height: 1.5; font-family: inherit; }
+        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; color: #333333; outline: none; background: transparent; margin-bottom: 15px; }
+        input::placeholder { color: #878787; opacity: 1; }
         .iti { width: 100%; margin-bottom: 15px; }
-        .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; }
+        .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; font-size: 16px !important; }
         .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; margin-top: 30px; }
-        @media (max-width: 480px) { 
-            .logo-container { margin-bottom: 20px; position: relative; left: -7px; }
-            .logo-container img { height: 45px; } 
-            .title { font-size: 24px; } 
-            .btn-mando { margin-top: 20px; } 
-        }
+        @media (max-width: 480px) { .logo-container { margin-bottom: 20px; } .logo-container img { height: 45px; } .title { font-size: 26px; } .btn-mando { margin-top: 20px; } }
     </style>
 </head>
 <body>
@@ -30,7 +26,8 @@
         <div class="logo-container"><img src="deepmersion.jpeg" alt="logo"></div>
         <p class="indicator">Paso 01 / Perfil</p>
         <h1 class="title">Datos de contacto.</h1>
-        <p class="description">Coordenadas de enlace.</p>
+        <p class="description">Establece tus coordenadas de enlace.</p>
+        <div style="height: 24px;"></div>
         <input type="number" placeholder="Edad">
         <input type="text" placeholder="Ocupación">
         <input id="phone" type="tel">
