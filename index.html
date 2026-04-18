@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Deepmersion / Misión 03</title>
+    <title>Deepmersion / Misión 04</title>
     <style>
         /* Bloqueo de scroll y base */
         html, body {
@@ -14,7 +14,6 @@
             overflow: hidden;
             background-color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            color: #333333;
             -webkit-text-size-adjust: 100%;
         }
 
@@ -33,7 +32,7 @@
         }
 
         .indicator {
-            color: #a1a1a6;
+            color: #878787; /* Tu nuevo color de marca para textos secundarios */
             font-size: 12px;
             font-weight: 600;
             margin-bottom: 16px;
@@ -42,7 +41,7 @@
         }
 
         .title {
-            color: #333333;
+            color: #333333; /* Solo autoridad en el título */
             font-size: 32px;
             font-weight: 700;
             line-height: 1.1;
@@ -51,43 +50,35 @@
         }
 
         .description {
-            color: #636366;
+            color: #878787; /* Color de marca */
             font-size: 17px;
             line-height: 1.5;
             margin: 0 0 32px 0;
         }
 
-        /* Contenedor de opciones */
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        textarea {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #eaeaea;
+            padding: 10px 0;
+            font-size: 18px;
+            color: #333333; /* El texto que escribe el usuario debe ser legible */
+            font-family: inherit;
+            resize: none;
+            outline: none;
             margin-bottom: 32px;
+            background: transparent;
+            border-radius: 0;
         }
 
-        /* Botón de opción individual */
-        .option-btn {
-            background: #ffffff;
-            border: 1px solid #eaeaea;
-            padding: 16px 20px;
-            border-radius: 12px;
-            color: #333333;
+        textarea::placeholder {
+            color: #878787;
+            font-style: italic;
             font-size: 16px;
-            font-weight: 500;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            -webkit-appearance: none;
         }
 
-        .option-btn:hover {
-            border-color: #333333;
-        }
-
-        /* Estilo para cuando se selecciona (simulado) */
-        .option-btn:active {
-            background: #f2f2f7;
-            transform: scale(0.98);
+        textarea:focus {
+            border-bottom: 1px solid #333333;
         }
 
         .btn-mando {
@@ -101,13 +92,12 @@
             font-size: 16px;
             cursor: pointer;
             -webkit-appearance: none;
-            margin-top: 8px;
         }
 
         /* AJUSTES PARA MÓVIL */
         @media (max-width: 480px) {
             .content-block {
-                padding: 0 45px; /* Margen lateral de espacio negativo */
+                padding: 0 45px;
             }
             .title {
                 font-size: 26px;
@@ -117,41 +107,37 @@
                 font-size: 15px;
                 margin-bottom: 24px;
             }
-            .option-btn {
-                padding: 14px 18px;
-                font-size: 15px;
+            .indicator {
+                font-size: 11px;
+                margin-bottom: 12px;
+            }
+            textarea {
+                font-size: 16px;
+                margin-bottom: 24px;
             }
         }
 
         /* COMPRESIÓN PARA PANTALLAS BAJAS */
-        @media (max-height: 700px) and (max-width: 480px) {
-            .title { font-size: 22px; }
-            .description { margin-bottom: 16px; }
-            .options-grid { gap: 8px; margin-bottom: 20px; }
-            .option-btn { padding: 12px 16px; }
-            .btn-mando { padding: 16px; }
+        @media (max-height: 670px) and (max-width: 480px) {
+            .title { font-size: 23px; }
+            .description { font-size: 14px; margin-bottom: 16px; }
+            textarea { margin-bottom: 18px; }
         }
     </style>
 </head>
 <body>
 
     <div class="content-block">
-        <p class="indicator">Misión 01 / Fase de verdad</p>
+        <p class="indicator">Misión 01 / Fase de destino</p>
         
-        <h1 class="title">La resistencia.</h1>
+        <h1 class="title">La situación de éxito.</h1>
         
-        <p class="description">Identifica el muro que bloquea tu avance. ¿Cuál es tu mayor resistencia hoy?</p>
+        <p class="description">Describe la situación específica en la que tendrías que estar para confirmar que tu inmersión fue un éxito total.</p>
       
-        <div class="options-grid">
-            <button class="option-btn">Miedo al juicio.</button>
-            <button class="option-btn">Comodidad acumulada.</button>
-            <button class="option-btn">Falta de claridad.</button>
-            <button class="option-btn">Ego / Orgullo.</button>
-            <button class="option-btn" style="color: #a1a1a6; font-style: italic;">Otra resistencia...</button>
-        </div>
+        <textarea rows="2" placeholder="Describe tu escenario aquí..."></textarea>
     
         <button class="btn-mando">
-            Sincronizar reporte &#8594;
+            Finalizar reporte &#8594;
         </button>
     </div>
 
