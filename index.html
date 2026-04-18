@@ -5,43 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepmersion / Registro</title>
     <style>
-        /* Base Operativa: Bloqueo de Scroll y Fondo Inmaculado */
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
-        
-        /* Contenedor Central: Alineación de Texto a la Izquierda */
         .content-block { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
         
-        /* Logo: Vive dentro de la caja, alineado a la izquierda */
+        /* Logo con margen simétrico 30px */
         .logo-container { margin-bottom: 30px; align-self: flex-start; }
         .logo-container img { height: 60px; width: auto; display: block; }
 
-        /* Estándares Tipográficos Deepmersion */
         .indicator { color: #878787; font-size: 11px; font-weight: 600; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
         .title { color: #333333; font-size: 28px; font-weight: 700; line-height: 1.1; margin: 0 0 12px 0; letter-spacing: -0.8px; }
-        .description { color: #878787; font-size: 16px; line-height: 1.4; margin: 0 0 24px 0; }
+        .description { color: #878787; font-size: 16px; line-height: 1.4; margin: 0 0 16px 0; }
         
-        /* Inputs Minimalistas */
-        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; font-family: inherit; outline: none; background: transparent; border-radius: 0; margin-bottom: 16px; text-align: left; }
+        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; font-family: inherit; outline: none; background: transparent; border-radius: 0; margin-bottom: 12px; }
         input:focus { border-bottom: 1px solid #333333; }
 
-        /* Botón de Acción Principal: Regla de los 40px */
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; -webkit-appearance: none; margin-top: 40px; }
-        
-        /* Enlace Secundario Centrado */
+        /* Botón con margen simétrico 30px */
+        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-weight: 500; font-size: 16px; cursor: pointer; -webkit-appearance: none; margin-top: 30px; }
         .login-link { color: #878787; font-size: 13px; margin-top: 24px; text-decoration: none; align-self: center; }
-        .login-link b { color: #333333; }
 
-        /* Optimizaciones Móviles */
-        @media (max-width: 480px) { .logo-container img { height: 45px; } .title { font-size: 24px; } .logo-container { margin-bottom: 25px; } .btn-mando { margin-top: 32px; } }
-        @media (max-height: 670px) { .title { font-size: 22px; } .logo-container { margin-bottom: 20px; } }
+        @media (max-width: 480px) { 
+            .logo-container { margin-bottom: 20px; position: relative; left: -7px; } /* Ajuste medio cm izquierda */
+            .logo-container img { height: 45px; } 
+            .title { font-size: 24px; } 
+            .btn-mando { margin-top: 20px; } 
+        }
     </style>
 </head>
 <body>
     <div class="content-block">
-        <div class="logo-container"><img src="deepmersion.jpeg" alt="logo deepmersion"></div>
+        <div class="logo-container"><img src="deepmersion.jpeg" alt="logo"></div>
         <p class="indicator">Acceso / Registro</p>
         <h1 class="title">Iniciar expedición.</h1>
-        <p class="description">Crea tus credenciales para entrar al búnker.</p>
+        <p class="description">Crea tus credenciales de acceso.</p>
         <input type="text" placeholder="Nombre completo">
         <input type="email" placeholder="Correo electrónico">
         <input type="password" placeholder="Contraseña">
