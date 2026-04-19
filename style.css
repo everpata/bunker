@@ -1,26 +1,60 @@
-/* Deepmersion Design System V2.0 - Foco en Principio */
+/* Deepmersion Design System V2.0 - Principios de Cultura */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
 
-.container { position: absolute; top: 50%; left: 50%; transform: translate(-50%; -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
+.container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
 
-/* LOGO Y ETIQUETA */
+/* --- ESTADO 1: INTERRUPCIÓN (Reliquia en el vacío) --- */
+.interruption-screen { 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+}
+
+.relic-image { 
+    width: 100%; 
+    max-width: 250px; 
+    height: auto; 
+    display: block;
+    margin-bottom: 24px;
+    animation: softFloat 6s ease-in-out infinite; 
+}
+
+@keyframes softFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-25px); }
+}
+
+.reveal-instruction { font-size: 11px; font-weight: 600; color: #878787; text-align: center; letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* --- ESTADO 2: REVELACIÓN (Foco en el Principio) --- */
+.revelation-screen { 
+    width: 100%; 
+    display: none; /* Oculto inicialmente */
+    opacity: 0;
+}
+
 .logo { margin: 0 0 30px -10px; }
 .logo img { height: 60px; width: auto; display: block; }
+
+/* Etiqueta indicadora con margen de 32px para conectar con la tarjeta */
 .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 32px; letter-spacing: 1.5px; text-transform: uppercase; }
 
-/* LA TARJETA DEL PRINCIPIO (work-area card) */
+/* TARJETA DE PRINCIPIO: Padding 30px para aire de museo */
 .work-area.card { 
     background-color: #f5f5f7; 
-    padding: 30px; /* Un poco más de aire interno para darle importancia */
+    padding: 30px; 
     border-radius: 16px; 
     display: flex; 
     flex-direction: column; 
-    gap: 16px; /* Espacio de 16px entre el principio y la explicación */
+    gap: 16px; 
     width: 100%;
 }
 
-/* EL PRINCIPIO: Máximo contraste y peso */
+/* El Principio: Negrita Extrema #333333 */
 .principle-statement { 
     font-size: 22px; 
     font-weight: 800; 
@@ -29,7 +63,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background-color: #fff
     letter-spacing: -0.5px;
 }
 
-/* LA EXPLICACIÓN: Tono secundario */
+/* La Explicación: Gris #878787 */
 .explanation-text { 
     font-size: 16px; 
     color: #878787; 
@@ -39,6 +73,14 @@ html, body { width: 100%; height: 100%; overflow: hidden; background-color: #fff
 /* BOTÓN DE MANDO */
 .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; }
 
-/* LÓGICA DE REVELACIÓN (Simplificada para el ejemplo) */
-.revealed-content { display: block; animation: fadeIn 0.8s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* LOGICA DE CAMBIO */
+body.revealed .interruption-screen { display: none; }
+body.revealed .revelation-screen { display: block; opacity: 1; animation: fadeIn 0.8s ease forwards; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 480px) {
+    .logo img { height: 45px; }
+    .btn-mando { margin-top: 20px; }
+    .work-area.card { padding: 24px; }
+}
