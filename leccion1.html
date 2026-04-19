@@ -12,42 +12,44 @@
         /* BLOQUE CENTRAL */
         .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
         
-        /* LOGO: Offset -10px / Margen 30px PC */
+        /* LOGO: Offset -10px / Margen 30px Desktop */
         .logo { margin: 0 0 30px -10px; align-self: flex-start; }
         .logo img { height: 60px; width: auto; display: block; }
 
         /* CABECERA ESTÁNDAR */
-        .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; }
         .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
         .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
         
         /* ÁREA DE TRABAJO: Gap simétrico de 16px */
         .lesson-content { width: 100%; display: flex; flex-direction: column; gap: 16px; margin: 0; }
-        .lesson-text { font-size: 16px; color: #878787; line-height: 1.6; }
+        .lesson-text { font-size: 16px; color: #878787; line-height: 1.5; }
         .lesson-text b { color: #333333; font-weight: 600; }
         
-        /* Bloque de énfasis limpio (Sin bordes) */
-        .highlight-box { background: #f5f5f7; padding: 22px; border-radius: 16px; }
-        .highlight-box p { font-size: 15px; color: #333333; font-weight: 500; line-height: 1.4; margin: 0; }
+        /* BLOQUE DE ÉNFASIS */
+        .highlight-box { background: #f5f5f7; padding: 24px; border-radius: 16px; width: 100%; }
+        .highlight-box p { font-size: 16px; color: #333333; font-weight: 500; line-height: 1.4; margin: 0; }
 
-        /* BOTÓN: Margen simétrico 30px PC */
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; }
+        /* BOTÓN: Margen simétrico 30px Desktop */
+        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; transition: opacity 0.2s ease; }
+        .btn-mando:active { opacity: 0.8; }
 
-        /* RESPONSIVE MÓVIL: Reglas de 20px */
+        /* RESPONSIVE MÓVIL */
         @media (max-width: 480px) {
             .logo { margin-bottom: 20px; } 
             .logo img { height: 45px; }
             .title { font-size: 26px; } 
-            .description { margin-bottom: 24px; }
             .btn-mando { margin-top: 20px; }
-            .lesson-content { gap: 14px; } /* Micro-ajuste para pantallas pequeñas */
+            /* Los márgenes de indicador, título y descripción permanecen fijos según manual */
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
+        <div class="logo">
+            <img src="deepmersion.jpeg" alt="logo deepmersion">
+        </div>
 
         <p class="indicator">Lección 01 / Fundamentos</p>
         <h1 class="title">La paradoja del búnker.</h1>
