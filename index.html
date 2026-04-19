@@ -6,6 +6,16 @@
     <title>Deepmersion / Registro</title>
 
     <style>
+        :root{
+            /* Espaciados principales (PC por defecto) */
+            --logo-to-indicator: 30px;
+            --indicator-to-title: 12px;
+            --title-to-description: 16px;
+            --description-to-content: 32px;
+            --content-to-button: 30px;
+            --logo-left-offset: -10px;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         html, body {
@@ -32,8 +42,8 @@
         
         /* LOGO */
         .logo {
-            margin-left: -10px; /* 🔥 requerido */
-            margin-bottom: 30px; /* PC */
+            margin-left: var(--logo-left-offset); /* Ubicación de logo: -10px a la izquierda */
+            margin-bottom: var(--logo-to-indicator); /* Logo a Indicador: 30px (PC) / 20px (Móvil) */
         }
 
         .logo img {
@@ -47,7 +57,7 @@
             font-size: 11px;
             font-weight: 600;
             color: #878787;
-            margin-bottom: 12px; /* 🔥 fijo */
+            margin-bottom: var(--indicator-to-title); /* Indicador a Título: 12px (fijo) */
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
@@ -57,7 +67,7 @@
             font-size: 30px;
             font-weight: 700;
             color: #333333;
-            margin-bottom: 16px; /* 🔥 fijo */
+            margin-bottom: var(--title-to-description); /* Título a Descripción: 16px (fijo) */
             line-height: 1.1;
             letter-spacing: -0.8px;
         }
@@ -66,7 +76,7 @@
         .description {
             font-size: 16px;
             color: #878787;
-            margin-bottom: 32px; /* 🔥 fijo */
+            margin-bottom: var(--description-to-content); /* Descripción a Contenido: 32px (fijo) */
             line-height: 1.5;
         }
         
@@ -104,7 +114,7 @@
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            margin-top: 30px; /* 🔥 PC */
+            margin-top: var(--content-to-button); /* Contenido a Botón: 30px (PC) / 20px (Móvil) */
             -webkit-appearance: none;
         }
 
@@ -119,9 +129,13 @@
 
         /* 📱 MOBILE */
         @media (max-width: 480px) {
+            :root{
+                --logo-to-indicator: 20px; /* Logo a Indicador móvil */
+                --content-to-button: 20px; /* Contenido a Botón móvil */
+            }
 
             .logo {
-                margin-bottom: 20px; /* 🔥 móvil */
+                margin-bottom: var(--logo-to-indicator); /* móvil */
             }
 
             .logo img {
@@ -132,12 +146,8 @@
                 font-size: 26px;
             }
 
-            .btn-mando {
-                margin-top: 20px; /* 🔥 móvil */
-            }
-
             .container {
-                padding: 0 25px; /* 🔥 mejora visual en móvil */
+                padding: 0 25px; /* mejora visual en móvil */
             }
         }
 
