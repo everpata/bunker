@@ -4,47 +4,177 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepmersion / Registro</title>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
-        .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
-        
-        .logo { margin: 0 0 30px -10px; display: block; }
-        .logo img { height: 60px; width: auto; display: block; }
 
-        .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
-        .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-width: 460px;
+            padding: 0 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
         
-        .form-area { width: 100%; display: flex; flex-direction: column; }
-        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; font-family: inherit; }
+        /* LOGO */
+        .logo {
+            margin-left: -10px; /* 🔥 requerido */
+            margin-bottom: 30px; /* PC */
+        }
+
+        .logo img {
+            height: 60px;
+            width: auto;
+            display: block;
+        }
+
+        /* INDICADOR */
+        .indicator {
+            font-size: 11px;
+            font-weight: 600;
+            color: #878787;
+            margin-bottom: 12px; /* 🔥 fijo */
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* TÍTULO */
+        .title {
+            font-size: 30px;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 16px; /* 🔥 fijo */
+            line-height: 1.1;
+            letter-spacing: -0.8px;
+        }
+
+        /* DESCRIPCIÓN */
+        .description {
+            font-size: 16px;
+            color: #878787;
+            margin-bottom: 32px; /* 🔥 fijo */
+            line-height: 1.5;
+        }
+        
+        /* INPUTS */
+        .form-area {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #eaeaea;
+            padding: 12px 0;
+            font-size: 16px;
+            color: #333333;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+        }
+
         input::placeholder { color: #878787; }
+
         input:focus { border-bottom: 1px solid #333333; }
 
-        /* Espacio quirúrgico de 30px */
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; }
-        .link { font-size: 13px; color: #878787; text-decoration: none; align-self: center; margin-top: 24px; }
-
-        @media (max-width: 480px) {
-            .logo { margin-bottom: 20px; } .logo img { height: 45px; }
-            .title { font-size: 26px; } 
-            .btn-mando { margin-top: 20px; }
+        /* BOTÓN */
+        .btn-mando {
+            width: 100%;
+            background: #333333;
+            color: #ffffff;
+            border: none;
+            padding: 20px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 30px; /* 🔥 PC */
+            -webkit-appearance: none;
         }
+
+        /* LINK */
+        .link {
+            font-size: 13px;
+            color: #878787;
+            text-decoration: none;
+            align-self: center;
+            margin-top: 24px;
+        }
+
+        /* 📱 MOBILE */
+        @media (max-width: 480px) {
+
+            .logo {
+                margin-bottom: 20px; /* 🔥 móvil */
+            }
+
+            .logo img {
+                height: 45px;
+            }
+
+            .title {
+                font-size: 26px;
+            }
+
+            .btn-mando {
+                margin-top: 20px; /* 🔥 móvil */
+            }
+
+            .container {
+                padding: 0 25px; /* 🔥 mejora visual en móvil */
+            }
+        }
+
     </style>
 </head>
+
 <body>
+
     <div class="container">
-        <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
+
+        <div class="logo">
+            <img src="deepmersion.jpeg" alt="logo">
+        </div>
+
         <p class="indicator">Acceso / Registro</p>
+
         <h1 class="title">Iniciar expedición.</h1>
-        <p class="description">Crea tus credenciales de acceso para entrar al búnker.</p>
+
+        <p class="description">
+            Crea tus credenciales de acceso para entrar al búnker.
+        </p>
+
         <div class="form-area">
             <input type="text" placeholder="Nombre completo">
             <input type="email" placeholder="Correo electrónico">
             <input type="password" placeholder="Contraseña">
         </div>
-        <button onclick="window.location.href='datos.html'" class="btn-mando">Crear cuenta &#8594;</button>
-        <a href="#" class="link">¿Ya tienes cuenta? <b>Inicia sesión</b></a>
+
+        <button onclick="window.location.href='datos.html'" class="btn-mando">
+            Crear cuenta &#8594;
+        </button>
+
+        <a href="#" class="link">
+            ¿Ya tienes cuenta? <b>Inicia sesión</b>
+        </a>
+
     </div>
+
 </body>
 </html>
