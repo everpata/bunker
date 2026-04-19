@@ -5,53 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepmersion / Lección 01</title>
     <style>
-        /* RESET OPERATIVO */
+        /* RESET TOTAL */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
         
-        /* CONTENEDOR CENTRALIZADO */
+        /* BLOQUE CENTRAL */
         .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
         
-        /* 1. LOGO: Ajuste -10px y Margen 30px/20px */
-        .logo { margin: 0 0 30px -10px; display: block; }
+        /* LOGO: Offset -10px / Margen 30px PC */
+        .logo { margin: 0 0 30px -10px; align-self: flex-start; }
         .logo img { height: 60px; width: auto; display: block; }
 
-        /* 2. INDICADOR: 11px, Bold 600, Color #878787 */
+        /* CABECERA ESTÁNDAR */
         .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
-        
-        /* 3. TÍTULO: 30px/26px, Bold 700, Color #333333 */
         .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
-        
-        /* 4. DESCRIPCIÓN: 16px, Color #878787 */
         .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
         
-        /* 5. ÁREA DE TRABAJO (CONTENIDO DE LECCIÓN) */
-        /* Mantiene el estándar de 16px y color #878787 para el cuerpo */
-        .lesson-content { width: 100%; display: flex; flex-direction: column; gap: 16px; }
+        /* ÁREA DE TRABAJO: Gap simétrico de 16px */
+        .lesson-content { width: 100%; display: flex; flex-direction: column; gap: 16px; margin: 0; }
         .lesson-text { font-size: 16px; color: #878787; line-height: 1.6; }
         .lesson-text b { color: #333333; font-weight: 600; }
         
-        /* Bloque de énfasis para micro-aprendizaje */
-        .highlight-box { background: #f5f5f7; padding: 20px; border-radius: 16px; border-left: 3px solid #333333; }
-        .highlight-box p { font-size: 15px; color: #333333; font-weight: 500; line-height: 1.4; }
+        /* Bloque de énfasis limpio (Sin bordes) */
+        .highlight-box { background: #f5f5f7; padding: 22px; border-radius: 16px; }
+        .highlight-box p { font-size: 15px; color: #333333; font-weight: 500; line-height: 1.4; margin: 0; }
 
-        /* 6. BOTÓN: Margen Simétrico 30px/20px, Color #333333 */
+        /* BOTÓN: Margen simétrico 30px PC */
         .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; }
 
-        /* RESPONSIVE MÓVIL (Reglas de 20px) */
+        /* RESPONSIVE MÓVIL: Reglas de 20px */
         @media (max-width: 480px) {
             .logo { margin-bottom: 20px; } 
             .logo img { height: 45px; }
             .title { font-size: 26px; } 
             .description { margin-bottom: 24px; }
             .btn-mando { margin-top: 20px; }
+            .lesson-content { gap: 14px; } /* Micro-ajuste para pantallas pequeñas */
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="logo"><img src="deepmersion.jpeg" alt="logo deepmersion"></div>
+        <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
 
         <p class="indicator">Lección 01 / Fundamentos</p>
         <h1 class="title">La paradoja del búnker.</h1>
