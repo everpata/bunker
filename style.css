@@ -1,0 +1,29 @@
+/* EL JEFE: Aquí están tus reglas Deepmersion */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, sans-serif; }
+
+.container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
+
+/* El Logo con su ajuste de -10px */
+.logo { margin: 0 0 30px -10px; }
+.logo img { height: 60px; width: auto; display: block; }
+
+/* Textos */
+.indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+.title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
+.description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
+
+/* Área de contenido */
+.work-area { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+.text-base { font-size: 16px; color: #878787; line-height: 1.5; }
+
+/* El Botón con sus 30px de separación */
+.btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; }
+
+/* Ajustes para Celular */
+@media (max-width: 480px) {
+    .logo { margin-bottom: 20px; }
+    .logo img { height: 45px; }
+    .title { font-size: 26px; }
+    .btn-mando { margin-top: 20px; }
+}
