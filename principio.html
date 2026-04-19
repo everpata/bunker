@@ -5,29 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepmersion / Principio III</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+        function triggerReveal() {
+            document.body.classList.add('revealed');
+        }
+    </script>
 </head>
 <body>
 
     <div class="container">
-        <div class="logo">
-            <img src="deepmersion.jpeg" alt="logo deepmersion">
+        
+        <div class="interruption-screen" onclick="triggerReveal()">
+            <img src="hacha.png" alt="reliquia" class="relic-image">
+            <p class="reveal-instruction">Toca para revelar el Principio III</p>
         </div>
 
-        <p class="indicator">Pilar de Cultura / 03 de 10</p>
+        <div class="revelation-screen">
+            <div class="logo">
+                <img src="deepmersion.jpeg" alt="logo deepmersion">
+            </div>
 
-        <div class="work-area card">
-            <p class="principle-statement">
-                "Afilamos el hacha aunque no vayamos a cortar ningún árbol."
-            </p>
-            
-            <p class="explanation-text">
-                El entrenamiento no es un evento previo a la acción, es el estado constante del hombre profundo. La oportunidad no avisa; solo favorece a quien ya posee el filo.
-            </p>
+            <p class="indicator">Pilar de Cultura / 03 de 10</p>
+
+            <div class="work-area card">
+                <p class="principle-statement">
+                    "Afilamos el hacha aunque no vayamos a cortar ningún árbol."
+                </p>
+                
+                <p class="explanation-text">
+                    El entrenamiento no es un evento previo a la acción, es el estado constante del hombre profundo. La oportunidad no avisa; solo favorece a quien ya posee el filo.
+                </p>
+            </div>
+
+            <button class="btn-mando" onclick="window.location.href='leccion_siguiente.html'">
+                He asimilado el Principio III →
+            </button>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='siguiente.html'">
-            He asimilado el Principio III →
-        </button>
     </div>
 
 </body>
