@@ -3,58 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Deepmersion / Lección 01</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
-        
-        .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
-        
-        .logo { margin: 0 0 30px -10px; align-self: flex-start; }
-        .logo img { height: 60px; width: auto; display: block; }
-
-        .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; }
-        .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
-        .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
-        
-        .lesson-content { width: 100%; display: flex; flex-direction: column; gap: 12px; margin: 0; }
-        .lesson-text { font-size: 16px; color: #878787; line-height: 1.5; }
-        .lesson-text b { color: #333333; font-weight: 600; }
-
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; }
-
-        @media (max-width: 480px) {
-            .logo { margin-bottom: 20px; } 
-            .logo img { height: 45px; }
-            .title { font-size: 26px; } 
-            .btn-mando { margin-top: 20px; }
-        }
-    </style>
+    <title>Deepmersion</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="container">
-        <div class="logo">
-            <img src="deepmersion.jpeg" alt="logo deepmersion">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        
+        <p class="indicator">Misión de campo 01</p>
+        <h1 class="title">El saboteador invisible</h1>
+        <p class="description">No es mala suerte, simplemente, programación. La superficie te diseñó para que seas torpe en el amor y funcional en el trabajo.</p>
+
+        <div class="work-area">
+            <p class="text-base">Es jodido admitirlo, pero sí, tu vida es un diseño. Todo el sufrimiento que experimentas, no es al azar. Fue hecho intencionaalmente para mantenerte relagado y sin criterio.</p>
+            <p class="text-base">Porque cuando un hombre se experimenta libre y suficiente, en ese preciso instante, deja de ser un cliente del sistema.</p>
         </div>
 
-        <p class="indicator">Lección 01 / Fundamentos</p>
-        <h1 class="title">La paradoja del búnker.</h1>
-        <p class="description">Para ascender a tu máximo potencial, primero debes descender a tu verdad más profunda.</p>
-
-        <div class="lesson-content">
-            <p class="lesson-text">
-                La inmersión no es un proceso de acumulación, sino de <b>eliminación</b>. No se trata de aprender quién eres, sino de quitar lo que no eres.
-            </p>
-            <p class="lesson-text">
-                El búnker no es una prisión, es un laboratorio de <b>claridad radical</b> donde cada capa descartada te acerca al núcleo de tu poder operativo.
-            </p>
-        </div>
-
-        <button onclick="window.location.href='mision2.html'" class="btn-mando">
-            Entendido, continuar →
+        <button class="btn-mando" onclick="window.location.href='SiguientePagina.html'">
+            Continuar
         </button>
     </div>
-
 </body>
 </html>
