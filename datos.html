@@ -6,18 +6,19 @@
     <title>Deepmersion / Perfil</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
         .logo { margin: 0 0 30px -10px; }
         .logo img { height: 60px; width: auto; display: block; }
-        .indicator { font-size: 11px; font-weight: 600; color: #878787; margin: 0 0 12px 0; letter-spacing: 1.5px; text-transform: uppercase; }
-        .title { font-size: 30px; font-weight: 700; color: #333333; margin: 0 0 16px 0; line-height: 1.1; }
-        .description { font-size: 16px; color: #878787; margin: 0 0 32px 0; line-height: 1.5; }
-        .work-area { width: 100%; display: flex; flex-direction: column; gap: 8px; }
-        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; background: transparent; outline: none; }
+        .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; }
+        .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
+        .form-area { width: 100%; display: flex; flex-direction: column; }
+        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; }
         .iti { width: 100%; } .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; font-size: 16px !important; }
         .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; }
-        @media (max-width: 480px) { .logo { margin-bottom: 20px; } .logo img { height: 45px; } .title { font-size: 26px; } .description { margin-bottom: 24px; } .btn-mando { margin-top: 20px; } }
+        @media (max-width: 480px) { .logo { margin-bottom: 20px; } .logo img { height: 45px; } .title { font-size: 26px; } .btn-mando { margin-top: 20px; } }
     </style>
 </head>
 <body>
@@ -26,7 +27,7 @@
         <p class="indicator">Paso 01 / Perfil</p>
         <h1 class="title">Datos de contacto.</h1>
         <p class="description">Establece tus coordenadas de enlace.</p>
-        <div class="work-area">
+        <div class="form-area">
             <input type="number" placeholder="Edad">
             <input type="text" placeholder="Ocupación">
             <input id="phone" type="tel">
