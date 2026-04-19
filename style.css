@@ -1,69 +1,44 @@
-/* Deepmersion Design System V1.9 - Levitación Fluida */
+/* Deepmersion Design System V2.0 - Foco en Principio */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
 
-/* BLOQUE CENTRAL */
-.container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; transition: all 0.5s ease; }
+.container { position: absolute; top: 50%; left: 50%; transform: translate(-50%; -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
 
-/* --- ESTADO 1: INTERRUPCIÓN (Reliquia Flotante Fluida) --- */
-.interruption-area { 
-    width: 100%; 
+/* LOGO Y ETIQUETA */
+.logo { margin: 0 0 30px -10px; }
+.logo img { height: 60px; width: auto; display: block; }
+.indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 32px; letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* LA TARJETA DEL PRINCIPIO (work-area card) */
+.work-area.card { 
+    background-color: #f5f5f7; 
+    padding: 30px; /* Un poco más de aire interno para darle importancia */
+    border-radius: 16px; 
     display: flex; 
     flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    cursor: pointer; 
-    min-height: 50vh; 
+    gap: 16px; /* Espacio de 16px entre el principio y la explicación */
+    width: 100%;
 }
 
-.relic-image { 
-    width: 100%; 
-    max-width: 250px; 
-    height: auto; 
-    display: block;
-    margin-bottom: 24px;
-    /* ANIMACIÓN: Ciclo fluido de 6 segundos para mayor dinamismo */
-    animation: softFloat 6s ease-in-out infinite; 
+/* EL PRINCIPIO: Máximo contraste y peso */
+.principle-statement { 
+    font-size: 22px; 
+    font-weight: 800; 
+    color: #333333; 
+    line-height: 1.2; 
+    letter-spacing: -0.5px;
 }
 
-.reveal-instruction { font-size: 11px; font-weight: 600; color: #878787; text-align: center; line-height: 1; letter-spacing: 1.5px; text-transform: uppercase; }
-
-/* RECALIBRACIÓN: Curva de movimiento continua */
-@keyframes softFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-25px); } /* Sube y baja sin pausas en los extremos */
+/* LA EXPLICACIÓN: Tono secundario */
+.explanation-text { 
+    font-size: 16px; 
+    color: #878787; 
+    line-height: 1.6; 
 }
 
-/* --- ESTADO 2: REVELACIÓN (Estructura Deepmersion) --- */
-.revealed-content { 
-    width: 100%; 
-    display: none; 
-    opacity: 0; 
-}
+/* BOTÓN DE MANDO */
+.btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; }
 
-.logo { margin: 0 0 30px -10px; align-self: flex-start; }
-.logo img { height: 60px; width: auto; display: block; }
-
-.indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; }
-.title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
-.description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; font-style: italic; opacity: 0.8; } 
-
-.work-area.card { background-color: #f5f5f7; padding: 24px; border-radius: 16px; display: flex; flex-direction: column; gap: 12px; }
-
-.principle-quote { font-size: 20px; font-weight: 600; color: #333333; line-height: 1.3; letter-spacing: -0.4px; }
-.explanation-text { font-size: 16px; color: #878787; line-height: 1.5; }
-
-.btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; }
-
-/* LÓGICA DE ACTIVACIÓN */
-body.principle-revealed .interruption-area { display: none; }
-body.principle-revealed .revealed-content { display: block; opacity: 1; animation: fadeInStructure 1s ease forwards; }
-
-@keyframes fadeInStructure { from { opacity: 0; } to { opacity: 1; } }
-
-@media (max-width: 480px) {
-    .logo { margin-bottom: 20px; } 
-    .logo img { height: 45px; }
-    .title { font-size: 26px; } 
-    .btn-mando { margin-top: 20px; }
-}
+/* LÓGICA DE REVELACIÓN (Simplificada para el ejemplo) */
+.revealed-content { display: block; animation: fadeIn 0.8s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
