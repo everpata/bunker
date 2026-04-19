@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deepmersion / Principio III</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function revealPrinciple() {
+            // Activa la tarjeta de la reliquia
+            document.getElementById('relicCard').classList.add('active');
+            // Muestra el botón de avanzar
+            document.getElementById('btnMando').classList.add('visible');
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo">
+            <img src="deepmersion.jpeg" alt="logo deepmersion">
+        </div>
+
+        <p class="indicator">Pilar de Cultura / Principios</p>
+        <h1 class="title">La reliquia desenterrada.</h1>
+
+        <div class="work-area">
+            
+            <div id="relicCard" class="relic-card" onclick="revealPrinciple()">
+                
+                <img src="https://images.squarespace-cdn.com/content/v1/59df95b06f5f3964f5f5f5f5/1539123456789-ABCDEF/worn_axe_museum.jpg?format=1000w" alt="reliquia hacha antigua desgastada" class="relic-image">
+
+                <p class="reveal-instruction">Toca la reliquia para revelar el principio.</p>
+
+                <div class="revealed-content">
+                    <p class="principle-text">
+                        "Afilamos el hacha aunque no vayamos a cortar ningún árbol."
+                    </p>
+                    <p class="explanation-text">
+                        Trata de entrenarse todo el tiempo para que podamos tomar cualquier oportunidad porque ninguna nos agarra desprevenidos.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <button id="btnMando" class="btn-mando" onclick="window.location.href='siguiente.html'">
+            He asimilado el principio →
+        </button>
+    </div>
+
+</body>
+</html>
