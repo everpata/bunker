@@ -1,182 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Base App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deepmersion / Lección 01</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
+        
+        .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
+        
+        .logo { margin: 0 0 30px -10px; align-self: flex-start; }
+        .logo img { height: 60px; width: auto; display: block; }
 
-<style>
-:root {
-  /* 📐 SPACING */
-  --space-logo-indicator-desktop: 30px;
-  --space-logo-indicator-mobile: 20px;
-  --space-indicator-title: 12px;
-  --space-title-description: 16px;
-  --space-description-content: 32px;
-  --space-content-button-desktop: 30px;
-  --space-content-button-mobile: 20px;
+        .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; }
+        .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
+        .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
+        
+        .lesson-content { width: 100%; display: flex; flex-direction: column; gap: 12px; margin: 0; }
+        .lesson-text { font-size: 16px; color: #878787; line-height: 1.5; }
+        .lesson-text b { color: #333333; font-weight: 600; }
+        
+        .highlight-box { background: #f5f5f7; padding: 24px; border-radius: 16px; width: 100%; }
+        .highlight-box p { font-size: 16px; color: #333333; font-weight: 500; line-height: 1.4; margin: 0; }
 
-  /* 🎨 COLORS */
-  --color-bg: #ffffff;
-  --color-primary: #333333;
-  --color-secondary: #878787;
-  --color-border: #eaeaea;
-  --color-module: #f5f5f7;
+        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; }
 
-  /* 🔤 TYPOGRAPHY */
-  --font-title-desktop: 30px;
-  --font-title-mobile: 26px;
-  --font-body: 16px;
-  --font-indicator: 11px;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  background: var(--color-bg);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* 🧱 BLOQUE PRINCIPAL */
-.app-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  max-width: 460px;
-  padding: 0 40px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-/* 🖼 LOGO */
-.logo {
-  margin-left: -10px;
-  margin-bottom: var(--space-logo-indicator-desktop);
-}
-
-.logo img {
-  height: 60px;
-}
-
-/* 🔹 INDICADOR */
-.indicator {
-  font-size: var(--font-indicator);
-  font-weight: 600;
-  color: var(--color-secondary);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: var(--space-indicator-title);
-}
-
-/* 🧠 TÍTULO */
-.title {
-  font-size: var(--font-title-desktop);
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: var(--space-title-description);
-  line-height: 1.1;
-}
-
-/* 📄 DESCRIPCIÓN */
-.description {
-  font-size: var(--font-body);
-  color: var(--color-secondary);
-  margin-bottom: var(--space-description-content);
-}
-
-/* 🧩 ÁREA DE TRABAJO */
-.form-area {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ✏️ INPUTS */
-input {
-  width: 100%;
-  border: none;
-  border-bottom: 1px solid var(--color-border);
-  padding: 12px 0;
-  font-size: var(--font-body);
-  color: var(--color-primary);
-  background: transparent;
-  outline: none;
-}
-
-input::placeholder {
-  color: var(--color-secondary);
-}
-
-/* 🔘 BOTÓN */
-.btn {
-  width: 100%;
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  padding: 18px;
-  border-radius: 14px;
-  font-size: var(--font-body);
-  margin-top: var(--space-content-button-desktop);
-  cursor: pointer;
-}
-
-/* 📱 MOBILE */
-@media (max-width: 480px) {
-  .app-container {
-    padding: 0 24px;
-  }
-
-  .logo {
-    margin-bottom: var(--space-logo-indicator-mobile);
-  }
-
-  .title {
-    font-size: var(--font-title-mobile);
-  }
-
-  .btn {
-    margin-top: var(--space-content-button-mobile);
-  }
-}
-</style>
+        @media (max-width: 480px) {
+            .logo { margin-bottom: 20px; } 
+            .logo img { height: 45px; }
+            .title { font-size: 26px; } 
+            .btn-mando { margin-top: 20px; }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="app-container">
+    <div class="container">
+        <div class="logo">
+            <img src="deepmersion.jpeg" alt="logo deepmersion">
+        </div>
 
-  <div class="logo">
-    <img src="logo.png" alt="logo">
-  </div>
+        <p class="indicator">Lección 01 / Fundamentos</p>
+        <h1 class="title">La paradoja del búnker.</h1>
+        <p class="description">Para ascender a tu máximo potencial, primero debes descender a tu verdad más profunda.</p>
 
-  <div class="indicator">Acceso / Registro</div>
+        <div class="lesson-content">
+            <p class="lesson-text">
+                La inmersión no es un proceso de acumulación, sino de <b>eliminación</b>. No se trata de aprender quién eres, sino de quitar lo que no eres.
+            </p>
+            
+            <div class="highlight-box">
+                <p>"El búnker no es una prisión, es un laboratorio de claridad radical."</p>
+            </div>
+        </div>
 
-  <div class="title">Iniciar expedición.</div>
-
-  <div class="description">
-    Crea tus credenciales de acceso para entrar al búnker.
-  </div>
-
-  <div class="form-area">
-    <input type="text" placeholder="Nombre completo">
-    <input type="email" placeholder="Correo electrónico">
-    <input type="password" placeholder="Contraseña">
-  </div>
-
-  <button class="btn">Crear cuenta →</button>
-
-</div>
+        <button onclick="window.location.href='mision2.html'" class="btn-mando">
+            Entendido, continuar →
+        </button>
+    </div>
 
 </body>
 </html>
