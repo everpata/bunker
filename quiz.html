@@ -1,12 +1,28 @@
-<div class="container">
-    <div class="logo"><img src="deepmersion.jpeg"></div>
-    <p class="indicator">Quiz 01 / Sincronización</p>
-    <h1 class="title">Punto de decisión.</h1>
-    <p class="description">Selecciona el factor que bloquea tu avance actual.</p>
-    <div class="work-area">
-        <button class="option-btn" onclick="this.classList.toggle('selected')">Exceso de información externa.</button>
-        <button class="option-btn" onclick="this.classList.toggle('selected')">Resistencia al cambio.</button>
-        <button class="option-btn" onclick="this.classList.toggle('selected')">Entorno no optimizado.</button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepmersion / Sincronización</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
+        
+        <p class="indicator">Evaluación / Sincronización</p>
+        <h1 class="title">Punto de control.</h1>
+        <p class="description">¿Cuál es tu prioridad táctica para la siguiente sesión?</p>
+
+        <div class="work-area">
+            <button class="option-btn" onclick="this.classList.toggle('selected')">Eliminar ruidos externos.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">Optimizar tiempos de respuesta.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">Documentar el proceso.</button>
+        </div>
+
+        <button class="btn-mando" onclick="window.location.href='bitacora.html'">
+            Sincronizar respuesta →
+        </button>
     </div>
-    <button class="btn-mando" onclick="window.location.href='#'">Sincronizar →</button>
-</div>
+</body>
+</html>
