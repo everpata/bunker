@@ -1,14 +1,25 @@
-<div class="container">
-    <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
-    <p class="indicator">Quiz 01 / Sincronización</p>
-    <h1 class="title">Punto de decisión.</h1>
-    <p class="description">Selecciona el factor que bloquea tu avance actual.</p>
-    
-    <div class="work-area">
-        <button class="option-btn" onclick="this.classList.toggle('selected')">Exceso de información externa.</button>
-        <button class="option-btn" onclick="this.classList.toggle('selected')">Resistencia al cambio.</button>
-        <button class="option-btn" onclick="this.classList.toggle('selected')">Entorno no optimizado.</button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deepmersion / Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
+        <p class="indicator">Quiz 01 / Sincronización</p>
+        <h1 class="title">Punto de decisión.</h1>
+        <p class="description">Selecciona el factor que bloquea tu avance actual.</p>
+        
+        <div class="work-area">
+            <button class="option-btn" onclick="this.classList.toggle('selected')">Exceso de información externa.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">Resistencia al cambio.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">Entorno no optimizado.</button>
+        </div>
+
+        <button class="btn-mando" onclick="window.location.href='final.html'">Sincronizar →</button>
     </div>
-    
-    <button class="btn-mando" onclick="window.location.href='siguiente.html'">Sincronizar →</button>
-</div>
+</body>
+</html>
