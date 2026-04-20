@@ -5,230 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepfall / Hub</title>
     <style>
-        /* --- ESTÁNDARES NUCLEARES --- */
-        :root {
-            --color-primary: #333333;
-            --color-secondary: #878787;
-            --color-bg-light: #f5f5f7;
-            --color-border: #eaeaea;
-            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            
-            /* Tamaños Estándar */
-            --size-tag: 10px;
-            --size-title: 22px;
-            --size-desc: 14px;
-            --size-logo: 50px;
-        }
-
+        /* --- ESTILO ESTÁNDAR DE TARJETA DEEPMERSION --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         html, body { 
             width: 100%; 
-            height: 100%; 
+            min-height: 100%; 
             background-color: #ffffff; 
-            font-family: var(--font-main); 
-            color: var(--color-primary); 
-            -webkit-font-smoothing: antialiased;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center; /* Centra la tarjeta en PC */
         }
-        
+
         .container { 
             width: 100%; 
-            max-width: 440px; 
-            margin: 0 auto; 
-            padding: 50px 35px; 
-        }
-        
-        /* --- CABECERA ESTÁNDAR --- */
-        .header { margin-bottom: 50px; text-align: left; }
-        .logo img { 
-            height: var(--size-logo); 
-            width: auto; 
-            display: block;
-            transition: filter 0.5s ease;
-        }
-        .user-welcome { 
-            font-size: 13px; 
-            color: var(--color-secondary); 
-            margin-top: 12px; 
-            font-weight: 500; 
+            max-width: 460px; /* Tamaño exacto de tus otras páginas */
+            padding: 60px 45px; /* Margen interno idéntico */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
-        /* --- SECCIONES ESTÁNDAR --- */
-        .section { width: 100%; margin-bottom: 50px; position: relative; }
-        
-        .section-header { margin-bottom: 20px; }
-        
-        .section-tag { 
-            font-size: var(--size-tag); 
-            font-weight: 800; 
-            color: var(--color-secondary); 
-            letter-spacing: 1.8px; 
+        /* --- LOGO Y TEXTOS (TAMAÑOS ORIGINALES) --- */
+        .logo { margin: 0 0 30px -10px; }
+        .logo img { height: 60px; width: auto; display: block; }
+
+        .indicator { 
+            font-size: 11px; 
+            font-weight: 600; 
+            color: #878787; 
+            margin-bottom: 12px; 
+            letter-spacing: 1.5px; 
             text-transform: uppercase; 
-            margin-bottom: 6px; 
-            display: block; 
-        }
-        
-        .section-title { 
-            font-size: var(--size-title); 
-            font-weight: 700; 
-            color: var(--color-primary); 
-            margin-bottom: 8px; 
-            line-height: 1.1;
-        }
-        
-        .section-desc { 
-            font-size: var(--size-desc); 
-            color: var(--color-secondary); 
-            line-height: 1.5; 
-            max-width: 95%;
         }
 
-        /* --- GRID 3 COLUMNAS --- */
+        .title { 
+            font-size: 30px; 
+            font-weight: 700; 
+            color: #333333; 
+            margin-bottom: 16px; 
+            line-height: 1.1; 
+            letter-spacing: -0.8px;
+        }
+
+        .description { 
+            font-size: 16px; 
+            color: #878787; 
+            margin-bottom: 32px; 
+            line-height: 1.5; 
+        }
+
+        /* --- SECCIONES DEL HUB --- */
+        .section { width: 100%; margin-bottom: 45px; position: relative; }
+        
+        /* Grid de 3 columnas para que sean pequeñas */
         .mission-grid { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
             gap: 10px; 
             overflow: hidden; 
-            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 150px; /* Altura estándar para 2 filas aprox */
-            position: relative;
+            max-height: 160px; /* Solo muestra 2 filas */
+            transition: max-height 0.4s ease;
         }
         
         .section.expanded .mission-grid { max-height: 1500px; }
 
         .mission-item { 
             aspect-ratio: 1; 
-            background: var(--color-bg-light); 
+            background: #f5f5f7; 
             border-radius: 12px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             text-decoration: none; 
-            color: var(--color-primary); 
+            color: #333333; 
             font-size: 14px; 
-            font-weight: 600; 
-            border: 1px solid transparent;
-            transition: transform 0.2s;
-        }
-        
-        .mission-item:active { transform: scale(0.95); background: var(--color-primary); color: #fff; }
-
-        .mission-item.locked { 
-            opacity: 0.25; 
-            background: #fff; 
-            border: 1px dashed var(--color-border); 
-            cursor: not-allowed; 
+            font-weight: 600;
         }
 
-        /* --- OVERLAY DE EXPANSIÓN --- */
+        .mission-item.locked { opacity: 0.25; background: #fff; border: 1px dashed #eaeaea; cursor: not-allowed; }
+
+        /* --- DIFUMINADO Y BOTÓN --- */
         .fade-overlay {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 80px;
-            background: linear-gradient(to top, rgba(255,255,255,1) 30%, rgba(255,255,255,0));
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
+            bottom: 0; left: 0; width: 100%; height: 80px;
+            background: linear-gradient(to top, #fff 20%, rgba(255,255,255,0));
+            display: flex; align-items: flex-end; justify-content: center;
             pointer-events: none;
-            transition: opacity 0.3s;
         }
-        
-        .section.expanded .fade-overlay { opacity: 0; pointer-events: none; }
+        .section.expanded .fade-overlay { display: none; }
 
         .expand-btn {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--color-primary);
-            background: #ffffff;
-            padding: 8px 16px;
-            border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            cursor: pointer;
-            pointer-events: auto;
-            margin-bottom: 5px;
-            border: 1px solid var(--color-border);
+            font-size: 11px; font-weight: 700; color: #333333;
+            background: #fff; padding: 8px 16px; border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            cursor: pointer; pointer-events: auto; border: 1px solid #f0f0f0;
         }
 
-        /* --- TARJETA UPSELL --- */
         .upsell-card { 
-            background: var(--color-bg-light); 
-            border-radius: 16px; 
-            padding: 24px; 
-            margin-top: 20px; 
-            display: none; 
+            background: #f5f5f7; border-radius: 14px; padding: 20px; margin-top: 15px; display: none; 
         }
-        .upsell-card h3 { font-size: 15px; margin-bottom: 8px; font-weight: 700; }
-        .upsell-card p { font-size: 13px; color: var(--color-secondary); margin-bottom: 18px; line-height: 1.5; }
-        .btn-upsell { 
-            background: var(--color-primary); 
-            color: #ffffff; 
-            padding: 12px 20px; 
-            border-radius: 10px; 
-            text-decoration: none; 
-            font-size: 12px; 
-            font-weight: 600; 
-            display: inline-block; 
+        .upsell-card h3 { font-size: 16px; margin-bottom: 5px; }
+        .upsell-card p { font-size: 14px; color: #878787; margin-bottom: 15px; line-height: 1.4; }
+        .btn-mando-small { 
+            background: #333333; color: #fff; padding: 12px 20px; 
+            border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-block; 
         }
 
-        /* ESTADO BLOQUEADO */
-        .locked-section .section-title { color: #d0d0d0; }
-        .locked-section .section-tag { color: #e0e0e0; }
-
-        @media (max-width: 400px) {
-            .container { padding: 40px 25px; }
-            :root { --size-title: 20px; --size-logo: 40px; }
+        @media (max-width: 480px) {
+            .container { padding: 40px 30px; }
+            .title { font-size: 26px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header class="header">
-            <div class="logo"><img id="dynamicLogo" src="deepmersion.jpeg" alt="logo"></div>
-            <p class="user-welcome" id="userName">Operativo identificado</p>
-        </header>
-
+        <div class="logo"><img id="dynamicLogo" src="deepmersion.jpeg" alt="logo"></div>
+        <p class="indicator" id="userRange">Operativo Identificado</p>
+        
         <section class="section" id="secDF">
-            <div class="section-header">
-                <span class="section-tag">Fase 01 / Deepfall</span>
-                <h2 class="section-title">Inducción Base.</h2>
-                <p class="section-desc">Fundamentos gratuitos completados. Puedes repasar los protocolos de acceso aquí.</p>
-            </div>
+            <h1 class="title">Deepfall.</h1>
+            <p class="description">Fundamentos base completados. Revisa tus protocolos aquí.</p>
             <div class="mission-grid" id="gridDF"></div>
             <div class="fade-overlay" onclick="toggleSection('secDF')">
-                <div class="expand-btn">Ver todas las lecciones</div>
+                <div class="expand-btn">Ver todas las misiones</div>
             </div>
         </section>
 
         <section class="section" id="secDM">
-            <div class="section-header">
-                <span class="section-tag">Fase 02 / Deepmersion</span>
-                <h2 class="section-title">Inmersión Operativa.</h2>
-                <p class="section-desc">Entrenamiento de alto impacto por cohortes. Nivel de acceso restringido.</p>
-            </div>
+            <h1 class="title" style="color: #ccc;">Deepmersion.</h1>
+            <p class="description">Acceso restringido a miembros de la cohorte activa.</p>
             <div class="mission-grid" id="gridDM"></div>
-            <div class="fade-overlay" id="fadeDM" onclick="toggleSection('secDM')">
-                <div class="expand-btn">Ver misiones de cohorte</div>
-            </div>
             <div id="upsellDM" class="upsell-card">
-                <h3>Acceso No Detectado</h3>
-                <p>Este nivel requiere credenciales de la cohorte activa. Consulta disponibilidad para el próximo despliegue.</p>
-                <a href="#" class="btn-upsell">Solicitar Acceso</a>
+                <h3>Rango Insuficiente</h3>
+                <p>Este nivel requiere credenciales de cohorte. Consulta disponibilidad.</p>
+                <a href="#" class="btn-mando-small">Consultar Acceso &#8594;</a>
             </div>
         </section>
-
+        
         <section class="section" id="secDQ">
-            <div class="section-header">
-                <span class="section-tag">Fase 03 / Deepquest</span>
-                <h2 class="section-title">Maestría Élite.</h2>
-                <p class="section-desc">El último eslabón de la cadena de mando. Solo para operativos graduados.</p>
-            </div>
+            <h1 class="title" style="color: #eee;">Deepquest.</h1>
+            <p class="description">Nivel de maestría final. Solo operativos graduados.</p>
             <div class="mission-grid" id="gridDQ"></div>
-            <div class="fade-overlay" id="fadeDQ" onclick="toggleSection('secDQ')">
-                <div class="expand-btn">Ver misiones élite</div>
-            </div>
         </section>
     </div>
 
@@ -249,46 +168,36 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        function toggleSection(id) {
-            document.getElementById(id).classList.toggle('expanded');
-        }
+        function toggleSection(id) { document.getElementById(id).classList.toggle('expanded'); }
 
         auth.onAuthStateChanged((user) => {
             if (!user) { window.location.href = "index.html"; return; }
             db.collection("usuarios").doc(user.uid).get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    document.getElementById('userName').innerText = "Operativo: " + (data.nombre || "No Identificado");
+                    document.getElementById('userRange').innerText = "Operativo: " + (data.nombre || "Alpha");
                     setupHub(data);
                 }
             });
         });
 
         function setupHub(data) {
-            const logo = document.getElementById('dynamicLogo');
-            
-            // Deepfall (Gratis)
+            // Deepfall
             renderMissions('gridDF', 15, "unlocked", "01_deepfall/m_");
-
             // Deepmersion
             if (data.access_DM) {
                 renderMissions('gridDM', 20, "unlocked", "02_deepmersion/m_");
-                logo.style.filter = "grayscale(0.4) contrast(1.1)";
+                document.getElementById('secDM').querySelector('.title').style.color = "#333";
             } else {
-                document.getElementById('secDM').classList.add('locked-section');
                 renderMissions('gridDM', 6, "locked", "#");
                 document.getElementById('upsellDM').style.display = "block";
-                document.getElementById('fadeDM').style.display = "none";
             }
-
             // Deepquest
             if (data.access_DQ) {
                 renderMissions('gridDQ', 25, "unlocked", "03_deepquest/m_");
-                logo.style.filter = "contrast(1.6) brightness(0.75)";
+                document.getElementById('secDQ').querySelector('.title').style.color = "#333";
             } else {
-                document.getElementById('secDQ').classList.add('locked-section');
                 renderMissions('gridDQ', 6, "locked", "#");
-                document.getElementById('fadeDQ').style.display = "none";
             }
         }
 
