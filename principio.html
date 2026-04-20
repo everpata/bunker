@@ -1,24 +1,35 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Principio III</title><link rel="stylesheet" href="style.css">
-    <script>function reveal(){document.body.classList.add('revealed');}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Principio III / Deepmersion</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function triggerReveal() {
+            document.body.classList.add('revealed');
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <div class="interruption-screen" onclick="reveal()">
-            <img src="tu-hacha.jpg" class="relic-image">
+        <div class="interruption-screen" onclick="triggerReveal()">
+            <img src="tu-hacha-arqueologica.jpg" class="relic-image" alt="reliquia">
             <p class="indicator">Toca para desenterrar el Principio III</p>
         </div>
+
         <div class="revelation-screen">
-            <div class="logo"><img src="deepmersion.jpeg"></div>
-            <p class="indicator">Principio III / 10</p>
+            <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
+            <p class="indicator">Pilar de Cultura / 03 de 10</p>
+            
             <div class="work-area card">
-                <p style="font-size: 22px; font-weight: 800; color: #333333; line-height: 1.2; margin-bottom: 12px;">"Afilamos el hacha aunque no vayamos a cortar ningún árbol."</p>
-                <p class="text-base">El entrenamiento es el estado natural del hombre profundo.</p>
+                <span class="principle-statement">"Afilamos el hacha aunque no vayamos a cortar ningún árbol."</span>
+                <p class="text-base">El entrenamiento constante no es una opción, es el estado natural del hombre profundo.</p>
             </div>
-            <button class="btn-mando">Asimilado →</button>
+
+            <button class="btn-mando" onclick="window.location.href='siguiente.html'">
+                He asimilado el principio →
+            </button>
         </div>
     </div>
 </body>
