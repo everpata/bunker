@@ -46,47 +46,5 @@
         <button onclick="window.location.href='datos.html'" class="btn-mando">Crear cuenta &#8594;</button>
         <a href="#" class="link">¿Ya tienes cuenta? <b>Inicia sesión</b></a>
     </div>
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
-
-<script>
-  // TUS LLAVES DEL BÚNKER (Configuración real)
-  const firebaseConfig = {
-    apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-    authDomain: "deepfall-b3601.firebaseapp.com",
-    projectId: "deepfall-b3601",
-    storageBucket: "deepfall-b3601.firebasestorage.app",
-    messagingSenderId: "207043962011",
-    appId: "1:207043962011:web:681397c7d540b4b3d4523e",
-    measurementId: "G-W9F9ZLMS74"
-  };
-
-  // Inicializar Firebase
-  firebase.initializeApp(firebaseConfig);
-
-  // Lógica de Validación
-  document.getElementById('btnLogin').addEventListener('click', () => {
-    // Captura lo que el usuario escribió en los inputs
-    const email = document.getElementById('userEmail').value;
-    const pass = document.getElementById('userPass').value;
-
-    if (!email || !pass) {
-        alert("Introduce tus credenciales, Operativo.");
-        return;
-    }
-
-    // Orden de Firebase: Revisa si el usuario existe
-    firebase.auth().signInWithEmailAndPassword(email, pass)
-      .then((userCredential) => {
-        // SI TODO SALE BIEN: Entra al curso
-        console.log("Acceso concedido");
-        window.location.href = "01_leccion.html"; 
-      })
-      .catch((error) => {
-        // SI ALGO SALE MAL: Muestra error
-        alert("Identidad no validada: Código o correo incorrecto.");
-      });
-  });
-</script>
 </body>
 </html>
