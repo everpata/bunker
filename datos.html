@@ -41,6 +41,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // 1. Configuración Deepfall
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -53,7 +54,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Detector de país automático por IP
+        // 2. Inicializar Teléfono con detección de país
         const phoneInputField = document.querySelector("#phone");
         const phoneInput = window.intlTelInput(phoneInputField, {
             preferredCountries: ["mx", "es", "co", "ar"],
@@ -67,44 +68,45 @@
             }
         });
 
+        // 3. Centinela
         auth.onAuthStateChanged((user) => { 
-            if (!user) {
-                console.log("No hay usuario logueado, redirigiendo...");
-                window.location.href = "index.html"; 
-            }
+            if (!user) window.location.href = "index.html"; 
         });
 
+        // 4. Lógica de Guardado con Captura de Código de País Forzada
         document.getElementById('btnGuardar').addEventListener('click', () => {
             const user = auth.currentUser;
             const age = document.getElementById('userAge').value;
             const job = document.getElementById('userJob').value;
             
-            // Intenta obtener el número internacional, si no, toma el valor bruto del input
-            let fullPhone = phoneInput.getNumber(); 
-            if (!fullPhone) {
-                fullPhone = phoneInputField.value; 
+            // CAPTURA INTELIGENTE DEL TELÉFONO
+            let fullPhone = phoneInput.getNumber(); // Intenta el formato estándar (+52...)
+            
+            // Si el plugin falla o devuelve vacío, armamos el número con el código de la bandera
+            if (!fullPhone || !fullPhone.includes('+')) {
+                const dialCode = phoneInput.getSelectedCountryData().dialCode; // saca el código (ej. 52)
+                const localNumber = phoneInputField.value.replace(/\s+/g, ''); // limpia espacios
+                fullPhone = `+${dialCode}${localNumber}`;
             }
 
-            // DEBUG: Esto te dirá en la consola qué está detectando el código
-            console.log("Datos capturados:", { edad: age, ocupacion: job, telefono: fullPhone });
-
-            if (!age || !job || !fullPhone) { 
-                alert("Por favor, completa todos los datos para tu expediente."); 
+            if (!age || !job || phoneInputField.value === "") { 
+                alert("Por favor, completa todos los datos operativos."); 
                 return; 
             }
 
+            // 5. Actualizar en Firestore (usamos .update para no borrar el nombre guardado en index.html)
             db.collection("usuarios").doc(user.uid).update({
                 edad: age,
                 ocupacion: job,
                 telefono: fullPhone,
-                fase: "Perfil Completado"
+                fase: "Perfil Completado",
+                ultimaSincronizacion: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then(() => { 
-                console.log("Sincronización exitosa");
                 window.location.href = "mision2.html"; 
             })
             .catch((error) => { 
-                alert("Error de búnker: " + error.message); 
+                alert("Error de sincronización: " + error.message); 
             });
         });
     </script>
