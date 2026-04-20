@@ -2,27 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepmersion / Sincronización</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
-        
-        <p class="indicator">Evaluación / Sincronización</p>
-        <h1 class="title">Punto de control.</h1>
-        <p class="description">¿Cuál es tu prioridad táctica para la siguiente sesión?</p>
-
+        <p class="indicator">Quiz 01</p>
+        <div class="progress-container"><div class="progress-fill" style="width: 60%;"></div></div>
+        <h1 class="title">Sincronización.</h1>
+        <p class="description">¿Cuál es tu principal distractor táctico?</p>
         <div class="work-area">
-            <button class="option-btn" onclick="this.classList.toggle('selected')">Eliminar ruidos externos.</button>
-            <button class="option-btn" onclick="this.classList.toggle('selected')">Optimizar tiempos de respuesta.</button>
-            <button class="option-btn" onclick="this.classList.toggle('selected')">Documentar el proceso.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">Información externa excesiva.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">Entorno físico no optimizado.</button>
         </div>
-
-        <button class="btn-mando" onclick="window.location.href='bitacora.html'">
-            Sincronizar respuesta →
-        </button>
+        <button class="btn-mando">Sincronizar →</button>
     </div>
 </body>
 </html>
