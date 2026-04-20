@@ -8,91 +8,46 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
-        
         .logo { margin: 0 0 30px -10px; }
         .logo img { height: 60px; width: auto; display: block; }
-
         .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 8px; letter-spacing: 1.5px; text-transform: uppercase; }
-        
-        /* BARRA DE PROGRESO */
         .progress-container { width: 100%; height: 2px; background-color: #f5f5f7; margin-bottom: 24px; border-radius: 2px; }
         .progress-fill { height: 100%; background-color: #333333; width: 25%; transition: width 0.8s ease; }
-
         .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; }
         .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
-        
-        textarea { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; background: transparent; outline: none; resize: none; font-family: inherit; line-height: 1.5; }
-        
+        textarea { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; background: transparent; outline: none; resize: none; font-family: inherit; }
         .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; }
-        
-        @media (max-width: 480px) { .logo { margin-bottom: 20px; } .logo img { height: 45px; } .title { font-size: 26px; } .btn-mando { margin-top: 20px; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
-        
         <p class="indicator">Misión 01 / Verdad</p>
-        <div class="progress-container">
-            <div class="progress-fill"></div>
-        </div>
-
+        <div class="progress-container"><div class="progress-fill"></div></div>
         <h1 class="title">La máscara.</h1>
         <p class="description">Identifica el patrón operativo que detectaste.</p>
-        
-        <textarea id="userReport" rows="2" placeholder="Escribe tu reporte..."></textarea>
-        
+        <textarea id="userReport" rows="1" placeholder="Escribe tu reporte..."></textarea>
         <button id="btnSincronizar" class="btn-mando">Sincronizar reporte &#8594;</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-
     <script>
-        // Configuración
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // EL CENTINELA
-        auth.onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = "index.html"; 
-            }
-        });
+        auth.onAuthStateChanged((user) => { if (!user) window.location.href = "index.html"; });
 
-        // GUARDAR REPORTE
         document.getElementById('btnSincronizar').addEventListener('click', () => {
-            const user = auth.currentUser;
-            const reportText = document.getElementById('userReport').value;
-
-            if (!reportText) {
-                alert("El búnker requiere tu reporte para continuar.");
-                return;
-            }
-
-            // Guardamos el reporte en una sub-colección o en el mismo documento del usuario
-            db.collection("usuarios").doc(user.uid).update({
-                mision01_reporte: reportText,
-                ultimoProgreso: "Misión 01 Completa",
-                porcentaje: 25
-            })
-            .then(() => {
-                console.log("Reporte sincronizado");
-                window.location.href = "mision3.html"; 
-            })
-            .catch((error) => {
-                alert("Error de enlace: " + error.message);
-            });
+            const report = document.getElementById('userReport').value;
+            if (!report) { alert("Escribe tu reporte."); return; }
+            db.collection("usuarios").doc(auth.currentUser.uid).update({
+                reporteMision01: report,
+                progreso: 25
+            }).then(() => { window.location.href = "mision3.html"; });
         });
     </script>
 </body>
