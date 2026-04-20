@@ -28,7 +28,6 @@
         .logo { margin: 0 0 30px -10px; }
         .logo img { height: 60px; width: auto; display: block; }
 
-        /* Expedicionario: Color suave */
         .indicator { 
             font-size: 11px; 
             font-weight: 600; 
@@ -38,7 +37,6 @@
             text-transform: uppercase; 
         }
 
-        /* Tramo: Ahora en #878787 */
         .tramo-label {
             font-size: 11px;
             font-weight: 800;
@@ -49,7 +47,6 @@
             margin-bottom: 6px;
         }
 
-        /* Títulos: Siempre en #333333 */
         .title { 
             font-size: 30px; 
             font-weight: 700; 
@@ -73,13 +70,13 @@
             grid-template-columns: repeat(3, 1fr); 
             gap: 10px; 
             overflow: hidden; 
-            max-height: 160px; 
+            max-height: 160px; /* Altura estándar para mostrar inicio de 2da fila */
             transition: max-height 0.4s ease;
         }
         
-        .section.expanded .mission-grid { max-height: 2000px; }
+        /* Solo expande si tiene la clase permitida */
+        .section.expanded.can-expand .mission-grid { max-height: 2000px; }
 
-        /* Estilo de las cajitas: Mismo fondo para todas */
         .mission-item { 
             aspect-ratio: 1; 
             background: #f5f5f7; 
@@ -91,27 +88,21 @@
             color: #333333; 
             font-size: 14px; 
             font-weight: 600;
-            transition: all 0.2s ease;
         }
 
-        /* Bloqueadas: mismo color de fondo, pero icono suave */
-        .mission-item.locked { 
-            cursor: not-allowed; 
-            color: #b0b0b0; 
-        }
+        /* Bloqueadas: sin puntero */
+        .mission-item.locked { cursor: default; }
 
-        .mission-item.unlocked:active {
-            background: #333333;
-            color: #ffffff;
-        }
-
+        /* Fade Blanco unificado para todas las secciones */
         .fade-overlay {
             position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 80px;
-            background: linear-gradient(to top, #fff 20%, rgba(255,255,255,0));
+            bottom: 0; left: 0; width: 100%; height: 90px;
+            background: linear-gradient(to top, #fff 30%, rgba(255,255,255,0));
             display: flex; align-items: flex-end; justify-content: center;
             pointer-events: none;
         }
+        
+        /* Ocultar fade solo si está expandido */
         .section.expanded .fade-overlay { display: none; }
 
         .expand-btn {
@@ -119,6 +110,7 @@
             background: #fff; padding: 8px 16px; border-radius: 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             cursor: pointer; pointer-events: auto; border: 1px solid #f0f0f0;
+            display: none; /* Se activa por JS si el tramo es accesible */
         }
 
         .upsell-card { 
@@ -144,13 +136,13 @@
         <div class="logo"><img id="dynamicLogo" src="deepmersion.jpeg" alt="logo"></div>
         <p class="indicator" id="userRange">Expedicionario Identificado</p>
         
-        <section class="section" id="secDF">
+        <section class="section can-expand" id="secDF">
             <span class="tramo-label">Tramo 01</span>
             <h1 class="title">Deepfall.</h1>
             <p class="description">Fundamentos base completados. Revisa tus protocolos aquí.</p>
             <div class="mission-grid" id="gridDF"></div>
-            <div class="fade-overlay" onclick="toggleSection('secDF')">
-                <div class="expand-btn">Ver todas las misiones</div>
+            <div class="fade-overlay">
+                <div class="expand-btn" id="btnDF" onclick="toggleSection('secDF')">Ver todas las misiones</div>
             </div>
         </section>
 
@@ -159,6 +151,9 @@
             <h1 class="title">Deepmersion.</h1>
             <p class="description">Acceso restringido a miembros de la cohorte activa.</p>
             <div class="mission-grid" id="gridDM"></div>
+            <div class="fade-overlay">
+                <div class="expand-btn" id="btnDM" onclick="toggleSection('secDM')">Ver todas las misiones</div>
+            </div>
             <div id="upsellDM" class="upsell-card">
                 <h3>Rango Insuficiente</h3>
                 <p>Este nivel requiere credenciales de cohorte. Consulta disponibilidad para el próximo despliegue.</p>
@@ -171,6 +166,9 @@
             <h1 class="title">Deepquest.</h1>
             <p class="description">Nivel de maestría final. Solo expedicionarios graduados de la Deepmersion.</p>
             <div class="mission-grid" id="gridDQ"></div>
+            <div class="fade-overlay">
+                <div class="expand-btn" id="btnDQ" onclick="toggleSection('secDQ')">Ver todas las misiones</div>
+            </div>
         </section>
     </div>
 
@@ -191,10 +189,21 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        function toggleSection(id) { document.getElementById(id).classList.toggle('expanded'); }
+        function toggleSection(id) { 
+            const sec = document.getElementById(id);
+            if(sec.classList.contains('can-expand')) {
+                sec.classList.toggle('expanded');
+            }
+        }
 
-        // Icono de candado SVG minimalista
-        const lockIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
+        // ICONO DE CANDADO MEJORADO: Con cerradura y peso visual en #333333
+        const lockIcon = `
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="10" width="14" height="11" rx="2" stroke="#333333" stroke-width="2.5"/>
+                <path d="M8 10V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V10" stroke="#333333" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="12" cy="15" r="1.5" fill="#333333"/>
+                <rect x="11.5" y="16" width="1" height="2" fill="#333333"/>
+            </svg>`;
 
         auth.onAuthStateChanged((user) => {
             if (!user) { window.location.href = "index.html"; return; }
@@ -208,17 +217,25 @@
         });
 
         function setupHub(data) {
+            // Tramo 01: Siempre expandible
             renderMissions('gridDF', 15, "unlocked", "01_deepfall/m_");
+            document.getElementById('btnDF').style.display = 'block';
             
+            // Tramo 02
             if (data.access_DM) {
                 renderMissions('gridDM', 20, "unlocked", "02_deepmersion/m_");
+                document.getElementById('secDM').classList.add('can-expand');
+                document.getElementById('btnDM').style.display = 'block';
             } else {
                 renderMissions('gridDM', 6, "locked", "#");
                 document.getElementById('upsellDM').style.display = "block";
             }
             
+            // Tramo 03
             if (data.access_DQ) {
                 renderMissions('gridDQ', 25, "unlocked", "03_deepquest/m_");
+                document.getElementById('secDQ').classList.add('can-expand');
+                document.getElementById('btnDQ').style.display = 'block';
             } else {
                 renderMissions('gridDQ', 6, "locked", "#");
             }
@@ -230,14 +247,12 @@
             for (let i = 1; i <= count; i++) {
                 const item = document.createElement('a');
                 item.className = `mission-item ${status}`;
-                
                 if (status === "locked") {
-                    item.innerHTML = lockIcon; // Ponemos el candado
+                    item.innerHTML = lockIcon;
                 } else {
-                    item.innerText = i < 10 ? "0" + i : i; // Ponemos el número
+                    item.innerText = i < 10 ? "0" + i : i;
                     item.href = path + i + ".html";
                 }
-                
                 grid.appendChild(item);
             }
         }
