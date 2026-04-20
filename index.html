@@ -3,36 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Deepmersion / Registro</title>
+    <title>Deepmersion / Acceso</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-text-size-adjust: 100%; }
         .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
-        .logo { margin: 0 0 30px -10px; }
+        
+        .logo { margin: 0 0 30px -10px; display: block; }
         .logo img { height: 60px; width: auto; display: block; }
+
         .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
         .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
         .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
+        
         .form-area { width: 100%; display: flex; flex-direction: column; }
-        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; font-family: inherit; }
+        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; font-family: inherit; transition: all 0.3s ease; }
+        input::placeholder { color: #878787; }
         input:focus { border-bottom: 1px solid #333333; }
+
         .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; }
-        .link { font-size: 13px; color: #878787; text-decoration: none; align-self: center; margin-top: 24px; }
+        
+        .link-toggle { font-size: 13px; color: #878787; text-decoration: none; align-self: center; margin-top: 24px; cursor: pointer; background: none; border: none; font-family: inherit; }
+        .link-toggle b { color: #333333; }
+
+        @media (max-width: 480px) {
+            .logo { margin-bottom: 20px; } .logo img { height: 45px; }
+            .title { font-size: 26px; } 
+            .btn-mando { margin-top: 20px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo"><img src="deepmersion.jpeg" alt="logo"></div>
-        <p class="indicator">Acceso / Registro</p>
-        <h1 class="title">Iniciar expedición.</h1>
-        <p class="description">Crea tus credenciales de acceso para entrar al búnker.</p>
+        <p id="auth-indicator" class="indicator">Acceso / Registro</p>
+        <h1 id="auth-title" class="title">Iniciar expedición.</h1>
+        <p id="auth-desc" class="description">Crea tus credenciales de acceso para entrar al búnker.</p>
+        
         <div class="form-area">
             <input type="text" id="userName" placeholder="Nombre completo">
             <input type="email" id="userEmail" placeholder="Correo electrónico">
             <input type="password" id="userPass" placeholder="Contraseña">
         </div>
-        <button id="btnRegistro" class="btn-mando">Crear cuenta &#8594;</button>
-        <a href="#" class="link">¿Ya tienes cuenta? <b>Inicia sesión</b></a>
+
+        <button id="btnAuth" class="btn-mando">Crear cuenta &#8594;</button>
+        
+        <button id="toggle-auth" class="link-toggle">¿Ya tienes cuenta? <b>Inicia sesión</b></button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -52,23 +68,78 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        document.getElementById('btnRegistro').addEventListener('click', () => {
+        let isLoginMode = false; // Controla si estamos en Registro o Login
+
+        // Lógica para cambiar de modo
+        document.getElementById('toggle-auth').addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            const nameInput = document.getElementById('userName');
+            const title = document.getElementById('auth-title');
+            const desc = document.getElementById('auth-desc');
+            const btn = document.getElementById('btnAuth');
+            const toggleLink = document.getElementById('toggle-auth');
+            const indicator = document.getElementById('auth-indicator');
+
+            if (isLoginMode) {
+                indicator.innerText = "Acceso / Identificación";
+                title.innerText = "Bienvenido de vuelta.";
+                desc.innerText = "Introduce tus credenciales para reanudar la misión.";
+                btn.innerText = "Acceder →";
+                toggleLink.innerHTML = "¿No tienes cuenta? <b>Regístrate</b>";
+                nameInput.style.opacity = "0";
+                setTimeout(() => { nameInput.style.display = "none"; }, 300);
+            } else {
+                indicator.innerText = "Acceso / Registro";
+                title.innerText = "Iniciar expedición.";
+                desc.innerText = "Crea tus credenciales de acceso para entrar al búnker.";
+                btn.innerText = "Crear cuenta →";
+                toggleLink.innerHTML = "¿Ya tienes cuenta? <b>Inicia sesión</b>";
+                nameInput.style.display = "block";
+                setTimeout(() => { nameInput.style.opacity = "1"; }, 10);
+            }
+        });
+
+        // Lógica del Botón Principal
+        document.getElementById('btnAuth').addEventListener('click', () => {
             const email = document.getElementById('userEmail').value;
             const pass = document.getElementById('userPass').value;
             const name = document.getElementById('userName').value;
 
-            if (!email || !pass || !name) { alert("Completa todos los campos."); return; }
+            if (!email || !pass) {
+                alert("Por favor, completa los campos de acceso.");
+                return;
+            }
 
-            auth.createUserWithEmailAndPassword(email, pass)
-                .then((userCredential) => {
-                    return db.collection("usuarios").doc(userCredential.user.uid).set({
-                        nombre: name,
-                        email: email,
-                        fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
+            if (isLoginMode) {
+                // --- INICIO DE SESIÓN ---
+                auth.signInWithEmailAndPassword(email, pass)
+                    .then(() => {
+                        window.location.href = 'datos.html'; 
+                    })
+                    .catch((error) => {
+                        alert("Acceso denegado: " + error.message);
                     });
-                })
-                .then(() => { window.location.href = 'datos.html'; })
-                .catch((error) => { alert("Error: " + error.message); });
+            } else {
+                // --- REGISTRO ---
+                if (!name) { alert("El nombre es vital para tu expediente."); return; }
+                
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .then((userCredential) => {
+                        // Guardar nombre en Firestore inmediatamente
+                        return db.collection("usuarios").doc(userCredential.user.uid).set({
+                            nombre: name,
+                            email: email,
+                            fase: "Registrado",
+                            fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    })
+                    .then(() => {
+                        window.location.href = 'datos.html'; 
+                    })
+                    .catch((error) => {
+                        alert("Error en el registro: " + error.message);
+                    });
+            }
         });
     </script>
 </body>
