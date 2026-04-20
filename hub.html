@@ -1,31 +1,294 @@
-<style>
-    /* ... (resto del CSS igual) ... */
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deepfall / Hub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body { 
+            width: 100%; 
+            min-height: 100%; 
+            background-color: #ffffff; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center; 
+        }
 
-    /* Estilo para el bloque de identificación */
-    .indicator { 
-        font-size: 11px; 
-        font-weight: 600; 
-        color: #878787; 
-        margin-bottom: 12px; /* Espacio aumentado aquí */
-        letter-spacing: 1.5px; 
-        text-transform: uppercase; 
-    }
+        .container { 
+            width: 100%; 
+            max-width: 460px; 
+            padding: 60px 45px; 
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-    .progress-tracker {
-        font-size: 11px;
-        font-weight: 500;
-        color: #333333;
-        letter-spacing: 1.2px;
-        text-transform: uppercase;
-        margin-bottom: 60px; /* Separación con el Tramo 01 */
-    }
+        .logo { margin: 0 0 30px -10px; }
+        .logo img { height: 60px; width: auto; display: block; }
 
-    /* ... (resto del CSS igual) ... */
-</style>
+        /* BLOQUE DE IDENTIFICACIÓN */
+        .indicator { 
+            font-size: 11px; 
+            font-weight: 600; 
+            color: #878787; 
+            margin-bottom: 12px; /* Espacio con el contador */
+            letter-spacing: 1.5px; 
+            text-transform: uppercase; 
+        }
 
-<div class="container">
-    <div class="logo"><img id="dynamicLogo" src="deepmersion.jpeg" alt="logo"></div>
-    <p class="indicator" id="userRange">Expedicionario Identificado</p>
-    <p class="progress-tracker" id="progressCount">Tramos completados: 01 de 03</p>
-    
+        .progress-tracker {
+            font-size: 11px;
+            font-weight: 500;
+            color: #333333;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 60px; /* Separación con el contenido */
+        }
+
+        /* ETIQUETAS DE TRAMO (Sin negritas) */
+        .tramo-label {
+            font-size: 11px;
+            font-weight: 500; 
+            color: #878787;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .title { 
+            font-size: 30px; 
+            font-weight: 700; 
+            color: #333333; 
+            margin-bottom: 16px; 
+            line-height: 1.1; 
+            letter-spacing: -0.8px;
+        }
+
+        .description { 
+            font-size: 16px; 
+            color: #878787; 
+            margin-bottom: 32px; 
+            line-height: 1.5; 
+        }
+
+        .section { width: 100%; margin-bottom: 55px; position: relative; }
+
+        /* CONTENEDOR DEL GRID */
+        .grid-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
+        .mission-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            overflow: hidden; 
+            max-height: 160px; 
+            transition: max-height 0.4s ease;
+        }
+        
+        /* Expansión controlada */
+        .section.expanded.can-expand .mission-grid { max-height: 2000px; }
+
+        .mission-item { 
+            aspect-ratio: 1; 
+            background: #f5f5f7; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-decoration: none; 
+            color: #333333; 
+            font-size: 14px; 
+            font-weight: 600;
+        }
+
+        .mission-item.locked { cursor: default; }
+
+        /* FADE BLANCO SOBRE LAS CAJAS */
+        .fade-overlay {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 90px;
+            background: linear-gradient(to top, #fff 30%, rgba(255,255,255,0));
+            display: flex; align-items: flex-end; justify-content: center;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .section.expanded .fade-overlay { display: none; }
+
+        .expand-btn {
+            font-size: 11px; font-weight: 700; color: #333333;
+            background: #fff; padding: 8px 16px; border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            cursor: pointer; pointer-events: auto; border: 1px solid #f0f0f0;
+            display: none; 
+        }
+
+        /* TARJETA UPSELL */
+        .upsell-card { 
+            background: #f5f5f7; border-radius: 14px; padding: 25px; margin-top: 15px; 
+            display: none; position: relative; z-index: 3;
+        }
+        .upsell-card h3 { font-size: 16px; margin-bottom: 8px; color: #333333; }
+        .upsell-card p { font-size: 14px; color: #878787; margin-bottom: 18px; line-height: 1.4; }
+        .btn-mando-small { 
+            background: #333333; color: #fff; padding: 12px 20px; 
+            border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-block; 
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 40px 30px; }
+            .title { font-size: 26px; }
+            .progress-tracker { margin-bottom: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo"><img id="dynamicLogo" src="deepmersion.jpeg" alt="logo"></div>
+        <p class="indicator" id="userRange">Expedicionario Identificado</p>
+        <p class="progress-tracker" id="progressCount">Tramos completados: 01 de 03</p>
+        
+        <section class="section can-expand" id="secDF">
+            <span class="tramo-label">Tramo 01</span>
+            <h1 class="title">Deepfall.</h1>
+            <p class="description">Fundamentos base completados. Revisa tus protocolos aquí.</p>
+            <div class="grid-wrapper">
+                <div class="mission-grid" id="gridDF"></div>
+                <div class="fade-overlay">
+                    <div class="expand-btn" id="btnDF" onclick="toggleSection('secDF')">Ver todas las misiones</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="secDM">
+            <span class="tramo-label">Tramo 02</span>
+            <h1 class="title">Deepmersion.</h1>
+            <p class="description">Acceso restringido a miembros de la cohorte activa.</p>
+            <div class="grid-wrapper">
+                <div class="mission-grid" id="gridDM"></div>
+                <div class="fade-overlay">
+                    <div class="expand-btn" id="btnDM" onclick="toggleSection('secDM')">Ver todas las misiones</div>
+                </div>
+            </div>
+            <div id="upsellDM" class="upsell-card">
+                <h3>Rango Insuficiente</h3>
+                <p>Este nivel requiere credenciales de cohorte. Consulta disponibilidad para el próximo despliegue.</p>
+                <a href="#" class="btn-mando-small">Consultar Acceso &#8594;</a>
+            </div>
+        </section>
+        
+        <section class="section" id="secDQ">
+            <span class="tramo-label">Tramo 03</span>
+            <h1 class="title">Deepquest.</h1>
+            <p class="description">Nivel de maestría final. Solo expedicionarios graduados de la Deepmersion.</p>
+            <div class="grid-wrapper">
+                <div class="mission-grid" id="gridDQ"></div>
+                <div class="fade-overlay">
+                    <div class="expand-btn" id="btnDQ" onclick="toggleSection('secDQ')">Ver todas las misiones</div>
+                </div>
+            </div>
+        </section>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        function toggleSection(id) { 
+            const sec = document.getElementById(id);
+            if(sec.classList.contains('can-expand')) {
+                sec.classList.toggle('expanded');
+            }
+        }
+
+        // SVG del Candado Reforzado
+        const lockIcon = `
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="10" width="14" height="11" rx="2" stroke="#333333" stroke-width="2.5"/>
+                <path d="M8 10V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V10" stroke="#333333" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="12" cy="15" r="1.5" fill="#333333"/>
+                <rect x="11.5" y="16" width="1" height="2" fill="#333333"/>
+            </svg>`;
+
+        auth.onAuthStateChanged((user) => {
+            if (!user) { window.location.href = "index.html"; return; }
+            db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('userRange').innerText = "Expedicionario: " + (data.nombre || "Alpha");
+                    
+                    // Contador Dinámico
+                    let count = 1;
+                    if (data.access_DM) count++;
+                    if (data.access_DQ) count++;
+                    document.getElementById('progressCount').innerText = `Tramos completados: 0${count} de 03`;
+                    
+                    setupHub(data);
+                }
+            });
+        });
+
+        function setupHub(data) {
+            // Tramo 01
+            renderMissions('gridDF', 15, "unlocked", "01_deepfall/m_");
+            document.getElementById('btnDF').style.display = 'block';
+            
+            // Tramo 02
+            if (data.access_DM) {
+                renderMissions('gridDM', 20, "unlocked", "02_deepmersion/m_");
+                document.getElementById('secDM').classList.add('can-expand');
+                document.getElementById('btnDM').style.display = 'block';
+                document.getElementById('upsellDM').style.display = 'none';
+            } else {
+                renderMissions('gridDM', 6, "locked", "#");
+                document.getElementById('upsellDM').style.display = "block";
+            }
+            
+            // Tramo 03
+            if (data.access_DQ) {
+                renderMissions('gridDQ', 25, "unlocked", "03_deepquest/m_");
+                document.getElementById('secDQ').classList.add('can-expand');
+                document.getElementById('btnDQ').style.display = 'block';
+            } else {
+                renderMissions('gridDQ', 6, "locked", "#");
+            }
+        }
+
+        function renderMissions(gridId, count, status, path) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = "";
+            for (let i = 1; i <= count; i++) {
+                const item = document.createElement('a');
+                item.className = `mission-item ${status}`;
+                if (status === "locked") {
+                    item.innerHTML = lockIcon;
+                } else {
+                    item.innerText = i < 10 ? "0" + i : i;
+                    item.href = path + i + ".html";
+                }
+                grid.appendChild(item);
+            }
+        }
+    </script>
+</body>
+</html>
