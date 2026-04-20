@@ -15,17 +15,10 @@
         .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; }
         .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
         .form-area { width: 100%; display: flex; flex-direction: column; }
-        
-        /* Inputs corregidos con IDs críticos */
         input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; font-family: inherit; }
-        input:focus { border-bottom: 1px solid #333333; }
-        
         .iti { width: 100%; margin-top: 10px; } 
         .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; font-size: 16px !important; width: 100% !important; }
-        
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; }
-        
-        @media (max-width: 480px) { .logo { margin-bottom: 20px; } .logo img { height: 45px; } .title { font-size: 26px; } .btn-mando { margin-top: 20px; } }
+        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; }
     </style>
 </head>
 <body>
@@ -34,13 +27,11 @@
         <p class="indicator">Paso 01 / Perfil</p>
         <h1 class="title">Datos de contacto.</h1>
         <p class="description">Establece tus coordenadas de enlace.</p>
-        
         <div class="form-area">
             <input type="number" id="userAge" placeholder="Edad">
             <input type="text" id="userJob" placeholder="Ocupación">
             <input id="phone" type="tel">
         </div>
-
         <button id="btnGuardar" class="btn-mando">Continuar &#8594;</button>
     </div>
 
@@ -62,47 +53,32 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Configurar Teléfono
-        const phoneInputField = document.querySelector("#phone");
-        const phoneInput = window.intlTelInput(phoneInputField, { 
-            preferredCountries: ["es", "mx", "co", "ar"], 
-            separateDialCode: true 
+        // Detector de país automático por IP
+        const phoneInput = window.intlTelInput(document.querySelector("#phone"), {
+            preferredCountries: ["mx", "es", "co", "ar"],
+            separateDialCode: true,
+            initialCountry: "auto",
+            geoIpLookup: function(success) {
+                fetch("https://ipapi.co/json").then(res => res.json()).then(data => success(data.country_code)).catch(() => success("mx"));
+            }
         });
 
-        // Centinela
-        auth.onAuthStateChanged((user) => {
-            if (!user) { window.location.href = "index.html"; }
-        });
+        auth.onAuthStateChanged((user) => { if (!user) window.location.href = "index.html"; });
 
-        // Lógica de Guardado Corregida
         document.getElementById('btnGuardar').addEventListener('click', () => {
             const user = auth.currentUser;
-            
-            // Capturamos los valores EXACTOS por ID
             const age = document.getElementById('userAge').value;
             const job = document.getElementById('userJob').value;
-            const phoneNumber = phoneInput.getNumber();
+            const fullPhone = phoneInput.getNumber(); // Captura con +52...
 
-            // VALIDACIÓN: Solo pedimos obligatorios Edad y Ocupación para evitar bloqueos
-            if (!age || !job) {
-                alert("Por favor, completa tu edad y ocupación.");
-                return;
-            }
+            if (!age || !job || !fullPhone) { alert("Completa todos los datos."); return; }
 
-            // Guardar en Firebase
-            db.collection("usuarios").doc(user.uid).set({
+            db.collection("usuarios").doc(user.uid).update({
                 edad: age,
                 ocupacion: job,
-                telefono: phoneNumber || "No provisto",
-                email: user.email,
+                telefono: fullPhone,
                 fase: "Perfil Completado"
-            }, { merge: true })
-            .then(() => {
-                window.location.href = "mision2.html"; 
-            })
-            .catch((error) => {
-                alert("Error al sincronizar búnker: " + error.message);
-            });
+            }).then(() => { window.location.href = "mision2.html"; });
         });
     </script>
 </body>
