@@ -28,19 +28,28 @@
         .logo { margin: 0 0 30px -10px; }
         .logo img { height: 60px; width: auto; display: block; }
 
+        /* Estilo para el bloque de identificación */
         .indicator { 
             font-size: 11px; 
             font-weight: 600; 
             color: #878787; 
-            margin-bottom: 60px; 
+            margin-bottom: 4px; /* Pegado al contador */
             letter-spacing: 1.5px; 
             text-transform: uppercase; 
         }
 
-        /* ETIQUETA DE TRAMO: Sin negritas */
+        .progress-tracker {
+            font-size: 11px;
+            font-weight: 500;
+            color: #333333;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 60px; /* Aquí va la separación con el contenido */
+        }
+
         .tramo-label {
             font-size: 11px;
-            font-weight: 500; /* Peso normal/medio, sin negrita */
+            font-weight: 500; 
             color: #878787;
             letter-spacing: 1.5px;
             text-transform: uppercase;
@@ -130,7 +139,7 @@
         @media (max-width: 480px) {
             .container { padding: 40px 30px; }
             .title { font-size: 26px; }
-            .indicator { margin-bottom: 40px; }
+            .progress-tracker { margin-bottom: 40px; }
         }
     </style>
 </head>
@@ -139,6 +148,7 @@
     <div class="container">
         <div class="logo"><img id="dynamicLogo" src="deepmersion.jpeg" alt="logo"></div>
         <p class="indicator" id="userRange">Expedicionario Identificado</p>
+        <p class="progress-tracker" id="progressCount">Tramos completados: 01 de 03</p>
         
         <section class="section can-expand" id="secDF">
             <span class="tramo-label">Tramo 01</span>
@@ -220,6 +230,14 @@
                 if (doc.exists) {
                     const data = doc.data();
                     document.getElementById('userRange').innerText = "Expedicionario: " + (data.nombre || "Alpha");
+                    
+                    // CÁLCULO DE PROGRESO DINÁMICO
+                    let tramosCompletados = 1; // Deepfall es gratis y siempre cuenta como 01
+                    if (data.access_DM) tramosCompletados++;
+                    if (data.access_DQ) tramosCompletados++;
+                    
+                    document.getElementById('progressCount').innerText = `Tramos completados: 0${tramosCompletados} de 03`;
+                    
                     setupHub(data);
                 }
             });
