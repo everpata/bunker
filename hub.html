@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deepfall / Centro de Mando</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        /* Contenedor con Scroll para que quepan las 20+ misiones */
+        .container { width: 100%; max-width: 460px; margin: 0 auto; padding: 40px 25px; display: flex; flex-direction: column; }
+        
+        .header { margin-bottom: 40px; display: flex; flex-direction: column; align-items: flex-start; }
+        .logo img { height: 50px; width: auto; transition: all 0.5s ease; }
+        .user-welcome { font-size: 14px; color: #878787; margin-top: 15px; font-weight: 500; }
+
+        /* Estructura de Secciones */
+        .section { width: 100%; margin-bottom: 35px; }
+        .section-title { font-size: 11px; font-weight: 700; color: #878787; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .status-tag { font-size: 9px; padding: 2px 8px; border-radius: 4px; background: #f5f5f7; color: #333333; }
+
+        /* Grid de Misiones */
+        .mission-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
+        
+        .mission-item { 
+            aspect-ratio: 1; 
+            background: #f5f5f7; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-decoration: none; 
+            color: #333333; 
+            font-size: 14px; 
+            font-weight: 600; 
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        /* Estados de Misión */
+        .mission-item.locked { opacity: 0.4; cursor: not-allowed; background: #ffffff; border: 1px dashed #eaeaea; }
+        .mission-item.unlocked:hover { background: #333333; color: #ffffff; transform: translateY(-2px); }
+
+        /* Banner de Upsell */
+        .upsell-card { 
+            width: 100%; 
+            background: #333333; 
+            border-radius: 16px; 
+            padding: 20px; 
+            color: #ffffff; 
+            margin-top: 10px; 
+            display: none; /* Se activa por JS */
+        }
+        .upsell-card h3 { font-size: 16px; margin-bottom: 8px; }
+        .upsell-card p { font-size: 13px; opacity: 0.8; margin-bottom: 15px; line-height: 1.4; }
+        .btn-upsell { background: #ffffff; color: #333333; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 600; display: inline-block; }
+
+        @media (max-width: 400px) { .mission-grid { grid-template-columns: repeat(3, 1fr); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo"><img id="dynamicLogo" src="deepmersion.jpeg" alt="logo"></div>
+            <p class="user-welcome" id="userName">Operativo identificado</p>
+        </div>
+
+        <div class="section" id="sectionDF">
+            <div class="section-title">01 / Deepfall <span class="status-tag">Abierto</span></div>
+            <div class="mission-grid">
+                <a href="02_mision_01.html" class="mission-item unlocked">01</a>
+                <a href="03_mision_02.html" class="mission-item unlocked">02</a>
+                <a href="04_mision_03.html" class="mission-item unlocked">03</a>
+                <a href="05_mision_04.html" class="mission-item unlocked">04</a>
+                <a href="06_mision_05.html" class="mission-item unlocked">05</a>
+            </div>
+        </div>
+
+        <div class="section" id="sectionDM">
+            <div class="section-title">02 / Deepmersion <span id="tagDM" class="status-tag">Restringido</span></div>
+            <div id="gridDM" class="mission-grid">
+                </div>
+            <div id="upsellDM" class="upsell-card">
+                <h3>Acceso a Deepmersion</h3>
+                <p>La próxima cohorte está por iniciar. Eleva tu rango operativo ahora.</p>
+                <a href="https://wa.me/tu_link" class="btn-upsell">Consultar Cohorte</a>
+            </div>
+        </div>
+
+        <div class="section" id="sectionDQ">
+            <div class="section-title">03 / Deepquest <span id="tagDQ" class="status-tag">Bloqueado</span></div>
+            <div id="gridDQ" class="mission-grid">
+                </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (!user) { window.location.href = "index.html"; return; }
+            
+            db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('userName').innerText = "Operativo: " + (data.nombre || "Sin nombre");
+                    configurarHub(data);
+                }
+            });
+        });
+
+        function configurarHub(data) {
+            const gridDM = document.getElementById('gridDM');
+            const gridDQ = document.getElementById('gridDQ');
+            const upsellDM = document.getElementById('upsellDM');
+            const logo = document.getElementById('dynamicLogo');
+
+            // --- LÓGICA DEEPMERSION ---
+            if (data.access_DM) {
+                document.getElementById('tagDM').innerText = "Acceso Total";
+                document.getElementById('tagDM').style.background = "#e1f5e8";
+                generarMisiones(gridDM, 10, "unlocked", "dm/mision_");
+                logo.style.filter = "grayscale(0.5) contrast(1.2)"; // Ejemplo de acento visual
+            } else {
+                generarMisiones(gridDM, 4, "locked", "#");
+                upsellDM.style.display = "block";
+            }
+
+            // --- LÓGICA DEEPQUEST ---
+            if (data.access_DQ) {
+                document.getElementById('tagDQ').innerText = "Rango Maestro";
+                document.getElementById('tagDQ').style.background = "#333333";
+                document.getElementById('tagDQ').style.color = "#ffffff";
+                generarMisiones(gridDQ, 10, "unlocked", "dq/mision_");
+                logo.style.filter = "contrast(1.5) brightness(0.8)"; // Acento máximo
+            } else {
+                generarMisiones(gridDQ, 4, "locked", "#");
+            }
+        }
+
+        function generarMisiones(contenedor, cantidad, estado, prefijo) {
+            contenedor.innerHTML = "";
+            for (let i = 1; i <= cantidad; i++) {
+                const link = document.createElement('a');
+                link.className = `mission-item ${estado}`;
+                link.innerText = i < 10 ? "0" + i : i;
+                if (estado === "unlocked") link.href = prefijo + i + ".html";
+                contenedor.appendChild(link);
+            }
+        }
+    </script>
+</body>
+</html>
