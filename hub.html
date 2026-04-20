@@ -63,18 +63,24 @@
             line-height: 1.5; 
         }
 
-        .section { width: 100%; margin-bottom: 55px; position: relative; }
+        /* --- ESTRUCTURA DE SECCIÓN --- */
+        .section { width: 100%; margin-bottom: 55px; }
+
+        /* Contenedor relativo para que el fade solo afecte al grid */
+        .grid-wrapper {
+            position: relative;
+            width: 100%;
+        }
         
         .mission-grid { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
             gap: 10px; 
             overflow: hidden; 
-            max-height: 160px; /* Altura estándar para mostrar inicio de 2da fila */
+            max-height: 160px; 
             transition: max-height 0.4s ease;
         }
         
-        /* Solo expande si tiene la clase permitida */
         .section.expanded.can-expand .mission-grid { max-height: 2000px; }
 
         .mission-item { 
@@ -90,19 +96,18 @@
             font-weight: 600;
         }
 
-        /* Bloqueadas: sin puntero */
         .mission-item.locked { cursor: default; }
 
-        /* Fade Blanco unificado para todas las secciones */
+        /* --- FADE SOBRE EL GRID --- */
         .fade-overlay {
             position: absolute;
             bottom: 0; left: 0; width: 100%; height: 90px;
             background: linear-gradient(to top, #fff 30%, rgba(255,255,255,0));
             display: flex; align-items: flex-end; justify-content: center;
             pointer-events: none;
+            z-index: 2;
         }
         
-        /* Ocultar fade solo si está expandido */
         .section.expanded .fade-overlay { display: none; }
 
         .expand-btn {
@@ -110,11 +115,13 @@
             background: #fff; padding: 8px 16px; border-radius: 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             cursor: pointer; pointer-events: auto; border: 1px solid #f0f0f0;
-            display: none; /* Se activa por JS si el tramo es accesible */
+            display: none; 
         }
 
+        /* --- TARJETA DE VENTA --- */
         .upsell-card { 
-            background: #f5f5f7; border-radius: 14px; padding: 25px; margin-top: 15px; display: none; 
+            background: #f5f5f7; border-radius: 14px; padding: 25px; margin-top: 15px; 
+            display: none; position: relative; z-index: 3; /* Por encima de cualquier fade */
         }
         .upsell-card h3 { font-size: 16px; margin-bottom: 8px; color: #333333; }
         .upsell-card p { font-size: 14px; color: #878787; margin-bottom: 18px; line-height: 1.4; }
@@ -140,9 +147,11 @@
             <span class="tramo-label">Tramo 01</span>
             <h1 class="title">Deepfall.</h1>
             <p class="description">Fundamentos base completados. Revisa tus protocolos aquí.</p>
-            <div class="mission-grid" id="gridDF"></div>
-            <div class="fade-overlay">
-                <div class="expand-btn" id="btnDF" onclick="toggleSection('secDF')">Ver todas las misiones</div>
+            <div class="grid-wrapper">
+                <div class="mission-grid" id="gridDF"></div>
+                <div class="fade-overlay">
+                    <div class="expand-btn" id="btnDF" onclick="toggleSection('secDF')">Ver todas las misiones</div>
+                </div>
             </div>
         </section>
 
@@ -150,9 +159,11 @@
             <span class="tramo-label">Tramo 02</span>
             <h1 class="title">Deepmersion.</h1>
             <p class="description">Acceso restringido a miembros de la cohorte activa.</p>
-            <div class="mission-grid" id="gridDM"></div>
-            <div class="fade-overlay">
-                <div class="expand-btn" id="btnDM" onclick="toggleSection('secDM')">Ver todas las misiones</div>
+            <div class="grid-wrapper">
+                <div class="mission-grid" id="gridDM"></div>
+                <div class="fade-overlay">
+                    <div class="expand-btn" id="btnDM" onclick="toggleSection('secDM')">Ver todas las misiones</div>
+                </div>
             </div>
             <div id="upsellDM" class="upsell-card">
                 <h3>Rango Insuficiente</h3>
@@ -165,9 +176,11 @@
             <span class="tramo-label">Tramo 03</span>
             <h1 class="title">Deepquest.</h1>
             <p class="description">Nivel de maestría final. Solo expedicionarios graduados de la Deepmersion.</p>
-            <div class="mission-grid" id="gridDQ"></div>
-            <div class="fade-overlay">
-                <div class="expand-btn" id="btnDQ" onclick="toggleSection('secDQ')">Ver todas las misiones</div>
+            <div class="grid-wrapper">
+                <div class="mission-grid" id="gridDQ"></div>
+                <div class="fade-overlay">
+                    <div class="expand-btn" id="btnDQ" onclick="toggleSection('secDQ')">Ver todas las misiones</div>
+                </div>
             </div>
         </section>
     </div>
@@ -196,7 +209,6 @@
             }
         }
 
-        // ICONO DE CANDADO MEJORADO: Con cerradura y peso visual en #333333
         const lockIcon = `
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="5" y="10" width="14" height="11" rx="2" stroke="#333333" stroke-width="2.5"/>
@@ -217,27 +229,27 @@
         });
 
         function setupHub(data) {
-            // Tramo 01: Siempre expandible
             renderMissions('gridDF', 15, "unlocked", "01_deepfall/m_");
             document.getElementById('btnDF').style.display = 'block';
             
-            // Tramo 02
             if (data.access_DM) {
                 renderMissions('gridDM', 20, "unlocked", "02_deepmersion/m_");
                 document.getElementById('secDM').classList.add('can-expand');
                 document.getElementById('btnDM').style.display = 'block';
+                document.getElementById('upsellDM').style.display = 'none';
             } else {
                 renderMissions('gridDM', 6, "locked", "#");
                 document.getElementById('upsellDM').style.display = "block";
+                document.getElementById('btnDM').style.display = 'none';
             }
             
-            // Tramo 03
             if (data.access_DQ) {
                 renderMissions('gridDQ', 25, "unlocked", "03_deepquest/m_");
                 document.getElementById('secDQ').classList.add('can-expand');
                 document.getElementById('btnDQ').style.display = 'block';
             } else {
                 renderMissions('gridDQ', 6, "locked", "#");
+                document.getElementById('btnDQ').style.display = 'none';
             }
         }
 
