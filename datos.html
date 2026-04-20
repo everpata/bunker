@@ -54,31 +54,58 @@
         const db = firebase.firestore();
 
         // Detector de país automático por IP
-        const phoneInput = window.intlTelInput(document.querySelector("#phone"), {
+        const phoneInputField = document.querySelector("#phone");
+        const phoneInput = window.intlTelInput(phoneInputField, {
             preferredCountries: ["mx", "es", "co", "ar"],
             separateDialCode: true,
             initialCountry: "auto",
             geoIpLookup: function(success) {
-                fetch("https://ipapi.co/json").then(res => res.json()).then(data => success(data.country_code)).catch(() => success("mx"));
+                fetch("https://ipapi.co/json")
+                    .then(res => res.json())
+                    .then(data => success(data.country_code))
+                    .catch(() => success("mx"));
             }
         });
 
-        auth.onAuthStateChanged((user) => { if (!user) window.location.href = "index.html"; });
+        auth.onAuthStateChanged((user) => { 
+            if (!user) {
+                console.log("No hay usuario logueado, redirigiendo...");
+                window.location.href = "index.html"; 
+            }
+        });
 
         document.getElementById('btnGuardar').addEventListener('click', () => {
             const user = auth.currentUser;
             const age = document.getElementById('userAge').value;
             const job = document.getElementById('userJob').value;
-            const fullPhone = phoneInput.getNumber(); // Captura con +52...
+            
+            // Intenta obtener el número internacional, si no, toma el valor bruto del input
+            let fullPhone = phoneInput.getNumber(); 
+            if (!fullPhone) {
+                fullPhone = phoneInputField.value; 
+            }
 
-            if (!age || !job || !fullPhone) { alert("Completa todos los datos."); return; }
+            // DEBUG: Esto te dirá en la consola qué está detectando el código
+            console.log("Datos capturados:", { edad: age, ocupacion: job, telefono: fullPhone });
+
+            if (!age || !job || !fullPhone) { 
+                alert("Por favor, completa todos los datos para tu expediente."); 
+                return; 
+            }
 
             db.collection("usuarios").doc(user.uid).update({
                 edad: age,
                 ocupacion: job,
                 telefono: fullPhone,
                 fase: "Perfil Completado"
-            }).then(() => { window.location.href = "mision2.html"; });
+            })
+            .then(() => { 
+                console.log("Sincronización exitosa");
+                window.location.href = "mision2.html"; 
+            })
+            .catch((error) => { 
+                alert("Error de búnker: " + error.message); 
+            });
         });
     </script>
 </body>
