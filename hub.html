@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepfall / Hub</title>
     <style>
-        /* --- ESTILO ESTÁNDAR DE TARJETA DEEPMERSION --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         html, body { 
@@ -14,29 +13,40 @@
             background-color: #ffffff; 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            justify-content: center; /* Centra la tarjeta en PC */
+            justify-content: center; 
         }
 
         .container { 
             width: 100%; 
-            max-width: 460px; /* Tamaño exacto de tus otras páginas */
-            padding: 60px 45px; /* Margen interno idéntico */
+            max-width: 460px; 
+            padding: 60px 45px; 
             display: flex;
             flex-direction: column;
             align-items: flex-start;
         }
 
-        /* --- LOGO Y TEXTOS (TAMAÑOS ORIGINALES) --- */
         .logo { margin: 0 0 30px -10px; }
         .logo img { height: 60px; width: auto; display: block; }
 
+        /* Etiqueta del Expedicionario */
         .indicator { 
             font-size: 11px; 
             font-weight: 600; 
             color: #878787; 
-            margin-bottom: 12px; 
+            margin-bottom: 60px; /* Mayor separación con el contenido */
             letter-spacing: 1.5px; 
             text-transform: uppercase; 
+        }
+
+        /* Nueva Etiqueta de Tramo */
+        .tramo-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #333333;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 6px;
         }
 
         .title { 
@@ -55,20 +65,18 @@
             line-height: 1.5; 
         }
 
-        /* --- SECCIONES DEL HUB --- */
-        .section { width: 100%; margin-bottom: 45px; position: relative; }
+        .section { width: 100%; margin-bottom: 55px; position: relative; }
         
-        /* Grid de 3 columnas para que sean pequeñas */
         .mission-grid { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
             gap: 10px; 
             overflow: hidden; 
-            max-height: 160px; /* Solo muestra 2 filas */
+            max-height: 160px; 
             transition: max-height 0.4s ease;
         }
         
-        .section.expanded .mission-grid { max-height: 1500px; }
+        .section.expanded .mission-grid { max-height: 2000px; }
 
         .mission-item { 
             aspect-ratio: 1; 
@@ -85,7 +93,6 @@
 
         .mission-item.locked { opacity: 0.25; background: #fff; border: 1px dashed #eaeaea; cursor: not-allowed; }
 
-        /* --- DIFUMINADO Y BOTÓN --- */
         .fade-overlay {
             position: absolute;
             bottom: 0; left: 0; width: 100%; height: 80px;
@@ -103,10 +110,10 @@
         }
 
         .upsell-card { 
-            background: #f5f5f7; border-radius: 14px; padding: 20px; margin-top: 15px; display: none; 
+            background: #f5f5f7; border-radius: 14px; padding: 25px; margin-top: 15px; display: none; 
         }
-        .upsell-card h3 { font-size: 16px; margin-bottom: 5px; }
-        .upsell-card p { font-size: 14px; color: #878787; margin-bottom: 15px; line-height: 1.4; }
+        .upsell-card h3 { font-size: 16px; margin-bottom: 8px; }
+        .upsell-card p { font-size: 14px; color: #878787; margin-bottom: 18px; line-height: 1.4; }
         .btn-mando-small { 
             background: #333333; color: #fff; padding: 12px 20px; 
             border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-block; 
@@ -115,6 +122,7 @@
         @media (max-width: 480px) {
             .container { padding: 40px 30px; }
             .title { font-size: 26px; }
+            .indicator { margin-bottom: 40px; }
         }
     </style>
 </head>
@@ -122,9 +130,10 @@
 
     <div class="container">
         <div class="logo"><img id="dynamicLogo" src="deepmersion.jpeg" alt="logo"></div>
-        <p class="indicator" id="userRange">Operativo Identificado</p>
+        <p class="indicator" id="userRange">Expedicionario Identificado</p>
         
         <section class="section" id="secDF">
+            <span class="tramo-label">Tramo 01</span>
             <h1 class="title">Deepfall.</h1>
             <p class="description">Fundamentos base completados. Revisa tus protocolos aquí.</p>
             <div class="mission-grid" id="gridDF"></div>
@@ -134,19 +143,21 @@
         </section>
 
         <section class="section" id="secDM">
-            <h1 class="title" style="color: #ccc;">Deepmersion.</h1>
+            <span class="tramo-label">Tramo 02</span>
+            <h1 class="title" id="titleDM" style="color: #ccc;">Deepmersion.</h1>
             <p class="description">Acceso restringido a miembros de la cohorte activa.</p>
             <div class="mission-grid" id="gridDM"></div>
             <div id="upsellDM" class="upsell-card">
                 <h3>Rango Insuficiente</h3>
-                <p>Este nivel requiere credenciales de cohorte. Consulta disponibilidad.</p>
+                <p>Este nivel requiere credenciales de cohorte. Consulta disponibilidad para el próximo despliegue.</p>
                 <a href="#" class="btn-mando-small">Consultar Acceso &#8594;</a>
             </div>
         </section>
         
         <section class="section" id="secDQ">
-            <h1 class="title" style="color: #eee;">Deepquest.</h1>
-            <p class="description">Nivel de maestría final. Solo operativos graduados.</p>
+            <span class="tramo-label">Tramo 03</span>
+            <h1 class="title" id="titleDQ" style="color: #eee;">Deepquest.</h1>
+            <p class="description">Nivel de maestría final. Solo expedicionarios graduados de la Deepmersion.</p>
             <div class="mission-grid" id="gridDQ"></div>
         </section>
     </div>
@@ -175,7 +186,7 @@
             db.collection("usuarios").doc(user.uid).get().then((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    document.getElementById('userRange').innerText = "Operativo: " + (data.nombre || "Alpha");
+                    document.getElementById('userRange').innerText = "Expedicionario: " + (data.nombre || "Alpha");
                     setupHub(data);
                 }
             });
@@ -184,18 +195,20 @@
         function setupHub(data) {
             // Deepfall
             renderMissions('gridDF', 15, "unlocked", "01_deepfall/m_");
+            
             // Deepmersion
             if (data.access_DM) {
                 renderMissions('gridDM', 20, "unlocked", "02_deepmersion/m_");
-                document.getElementById('secDM').querySelector('.title').style.color = "#333";
+                document.getElementById('titleDM').style.color = "#333";
             } else {
                 renderMissions('gridDM', 6, "locked", "#");
                 document.getElementById('upsellDM').style.display = "block";
             }
+            
             // Deepquest
             if (data.access_DQ) {
                 renderMissions('gridDQ', 25, "unlocked", "03_deepquest/m_");
-                document.getElementById('secDQ').querySelector('.title').style.color = "#333";
+                document.getElementById('titleDQ').style.color = "#333";
             } else {
                 renderMissions('gridDQ', 6, "locked", "#");
             }
