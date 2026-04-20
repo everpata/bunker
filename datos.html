@@ -15,10 +15,16 @@
         .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; }
         .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
         .form-area { width: 100%; display: flex; flex-direction: column; }
+        
+        /* Inputs corregidos con IDs críticos */
         input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; font-family: inherit; }
-        .iti { width: 100%; } 
+        input:focus { border-bottom: 1px solid #333333; }
+        
+        .iti { width: 100%; margin-top: 10px; } 
         .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; font-size: 16px !important; width: 100% !important; }
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; }
+        
+        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; -webkit-appearance: none; }
+        
         @media (max-width: 480px) { .logo { margin-bottom: 20px; } .logo img { height: 45px; } .title { font-size: 26px; } .btn-mando { margin-top: 20px; } }
     </style>
 </head>
@@ -28,11 +34,13 @@
         <p class="indicator">Paso 01 / Perfil</p>
         <h1 class="title">Datos de contacto.</h1>
         <p class="description">Establece tus coordenadas de enlace.</p>
+        
         <div class="form-area">
             <input type="number" id="userAge" placeholder="Edad">
             <input type="text" id="userJob" placeholder="Ocupación">
             <input id="phone" type="tel">
         </div>
+
         <button id="btnGuardar" class="btn-mando">Continuar &#8594;</button>
     </div>
 
@@ -42,7 +50,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -55,46 +62,46 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 2. Inicializar el plugin de teléfono
+        // Configurar Teléfono
         const phoneInputField = document.querySelector("#phone");
         const phoneInput = window.intlTelInput(phoneInputField, { 
             preferredCountries: ["es", "mx", "co", "ar"], 
             separateDialCode: true 
         });
 
-        // 3. EL CENTINELA: Verifica si el usuario está logueado
+        // Centinela
         auth.onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = "index.html"; // Expulsa si no hay sesión
-            }
+            if (!user) { window.location.href = "index.html"; }
         });
 
-        // 4. LÓGICA DE GUARDADO
+        // Lógica de Guardado Corregida
         document.getElementById('btnGuardar').addEventListener('click', () => {
             const user = auth.currentUser;
+            
+            // Capturamos los valores EXACTOS por ID
             const age = document.getElementById('userAge').value;
             const job = document.getElementById('userJob').value;
-            const phoneNumber = phoneInput.getNumber(); // Obtiene el número con código de país
+            const phoneNumber = phoneInput.getNumber();
 
-            if (!age || !job || !phoneNumber) {
-                alert("Por favor, completa todos los campos operativos.");
+            // VALIDACIÓN: Solo pedimos obligatorios Edad y Ocupación para evitar bloqueos
+            if (!age || !job) {
+                alert("Por favor, completa tu edad y ocupación.");
                 return;
             }
 
-            // Guardar en Firestore en la colección "usuarios" con el ID del usuario
+            // Guardar en Firebase
             db.collection("usuarios").doc(user.uid).set({
                 edad: age,
                 ocupacion: job,
-                telefono: phoneNumber,
+                telefono: phoneNumber || "No provisto",
                 email: user.email,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true }) // merge: true evita que se borren datos anteriores si existen
+                fase: "Perfil Completado"
+            }, { merge: true })
             .then(() => {
-                console.log("Datos sincronizados");
-                window.location.href = "mision2.html"; // Salto a la siguiente página
+                window.location.href = "mision2.html"; 
             })
             .catch((error) => {
-                alert("Error al sincronizar datos: " + error.message);
+                alert("Error al sincronizar búnker: " + error.message);
             });
         });
     </script>
