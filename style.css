@@ -1,4 +1,4 @@
-/* Deepmersion V2.9 - Clean Image Focus */
+/* Deepmersion V3.0 - Sistema Universal Blindado */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body { 
@@ -18,35 +18,75 @@ html, body {
     padding: 60px 45px; 
     display: flex; 
     flex-direction: column;
+    align-items: flex-start;
 }
 
+/* --- CABECERA COMÚN --- */
 .logo { margin-bottom: 30px; margin-left: -10px; flex-shrink: 0; }
-.logo img { height: 55px; width: auto; }
+.logo img { height: 55px; width: auto; display: block; }
 
-.indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
-.progress-container { width: 100%; height: 2px; background-color: #f5f5f7; margin-bottom: 32px; }
+.indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; }
+
+.progress-container {
+    width: 100%;
+    height: 2px;
+    background-color: #f5f5f7;
+    margin-bottom: 32px;
+    border-radius: 2px;
+}
 .progress-fill { height: 100%; background-color: #333333; transition: width 0.8s ease; }
 
-.title { font-size: 28px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
-.description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
+.title { font-size: 28px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; width: 100%; }
+.description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; width: 100%; }
 
+/* --- ÁREAS DE TRABAJO --- */
 .work-area { width: 100%; display: flex; flex-direction: column; gap: 12px; }
 
-/* COMPONENTE: IMAGEN DE EVIDENCIA (REDONDEADO DIRECTO) */
-.evidence-image { 
-    width: 100%; 
-    height: auto; 
-    display: block; 
-    border-radius: 16px; /* Igual al video */
+/* La Tarjeta Gris (Para Texto, Bitácora, Quiz y Principios) */
+.work-area.card { 
+    background-color: #f5f5f7; 
+    padding: 26px; 
+    border-radius: 16px; 
+    width: 100%;
 }
 
-/* ÁREA DE TRABAJO CON TARJETA (Para Texto/Escritura) */
-.work-area.card { background-color: #f5f5f7; padding: 26px; border-radius: 16px; }
+/* --- ELEMENTOS DE CONTENIDO --- */
+.text-base { font-size: 16px; color: #878787; line-height: 1.6; }
+.text-base b { color: #333333; font-weight: 700; }
 
-/* VIDEO CONTAINER */
-.video-container { width: 100%; position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; background: #000; }
+.principle-statement { font-size: 22px; font-weight: 800; color: #333333; line-height: 1.2; margin-bottom: 12px; display: block; }
+
+/* Video e Imagen (Ambos con redondeado de 16px, sin caja gris) */
+.video-container, .evidence-image { 
+    width: 100%; 
+    border-radius: 16px; 
+    overflow: hidden; 
+}
+.video-container { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+.evidence-image { height: auto; display: block; }
 
+/* Quiz */
+.option-btn { 
+    width: 100%; 
+    background-color: #f5f5f7; 
+    border: 2px solid transparent; 
+    padding: 18px; 
+    border-radius: 14px; 
+    color: #878787; 
+    font-size: 16px; 
+    font-weight: 500; 
+    text-align: left; 
+    cursor: pointer; 
+    transition: 0.2s; 
+    font-family: inherit;
+}
+.option-btn.selected { border-color: #333333; color: #333333; }
+
+/* Escritura */
+textarea { width: 100%; background: transparent; border: none; resize: none; font-family: inherit; font-size: 16px; color: #333333; outline: none; min-height: 120px; line-height: 1.5; }
+
+/* --- BOTÓN DE MANDO --- */
 .btn-mando { 
     width: 100%; 
     background: #333333; 
@@ -60,6 +100,36 @@ html, body {
     margin-top: 35px; 
     -webkit-appearance: none;
 }
+
+/* --- SISTEMA DE RITUAL (PRINCIPIOS) --- */
+/* Bloque de Interrupción */
+.interruption-screen { 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer;
+}
+.relic-image { 
+    width: 100%; 
+    max-width: 240px; 
+    height: auto; 
+    margin-bottom: 30px; 
+    animation: softFloat 6s ease-in-out infinite; 
+}
+@keyframes softFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+
+/* Bloque de Revelación */
+.revelation-screen { display: none; width: 100%; }
+
+/* Lógica de activación por Body Class */
+body.revealed .interruption-screen { display: none !important; }
+body.revealed .revelation-screen { display: block !important; animation: fadeIn 0.8s ease forwards; }
+body.revealed .indicator { margin-bottom: 32px; } /* Salto de aire en principios */
+body.revealed .progress-container { display: none; } /* Ocultar barra en principios */
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 @media (max-width: 480px) {
     .container { padding: 40px 30px; }
