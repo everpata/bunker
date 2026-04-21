@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Video / Deepmersion</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        <p class="indicator">Módulo 02</p>
+        <div class="progress-container"><div class="progress-fill" style="width: 40%;"></div></div>
+        <h1 class="title">Análisis Visual.</h1>
+        <p class="description">Identifica los patrones de ruido en tu entorno.</p>
+        <div class="work-area"><div class="video-container"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe></div></div>
+        
+        <button id="btn-next" class="btn-mando" onclick="window.location.href='m_siguiente.html'">He visto el video →</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const btn = document.getElementById('btn-next');
+
+                        // Lógica de cambio de botón si finalizó el programa
+                        if (data.fase === "Finalizado" && !data.access_DM) {
+                            btn.innerText = "Avanzar al tramo 02 →";
+                            btn.onclick = function() { window.location.href = 'hub.html'; };
+                        }
+                    }
+                });
+            } else {
+                // Centinela: Si no hay usuario loggeado, redirige a inicio
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>
