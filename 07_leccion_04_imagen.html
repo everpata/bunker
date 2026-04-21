@@ -1,105 +1,51 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Evidencia / Deepmersion</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Evidencia / Deepmersion</title><link rel="stylesheet" href="style.css">
     <style>
-        /* AJUSTE PARA CENTRADO PERFECTO */
-        html, body { 
-            height: 100%; 
-            margin: 0; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background-color: #ffffff; 
-        }
-        .container { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-start; 
-            justify-content: center;
-            min-height: auto; 
-        }
-
-        /* BLOQUE DE CONVERSIÓN OCULTO */
-        #conversion-upgrade {
-            display: none;
-            width: 100%;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        /* Aseguramos que la imagen respete el ancho */
-        .evidence-image {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
+        html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
+        .container { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: auto; }
+        #conversion-upgrade { display: none; width: 100%; margin-top: 30px; padding-top: 30px; border-top: 1px solid #f0f0f0; }
+        .evidence-image { width: 100%; height: auto; display: block; border-radius: 12px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo"><img src="../deepmersion.jpeg"></div>
-        
+        <div class="logo"><img src="deepmersion.jpeg"></div>
         <p class="indicator">Evidencias</p>
-        
-        <div class="progress-container">
-            <div class="progress-fill" style="width: 50%;"></div>
-        </div>
-        
+        <div class="progress-container"><div class="progress-fill" style="width: 50%;"></div></div>
         <h1 class="title">Resultados.</h1>
         <p class="description">La manifestación real de la teoría operativa.</p>
-        
-        <div class="work-area">
-            <img src="yo.jpeg" class="evidence-image">
-        </div>
-
+        <div class="work-area"><img src="yo.jpeg" class="evidence-image"></div>
         <button id="next-btn" class="btn-mando" onclick="window.location.href='m_siguiente.html'">Continuar →</button>
 
         <div id="conversion-upgrade">
             <p class="indicator" style="margin-bottom:10px;">Estatus: Fundamentos Dominados</p>
             <h2 class="title" style="font-size: 24px; margin-bottom: 12px;">¿Listo para el Tramo 02?</h2>
-            <p class="description" style="font-size: 14px; margin-bottom: 25px;">Has visualizado todos los protocolos del Tramo 01. La verdadera ejecución operativa te espera en el siguiente nivel.</p>
-            <button class="btn-mando" onclick="window.location.href='../hub.html'">Avanzar al Tramo 02 →</button>
+            <p class="description" style="font-size: 14px; margin-bottom: 25px;">Has visualizado todos los protocolos. El siguiente nivel te espera.</p>
+            <button class="btn-mando" onclick="window.location.href='hub.html'">Avanzar al Tramo 02 →</button>
         </div>
     </div>
-
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
+        const auth = firebase.auth(); const db = firebase.firestore();
         auth.onAuthStateChanged((user) => {
             if (user) {
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-
-                        // Lógica de intercambio si terminó el programa
                         if (data.fase === "Finalizado" && !data.access_DM) {
                             document.getElementById('conversion-upgrade').style.display = 'block';
                             document.getElementById('next-btn').style.display = 'none';
                         }
                     }
                 });
-            } else {
-                window.location.href = "../index.html";
-            }
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
