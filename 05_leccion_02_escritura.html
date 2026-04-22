@@ -1,64 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bitácora / Deepmersion</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* AJUSTE PARA CENTRADO PERFECTO */
-        html, body { 
-            height: 100%; 
-            margin: 0; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background-color: #ffffff; 
-        }
-        .container { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-start; 
-            justify-content: center;
-            min-height: auto; 
-        }
-
-        /* BLOQUE DE CONVERSIÓN OCULTO */
-        #conversion-upgrade {
-            display: none;
-            width: 100%;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 1px solid #f0f0f0;
-        }
-    </style>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bitácora / Deepmersion</title><link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <div class="logo"><img src="../deepmersion.jpeg"></div>
-        
+        <div class="logo"><img src="deepmersion.jpeg"></div>
         <p class="indicator">Reporte</p>
-        
-        <div class="progress-container">
-            <div class="progress-fill" style="width: 80%;"></div>
-        </div>
-        
+        <div class="progress-container"><div class="progress-fill" style="width: 80%;"></div></div>
         <h1 class="title">Análisis.</h1>
-        <p class="description">Resume tu hallazgo clave.</p>
         
-        <div id="work-block" style="width: 100%;">
-            <div class="work-area card">
-                <textarea placeholder="Escribe aquí..."></textarea>
-            </div>
-            <button id="next-btn" class="btn-mando" onclick="window.location.href='m_siguiente.html'">Guardar reporte →</button>
+        <p id="log-desc" class="description">Resume tu hallazgo clave.</p>
+        
+        <div id="log-area" class="work-area card">
+            <textarea placeholder="Escribe aquí..."></textarea>
         </div>
-
-        <div id="conversion-upgrade">
-            <p class="indicator" style="margin-bottom:10px;">Estatus: Fundamentos Dominados</p>
-            <h2 class="title" style="font-size: 24px; margin-bottom: 12px;">¿Listo para el Tramo 02?</h2>
-            <p class="description" style="font-size: 14px; margin-bottom: 25px;">Tu bitácora del Tramo 01 está completa. Es hora de iniciar una nueva fase operativa.</p>
-            <button class="btn-mando" onclick="window.location.href='../hub.html'">Avanzar al Tramo 02 →</button>
-        </div>
+        
+        <button id="btn-next" class="btn-mando" onclick="window.location.href='m_siguiente.html'">Guardar reporte →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -83,16 +42,25 @@
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
+                        const btn = document.getElementById('btn-next');
 
-                        // Si ya terminó el curso y no ha pagado el Tramo 2
+                        // Lógica para cuando el usuario ya finalizó el programa
                         if (data.fase === "Finalizado" && !data.access_DM) {
-                            document.getElementById('conversion-upgrade').style.display = 'block';
-                            document.getElementById('work-block').style.display = 'none';
+                            // Ocultar la caja de texto
+                            document.getElementById('log-area').style.display = 'none';
+                            
+                            // Cambiar el texto de la descripción
+                            document.getElementById('log-desc').innerText = "Reporte archivado. Tu bitácora operativa está completa.";
+                            
+                            // Cambiar el botón hacia el Hub
+                            btn.innerText = "Avanzar al tramo 02 →";
+                            btn.onclick = function() { window.location.href = 'hub.html'; };
                         }
                     }
                 });
             } else {
-                window.location.href = "../index.html";
+                // Centinela: Si no hay usuario loggeado, redirige a inicio
+                window.location.href = "index.html";
             }
         });
     </script>
