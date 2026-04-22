@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Misión Cumplida / Deepmersion</title><link rel="stylesheet" href="style.css">
+    <style>
+        /* Centrado perfecto para la graduación */
+        html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
+        .container { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: auto; }
+        
+        /* Animaciones de victoria */
+        .victory-img { width: 100%; border-radius: 12px; margin-bottom: 20px; animation: floatIn 1.5s ease forwards; }
+        .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; }
+
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        <p class="indicator">Tramo 01 Completado</p>
+        
+        <h1 class="title">Misión Cumplida.</h1>
+
+        <img src="victoria.jpeg" class="victory-img">
+
+        <div class="work-area card victory-card">
+            <p class="text-base">Has asimilado los 20 protocolos fundamentales. Tu mente ahora opera en una frecuencia distinta. <b>Estás listo para el siguiente tramo.</b></p>
+        </div>
+
+        <button class="btn-mando" onclick="window.location.href='hub.html'">Regresar al Hub de Comando →</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // EL CÓDIGO ESPECIAL: Actualiza el estatus del usuario automáticamente
+                db.collection("usuarios").doc(user.uid).update({
+                    fase: "Finalizado"
+                }).then(() => {
+                    console.log("Estatus actualizado: Finalizado");
+                }).catch((error) => {
+                    console.error("Error al actualizar:", error);
+                });
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>
