@@ -17,8 +17,8 @@
         }
         /* Etiqueta de estado crítico tipo Hub */
         .status-chip {
-            background-color: #fce8e6; /* Rojo pálido */
-            color: #d93025; /* Rojo alerta */
+            background-color: #fce8e6;
+            color: #d93025;
             padding: 4px 8px;
             border-radius: 4px;
             display: inline-block;
@@ -27,24 +27,61 @@
             margin-left: 5px;
             letter-spacing: 0.5px;
         }
-        /* Contenedor del Timer en texto normal */
+        
+        /* Contenedor del Timer con márgenes simétricos */
         .timer-container {
             width: 100%;
-            text-align: left;
-            margin-top: 25px; /* Espacio simétrico arriba */
-            margin-bottom: 25px; /* Espacio simétrico abajo */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Alineado a la izquierda */
+            margin-top: 30px; /* Espacio simétrico hacia arriba */
+            margin-bottom: 30px; /* Espacio simétrico hacia abajo */
         }
         .timer-label {
             font-size: 14px;
             color: #333;
-            margin-bottom: 4px;
+            margin-bottom: 12px;
             display: block;
             font-weight: normal;
         }
-        .timer-display {
-            font-size: 15px;
+        
+        /* Estilos de las cajas del Timer */
+        .timer-boxes {
+            display: flex;
+            align-items: center;
+            gap: 6px; /* Separación entre cajas */
+        }
+        .time-box {
+            background-color: #f5f5f7; /* Caja gris claro elegante */
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 8px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            min-width: 48px;
+            box-sizing: border-box;
+        }
+        .time-box span {
+            font-size: 18px;
             font-weight: bold;
-            color: #d93025; /* En rojo para denotar la urgencia, pero sin competir como un botón */
+            color: #d93025; /* Rojo alerta */
+            font-family: monospace;
+            line-height: 1.1;
+        }
+        .time-box small {
+            font-size: 9px;
+            color: #666;
+            margin-top: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .time-separator {
+            font-size: 18px;
+            font-weight: bold;
+            color: #999;
+            margin-top: -14px; /* Alinea los dos puntos con los números */
         }
     </style>
 </head>
@@ -79,7 +116,9 @@
 
         <div class="timer-container">
             <span class="timer-label">La escotilla para entrar a la inmersión cierra en:</span>
-            <div id="countdown" class="timer-display">Calculando...</div>
+            <div id="countdown" class="timer-boxes">
+                Calculando...
+            </div>
         </div>
 
         <button class="btn-mando" onclick="window.location.href='hub.html'">Avanzar al Tramo 02 →</button>
@@ -103,7 +142,7 @@
 
             if (distance < 0) {
                 clearInterval(timerInterval);
-                document.getElementById("countdown").innerHTML = "ESCOTILLA CERRADA";
+                document.getElementById("countdown").innerHTML = "<div style='color:#d93025; font-weight:bold; font-size:16px;'>ESCOTILLA CERRADA</div>";
                 return; 
             }
 
@@ -112,12 +151,16 @@
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Formateo explícito con días, horas, minutos y segundos
-            document.getElementById("countdown").innerHTML = 
-                (days < 10 ? "0" + days : days) + " días, " + 
-                (hours < 10 ? "0" + hours : hours) + " horas, " + 
-                (minutes < 10 ? "0" + minutes : minutes) + " minutos y " + 
-                (seconds < 10 ? "0" + seconds : seconds) + " segundos.";
+            // Formateo inyectando el HTML de las cajas
+            document.getElementById("countdown").innerHTML = `
+                <div class="time-box"><span>${days < 10 ? '0' + days : days}</span><small>DÍAS</small></div>
+                <div class="time-separator">:</div>
+                <div class="time-box"><span>${hours < 10 ? '0' + hours : hours}</span><small>HRS</small></div>
+                <div class="time-separator">:</div>
+                <div class="time-box"><span>${minutes < 10 ? '0' + minutes : minutes}</span><small>MIN</small></div>
+                <div class="time-separator">:</div>
+                <div class="time-box"><span>${seconds < 10 ? '0' + seconds : seconds}</span><small>SEG</small></div>
+            `;
         }, 1000);
 
         // CONFIGURACIÓN FIREBASE
