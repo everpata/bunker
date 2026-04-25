@@ -8,14 +8,13 @@
     <style>
         .meta-header {
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 20px; /* Distancia original de 20px */
         }
         .meta-item {
             font-size: 14px;
             margin-bottom: 6px;
             color: #333;
         }
-        /* Etiqueta de estado crítico tipo Hub */
         .status-chip {
             background-color: #fce8e6;
             color: #d93025;
@@ -28,15 +27,22 @@
             letter-spacing: 0.5px;
         }
         
-        /* Contenedor del Timer con márgenes ajustados al diseño original */
+        /* CONTROL STRICTO DE SIMETRÍA (20px exactos entre elementos) */
+        .work-area.card {
+            margin-bottom: 20px !important; /* 20px exactos hacia el Timer */
+        }
         .timer-container {
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            margin-top: 15px; /* Se acerca a la caja gris */
-            margin-bottom: 20px; /* Mantiene el botón a la distancia original de tus plantillas */
+            margin-top: 0 !important; /* Evita que se sumen márgenes con la caja gris */
+            margin-bottom: 20px !important; /* 20px exactos hacia el Botón */
         }
+        .btn-mando {
+            margin-top: 0 !important; /* Evita que el botón agregue espacio extra hacia arriba */
+        }
+
         .timer-label {
             font-size: 14px;
             color: #333;
