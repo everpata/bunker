@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quiz / Deepmersion (T02)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        <p class="indicator">Sincronización / DM</p>
+        <div class="progress-container"><div class="progress-fill" style="width: 30%;"></div></div>
+        <h1 class="title">Evaluación.</h1>
+        <p id="quiz-desc" class="description">¿Qué parte de tu vieja identidad pesa más?</p>
+        
+        <div id="quiz-area" class="work-area">
+            <button class="option-btn" onclick="this.classList.toggle('selected')">El Salvador.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">El Perfeccionista.</button>
+        </div>
+        
+        <button id="btn-next" class="btn-mando">Sincronizar →</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const archivoActual = "03_DM_quiz.html";
+        const siguienteArchivo = "04_DM_texto.html"; // Ajustar al siguiente
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        
+                        // CENTINELAS TRAMO 02
+                        if (data.access_DM !== true) { window.location.href = "21_DF_reporte_final.html"; return; }
+                        if (data.fase === "Finalizado_DM") { window.location.href = "21_DM_reporte_final.html"; return; }
+
+                        // AUTOGUARDADO TRAMO 02
+                        userRef.update({ leccion_actual_DM: archivoActual });
+                        
+                        const campoQuiz = "quiz_" + archivoActual.replace(/\./g, "_");
+                        if (data[campoQuiz] && Array.isArray(data[campoQuiz])) {
+                            const botones = document.querySelectorAll('.option-btn');
+                            botones.forEach(btn => {
+                                if (data[campoQuiz].includes(btn.innerText.trim())) btn.classList.add('selected');
+                            });
+                        }
+                    }
+                });
+
+                document.getElementById("btn-next").onclick = function() {
+                    const seleccionados = Array.from(document.querySelectorAll('.option-btn.selected')).map(btn => btn.innerText.trim());
+                    const btn = document.getElementById("btn-next");
+                    if (seleccionados.length === 0) { alert("Selecciona una opción."); return; }
+
+                    btn.innerText = "Sincronizando...";
+                    btn.disabled = true;
+
+                    const nombreCampo = "quiz_" + archivoActual.replace(/\./g, "_");
+                    userRef.update({ [nombreCampo]: seleccionados }).then(() => {
+                        window.location.href = siguienteArchivo;
+                    });
+                };
+            } else { window.location.href = "index.html"; }
+        });
+    </script>
+</body>
+</html>
