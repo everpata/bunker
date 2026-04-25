@@ -5,37 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Texto / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* AJUSTE PARA CENTRADO PERFECTO (Regla de Estilo) */
-        html, body { 
-            height: 100%; 
-            margin: 0; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background-color: #ffffff; 
-        }
-        .container { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-start; /* Alineación a la izquierda dentro de la tarjeta */
-            justify-content: center;
-            min-height: auto; 
-        }
-        
-        /* BLOQUE DE CONVERSIÓN OCULTO */
-        #conversion-upgrade {
-            display: none;
-            width: 100%;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 1px solid #f0f0f0;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo"><img src="../deepmersion.jpeg"></div>
+        <div class="logo"><img src="deepmersion.jpeg"></div>
         
         <p class="indicator">Lección 01</p>
         
@@ -50,14 +23,7 @@
             <p class="text-base">El búnker no es una prisión, es tu <b>laboratorio</b>.</p>
         </div>
 
-        <button id="next-btn" class="btn-mando" onclick="window.location.href='m_2.html'">Continuar →</button>
-
-        <div id="conversion-upgrade">
-            <p class="indicator" style="margin-bottom:10px;">Estatus: Fundamentos Dominados</p>
-            <h2 class="title" style="font-size: 24px; margin-bottom: 12px;">¿Listo para el Tramo 02?</h2>
-            <p class="description" style="font-size: 14px; margin-bottom: 25px;">Ya dominas estos protocolos. La verdadera expedición operativa comienza ahora.</p>
-            <button class="btn-mando" onclick="window.location.href='../hub.html'">Avanzar al Tramo 02 →</button>
-        </div>
+        <button class="btn-mando" onclick="window.location.href='02_DF_video.html'">Continuar →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -65,6 +31,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // =======================================================
+        // 2. ESCRIBE AQUÍ EL NOMBRE EXACTO DE ESTE ARCHIVO HTML
+        // =======================================================
+        const archivoActual = "01_DF_texto.html";
+
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -77,23 +48,26 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // EL CENTINELA Y EL INTERRUPTOR DE CONVERSIÓN
         auth.onAuthStateChanged((user) => {
             if (user) {
-                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-
-                        // Si ya terminó el curso y no ha pagado el Tramo 2
-                        if (data.fase === "Finalizado" && !data.access_DM) {
-                            document.getElementById('conversion-upgrade').style.display = 'block';
-                            document.getElementById('next-btn').style.display = 'none';
+                        
+                        // CENTINELA: Si ya terminó, lo expulsa al reporte final
+                        if (data.fase === "Finalizado") {
+                            window.location.href = "21_DF_reporte_final.html"; // Asegúrate de que este sea el nombre de tu tarjeta final
+                        } else {
+                            // AUTOGUARDADO: Fija sus coordenadas en Firebase
+                            userRef.update({ leccion_actual: archivoActual })
+                                .catch((err) => console.log("Guardando coordenadas...", err));
                         }
                     }
                 });
             } else {
-                // Si no está logueado, patada hacia afuera
-                window.location.href = "../index.html";
+                // CENTINELA BASE: Si no está logueado, lo manda al Login
+                window.location.href = "index.html";
             }
         });
     </script>
