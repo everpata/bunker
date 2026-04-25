@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Misión Cumplida / Deepmersion</title><link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Misión Cumplida / Deepmersion</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* Centrado perfecto para la graduación */
+        /* Centrado perfecto para la graduación y animaciones de victoria */
         html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
-        .container { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: auto; }
+        .container { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: auto; width: 100%; }
         
-        /* Animaciones de victoria */
         .victory-img { width: 100%; border-radius: 12px; margin-bottom: 20px; animation: floatIn 1.5s ease forwards; }
-        .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; }
+        .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; box-sizing: border-box; }
 
         @keyframes floatIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -28,10 +29,10 @@
         <img src="victoria.jpeg" class="victory-img">
 
         <div class="work-area card victory-card">
-            <p class="text-base">Has asimilado los 20 protocolos fundamentales. Tu mente ahora opera en una frecuencia distinta. <b>Estás listo para el siguiente tramo.</b></p>
+            <p class="text-base">Has asimilado los protocolos fundamentales. Tu mente ahora opera en una frecuencia distinta. <b>Estás listo para el siguiente tramo.</b></p>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='hub.html'">Regresar al Hub de Comando →</button>
+        <button class="btn-mando" onclick="window.location.href='21_DF_reporte_final.html'">Abrir Reporte de Descenso →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -39,6 +40,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // =======================================================
+        // COORDENADA ACTUAL
+        // =======================================================
+        const archivoActual = "20_DF_exito.html";
+
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -53,13 +59,16 @@
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // EL CÓDIGO ESPECIAL: Actualiza el estatus del usuario automáticamente
-                db.collection("usuarios").doc(user.uid).update({
-                    fase: "Finalizado"
+                const userRef = db.collection("usuarios").doc(user.uid);
+                
+                // EL CEROJO: Quema las naves inmediatamente
+                userRef.update({
+                    fase: "Finalizado",
+                    leccion_actual: archivoActual
                 }).then(() => {
-                    console.log("Estatus actualizado: Finalizado");
+                    console.log("Expedicionario graduado. Naves quemadas.");
                 }).catch((error) => {
-                    console.error("Error al actualizar:", error);
+                    console.error("Error al ejecutar cierre:", error);
                 });
             } else {
                 window.location.href = "index.html";
