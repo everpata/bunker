@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reporte de Descenso / Deepmersion</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        
+        <p class="indicator">Reporte Final</p>
+        
+        <div class="progress-container">
+            <div class="progress-fill" style="width: 100%;"></div>
+        </div>
+        
+        <h1 class="title">Fin del Descenso.</h1>
+        <p class="description">Lectura obligatoria antes de continuar.</p>
+        
+        <div class="work-area card">
+            <p class="text-base" style="margin-bottom: 15px;">
+                <b>Expedicionario:</b> <span id="nombre-exp">Cargando...</span><br>
+                <b>Tramos completados:</b> 01 de 03<br>
+                <b>Estado operativo:</b> <span style="color: #d93025; font-weight: bold;">🔴 MÁSCARA ROTA (VULNERABLE)</span>
+            </p>
+            
+            <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
+                <b>DIAGNÓSTICO TÉCNICO:</b> Has completado el Descenso. Tu capacidad para mentirte ha sido neutralizada y tu máscara (el Salvador/Chico Bueno) ha sido fracturada. Sin embargo, te encuentras en la zona de mayor riesgo de la expedición: la exposición total.<br><br>
+                Has despertado al Monje, pero tu Anarquista sigue dormido. Tienes la verdad, pero no tienes el equipo para defenderla en la trinchera.
+            </p>
+
+            <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
+                <b>ADVERTENCIA DE SEGURIDAD:</b> Acampar en este punto es un error crítico. Un hombre con la máscara rota pero sin blindaje táctico es una presa fácil para la superficie. Si regresas a tu entorno ahora, la presión social y emocional te obligará a intentar "pegar" los pedazos de tu vieja máscara, pero el pegamento ya no servirá. El resultado será una humillación mayor.
+            </p>
+
+            <p class="text-base" style="font-size: 14px;">
+                <b>ORDEN DE MANDO:</b> Es imperativo iniciar la Inmersión (Tramo 02) de inmediato. Necesitas dotar a tu sistema nervioso de las herramientas del Anarquista para blindar tu nueva verdad.
+            </p>
+        </div>
+
+        <p id="countdown-timer" class="indicator" style="color: #d93025; font-weight: bold; margin-bottom: 15px; text-align: center; width: 100%;">
+            La inmersión empieza en: 03:00
+        </p>
+
+        <button class="btn-mando" onclick="window.location.href='hub.html'">Avanzar al Tramo 02 →</button>
+
+        <p class="description" style="margin-top: 20px; font-style: italic; text-align: center; font-size: 13px;">
+            O conquistas tu densidad en el siguiente tramo, o aceptas ser un turista que se asustó cuando el aire empezó a faltar.
+        </p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // TIMER LÓGICA (3 minutos = 180 segundos)
+        let timeLeft = 180;
+        const timerElement = document.getElementById('countdown-timer');
+        const countdown = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerElement.innerText = "TIEMPO EXPIRADO. INICIA AHORA.";
+            } else {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                timerElement.innerText = `La inmersión empieza en: 0${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                timeLeft--;
+            }
+        }, 1000);
+
+        // LÓGICA DE FIREBASE Y AUTO-GUARDADO DE FASE
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                
+                // 1. Obtener datos para poner el nombre
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById("nombre-exp").innerText = data.nombre || "Alfa";
+                        
+                        // 2. Actualizar el estatus a Finalizado automáticamente
+                        if (data.fase !== "Finalizado") {
+                            userRef.update({ fase: "Finalizado" })
+                            .then(() => console.log("Usuario graduado exitosamente."))
+                            .catch((err) => console.error("Error al actualizar fase:", err));
+                        }
+                    }
+                });
+            } else {
+                // Si no está logueado, expulsarlo al index
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>
