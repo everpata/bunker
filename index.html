@@ -58,9 +58,6 @@
 
         let isLoginMode = false;
 
-        // =================================================================
-        // 1. EL ENRUTADOR MAESTRO (3 NIVELES DE ESCALA)
-        // =================================================================
         auth.onAuthStateChanged((user) => {
             if (user) {
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
@@ -71,15 +68,15 @@
                         if (data.access_DQ === true) {
                             window.location.href = data.leccion_actual_DQ || "quest/01_DQ_bienvenida.html"; 
                         }
-                        // FILTRO 2: BLOQUEO TRAMO 02 (Terminó DM, no ha pagado DQ)
+                        // FILTRO 2: BLOQUEO TRAMO 02 (Terminó DM, se estrella contra el reporte rojo)
                         else if (data.fase === "Finalizado_DM") {
-                            window.location.href = "bunker/XX_DM_reporte_final.html"; // Archivo futuro
+                            window.location.href = "21_DM_reporte_final.html"; 
                         }
-                        // FILTRO 3: VIP (Tramo 02 pagado)
+                        // FILTRO 3: VIP (Tramo 02 pagado, sigue operando)
                         else if (data.access_DM === true) {
-                            window.location.href = data.leccion_actual_DM || "bunker/01_DM_bienvenida.html"; 
+                            window.location.href = data.leccion_actual_DM || "01_DM_texto.html"; 
                         }
-                        // FILTRO 4: BLOQUEO TRAMO 01 (Terminó DF, no ha pagado DM)
+                        // FILTRO 4: BLOQUEO TRAMO 01 (Terminó DF, se estrella contra el reporte de DM)
                         else if (data.fase === "Finalizado") {
                             window.location.href = "21_DF_reporte_final.html"; 
                         } 
@@ -98,7 +95,6 @@
             }
         });
 
-        // 2. CAMBIO ENTRE LOGIN Y REGISTRO
         document.getElementById('toggle-auth').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             const nameInput = document.getElementById('userName');
@@ -122,7 +118,6 @@
             }
         });
 
-        // 3. ACCIÓN DEL BOTÓN PRINCIPAL
         document.getElementById('btnAuth').addEventListener('click', () => {
             const email = document.getElementById('userEmail').value;
             const pass = document.getElementById('userPass').value;
