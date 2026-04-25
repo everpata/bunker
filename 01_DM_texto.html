@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Texto / Deepmersion (Tramo 02)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        
+        <p class="indicator">Lección 01 / Inmersión</p>
+        
+        <div class="progress-container">
+            <div class="progress-fill" style="width: 5%;"></div>
+        </div>
+        
+        <h1 class="title">El Anarquista.</h1>
+        <p class="description">Bienvenido al Tramo 02. La máscara se ha roto.</p>
+        
+        <div class="work-area card">
+            <p class="text-base">Aquí comienza la verdadera reconstrucción operativa.</p>
+        </div>
+
+        <button class="btn-mando" onclick="window.location.href='02_DM_video.html'">Continuar →</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // =======================================================
+        // COORDENADA EXACTA DE LA DEEPMERSION
+        // =======================================================
+        const archivoActual = "01_DM_texto.html";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        
+                        // CENTINELA 1: Si NO tiene la llave maestra (No ha pagado), patada al Tramo 01
+                        if (data.access_DM !== true) {
+                            window.location.href = "21_DF_reporte_final.html"; 
+                        } 
+                        // CENTINELA 2: Si ya terminó la DM, patada al reporte final de la DM
+                        else if (data.fase === "Finalizado_DM") {
+                            window.location.href = "21_DM_reporte_final.html"; // Archivo que crearemos luego
+                        } 
+                        // AUTOGUARDADO: Fija sus coordenadas en la variable exclusiva de la DM
+                        else {
+                            userRef.update({ leccion_actual_DM: archivoActual })
+                                .catch((err) => console.log("Guardando coordenadas DM...", err));
+                        }
+                    }
+                });
+            } else {
+                // CENTINELA BASE: Si no está logueado, lo manda al Login
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>
