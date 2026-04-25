@@ -59,7 +59,7 @@
         let isLoginMode = false;
 
         // =================================================================
-        // 1. EL ENRUTADOR INTELIGENTE (Túnel Automático)
+        // 1. EL ENRUTADOR MAESTRO (3 NIVELES DE ESCALA)
         // =================================================================
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -67,20 +67,31 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // Si ya terminó el programa, directo a la página de ventas/reporte
-                        if (data.fase === "Finalizado") {
+                        // FILTRO 1: ULTRA-VIP (Tramo 03 pagado)
+                        if (data.access_DQ === true) {
+                            window.location.href = data.leccion_actual_DQ || "quest/01_DQ_bienvenida.html"; 
+                        }
+                        // FILTRO 2: BLOQUEO TRAMO 02 (Terminó DM, no ha pagado DQ)
+                        else if (data.fase === "Finalizado_DM") {
+                            window.location.href = "bunker/XX_DM_reporte_final.html"; // Archivo futuro
+                        }
+                        // FILTRO 3: VIP (Tramo 02 pagado)
+                        else if (data.access_DM === true) {
+                            window.location.href = data.leccion_actual_DM || "bunker/01_DM_bienvenida.html"; 
+                        }
+                        // FILTRO 4: BLOQUEO TRAMO 01 (Terminó DF, no ha pagado DM)
+                        else if (data.fase === "Finalizado") {
                             window.location.href = "21_DF_reporte_final.html"; 
                         } 
-                        // Si tiene una lección guardada, lo teletransporta allí
+                        // FILTRO 5: ENTRENAMIENTO BÁSICO (Tramo 01)
                         else if (data.leccion_actual) {
                             window.location.href = data.leccion_actual;
                         } 
-                        // Si no tiene fase y no tiene lección, lo mandamos al formulario inicial (o tu lección 1 si prefieres)
+                        // FILTRO 6: NUEVO INGRESO
                         else {
                             window.location.href = "datos.html"; 
                         }
                     } else {
-                        // Usuario sin documento, asume que es nuevo
                         window.location.href = "datos.html";
                     }
                 }).catch(() => { window.location.href = "datos.html"; });
