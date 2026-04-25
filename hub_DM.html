@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hub DM / Deepmersion</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
+        .lesson-card {
+            background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 12px;
+            padding: 18px; display: flex; align-items: center; justify-content: space-between;
+            text-decoration: none; color: #333; transition: all 0.3s;
+        }
+        .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
+        .lesson-info b { display: block; font-size: 14px; margin-bottom: 4px; }
+        .lesson-info span { font-size: 12px; color: #878787; }
+    </style>
+</head>
+<body>
+    <div class="container" style="justify-content: flex-start; padding-top: 40px; overflow-y: auto;">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        <p class="indicator">Centro de Mando / Tramo 02</p>
+        <h1 class="title">Inmersión.</h1>
+        <p class="description">Accede a tus protocolos operativos.</p>
+
+        <div class="hub-grid">
+            <a href="01_DM_texto.html" class="lesson-card">
+                <div class="lesson-info">
+                    <b>01. El Anarquista</b>
+                    <span>Protocolo de identidad</span>
+                </div>
+            </a>
+            <a href="02_DM_bitacora.html" class="lesson-card">
+                <div class="lesson-info">
+                    <b>02. Bitácora de Guerra</b>
+                    <span>Análisis crítico</span>
+                </div>
+            </a>
+            <a href="03_DM_quiz.html" class="lesson-card">
+                <div class="lesson-info">
+                    <b>03. Sincronización</b>
+                    <span>Evaluación de peso</span>
+                </div>
+            </a>
+            </div>
+
+        <button class="btn-mando" onclick="window.location.href='21_DM_reporte_final.html'" style="margin-top: 30px; background: transparent; color: #333; border: 1px solid #333;">← Volver al Reporte de Estatus</button>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                    const data = doc.data();
+                    if (data.access_DM !== true) window.location.href = "index.html";
+                });
+            } else { window.location.href = "index.html"; }
+        });
+    </script>
+</body>
+</html>
