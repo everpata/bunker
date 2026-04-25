@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Principio III / Deepmersion</title><link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Principio III / Deepmersion</title>
+    <link rel="stylesheet" href="style.css">
     <script>function reveal(){document.body.classList.add('revealed');}</script>
 </head>
 <body>
@@ -11,14 +13,17 @@
             <img src="hacha.png" class="relic-image">
             <p class="indicator">Toca para desenterrar el Principio III</p>
         </div>
+        
         <div class="revelation-screen">
             <div class="logo"><img src="deepmersion.jpeg"></div>
             <p class="indicator">Principio III / 10</p>
+            
             <div class="work-area card">
                 <span class="principle-statement">"Afilamos el hacha aunque no vayamos a cortar ningún árbol."</span>
                 <p class="text-base">El entrenamiento es el estado natural del hombre profundo.</p>
             </div>
-            <button id="btn-next" class="btn-mando" onclick="window.location.href='m_siguiente.html'">Asimilado →</button>
+            
+            <button class="btn-mando" onclick="window.location.href='07_DF_texto.html'">Asimilado →</button>
         </div>
     </div>
 
@@ -27,6 +32,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // =======================================================
+        // 2. ESCRIBE AQUÍ EL NOMBRE EXACTO DE ESTE ARCHIVO HTML
+        // =======================================================
+        const archivoActual = "06_DF_principio.html";
+
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -41,20 +51,23 @@
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        const btn = document.getElementById('btn-next');
-
-                        // Lógica de cambio de botón si finalizó el programa
-                        if (data.fase === "Finalizado" && !data.access_DM) {
-                            btn.innerText = "Avanzar al tramo 02 →";
-                            btn.onclick = function() { window.location.href = 'hub.html'; };
+                        
+                        // CENTINELA: Si ya terminó, lo expulsa al reporte final
+                        if (data.fase === "Finalizado") {
+                            window.location.href = "21_DF_reporte_final.html"; 
+                        } else {
+                            // AUTOGUARDADO: Fija sus coordenadas en Firebase
+                            userRef.update({ leccion_actual: archivoActual })
+                                .catch((err) => console.log("Guardando coordenadas...", err));
                         }
                     }
                 });
             } else {
-                // Centinela: Si no hay usuario loggeado, redirige a inicio
+                // CENTINELA BASE: Si no está logueado, lo manda al Login
                 window.location.href = "index.html";
             }
         });
