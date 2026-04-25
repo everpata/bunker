@@ -6,7 +6,6 @@
     <title>Reporte de Descenso / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilos específicos para los nuevos elementos de diseño */
         .meta-header {
             width: 100%;
             margin-bottom: 20px;
@@ -25,7 +24,7 @@
             display: inline-block;
             font-weight: bold;
             font-size: 12px;
-            margin-top: 4px;
+            margin-left: 5px;
             letter-spacing: 0.5px;
         }
         /* Tarjeta oscura para el Timer */
@@ -60,16 +59,12 @@
         
         <p class="indicator">Reporte Final</p>
         
-        <div class="progress-container">
-            <div class="progress-fill" style="width: 100%;"></div>
-        </div>
-        
         <h1 class="title">Fin del Descenso.</h1>
 
         <div class="meta-header">
-            <div class="meta-item"><b>Expedicionario:</b> <span id="nombre-exp">Alfa</span></div>
+            <div class="meta-item"><b>Expedicionario:</b> <span id="nombre-exp">Cargando...</span></div>
             <div class="meta-item"><b>Tramos completados:</b> 01 de 03</div>
-            <div class="status-chip">🔴 MÁSCARA ROTA (VULNERABLE)</div>
+            <div class="meta-item"><b>Estado operativo:</b><span class="status-chip">MÁSCARA ROTA (VULNERABLE)</span></div>
         </div>
         
         <div class="work-area card">
@@ -89,7 +84,7 @@
 
         <div class="timer-card">
             <span class="timer-label">La Inmersión empieza en:</span>
-            <div id="countdown" class="timer-display">00:00:00:00</div>
+            <div id="countdown" class="timer-display">Cargando...</div>
         </div>
 
         <button class="btn-mando" onclick="window.location.href='hub.html'">Avanzar al Tramo 02 →</button>
@@ -104,12 +99,18 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // CONFIGURACIÓN TIMER PARA 10 DE MAYO 19:00 ECUADOR (-5 GMT)
-        const targetDate = new Date("May 10, 2024 19:00:00 GMT-0500").getTime();
+        // CONFIGURACIÓN TIMER PARA 10 DE MAYO 2026 19:00 ECUADOR (-5 GMT)
+        const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime();
 
         const timerInterval = setInterval(function() {
             const now = new Date().getTime();
             const distance = targetDate - now;
+
+            if (distance < 0) {
+                clearInterval(timerInterval);
+                document.getElementById("countdown").innerHTML = "OPERACIÓN INICIADA";
+                return; // Detiene el cálculo si ya pasó la fecha
+            }
 
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -121,11 +122,6 @@
                 (hours < 10 ? "0" + hours : hours) + ":" + 
                 (minutes < 10 ? "0" + minutes : minutes) + ":" + 
                 (seconds < 10 ? "0" + seconds : seconds);
-
-            if (distance < 0) {
-                clearInterval(timerInterval);
-                document.getElementById("countdown").innerHTML = "OPERACIÓN INICIADA";
-            }
         }, 1000);
 
         // CONFIGURACIÓN FIREBASE
@@ -147,7 +143,9 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        document.getElementById("nombre-exp").innerText = data.nombre || "Alfa";
+                        
+                        // Cambio del fallback de "Alfa" a "Aspirante a hombre profundo"
+                        document.getElementById("nombre-exp").innerText = data.nombre || "Aspirante a hombre profundo";
                         
                         // Actualizar fase a Finalizado
                         if (data.fase !== "Finalizado") {
