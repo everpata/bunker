@@ -58,17 +58,29 @@
 
         let isLoginMode = false;
 
-        // 1. EL ENRUTADOR (Solo se activa si el usuario ya está logueado)
+        // =================================================================
+        // 1. EL ENRUTADOR INTELIGENTE (Túnel Automático)
+        // =================================================================
         auth.onAuthStateChanged((user) => {
             if (user) {
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
-                        const fase = doc.data().fase;
-                        if (fase === "Quiz Completado") window.location.href = "mision5.html";
-                        else if (fase === "Video Visto") window.location.href = "mision4.html";
-                        else if (fase === "Perfil Completado") window.location.href = "mision2.html";
-                        else window.location.href = "datos.html";
+                        const data = doc.data();
+                        
+                        // Si ya terminó el programa, directo a la página de ventas/reporte
+                        if (data.fase === "Finalizado") {
+                            window.location.href = "21_DF_reporte_final.html"; 
+                        } 
+                        // Si tiene una lección guardada, lo teletransporta allí
+                        else if (data.leccion_actual) {
+                            window.location.href = data.leccion_actual;
+                        } 
+                        // Si no tiene fase y no tiene lección, lo mandamos al formulario inicial (o tu lección 1 si prefieres)
+                        else {
+                            window.location.href = "datos.html"; 
+                        }
                     } else {
+                        // Usuario sin documento, asume que es nuevo
                         window.location.href = "datos.html";
                     }
                 }).catch(() => { window.location.href = "datos.html"; });
