@@ -28,24 +28,19 @@
             letter-spacing: 0.5px;
         }
         
-        /* CORRECCIÓN DE SIMETRÍA: Anula el margen residual de la caja gris */
-        .work-area.card {
-            margin-bottom: 0 !important; 
-        }
-
-        /* Contenedor del Timer con márgenes 100% simétricos */
+        /* Contenedor del Timer con márgenes ajustados al diseño original */
         .timer-container {
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            margin-top: 35px; /* Distancia exacta desde el borde de la caja gris */
-            margin-bottom: 35px; /* Distancia exacta hasta el botón */
+            margin-top: 15px; /* Se acerca a la caja gris */
+            margin-bottom: 20px; /* Mantiene el botón a la distancia original de tus plantillas */
         }
         .timer-label {
             font-size: 14px;
             color: #333;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: block;
             font-weight: normal;
         }
@@ -156,7 +151,6 @@
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Formateo inyectando el HTML de las cajas
             document.getElementById("countdown").innerHTML = `
                 <div class="time-box"><span>${days < 10 ? '0' + days : days}</span><small>DÍAS</small></div>
                 <div class="time-separator">:</div>
