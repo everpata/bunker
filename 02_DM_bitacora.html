@@ -27,7 +27,7 @@
 
     <script>
         const archivoActual = "02_DM_bitacora.html";
-        const siguienteArchivo = "03_DM_quiz.html"; // Ajustar al siguiente
+        const siguienteArchivo = "03_DM_quiz.html"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
@@ -51,29 +51,41 @@
                         
                         // CENTINELAS TRAMO 02
                         if (data.access_DM !== true) { window.location.href = "21_DF_reporte_final.html"; return; }
-                        if (data.fase === "Finalizado_DM") { window.location.href = "21_DM_reporte_final.html"; return; }
 
-                        // AUTOGUARDADO TRAMO 02
-                        userRef.update({ leccion_actual_DM: archivoActual });
+                        // AUTOGUARDADO (Solo si no ha finalizado)
+                        if (data.fase !== "Finalizado_DM") {
+                            userRef.update({ leccion_actual_DM: archivoActual });
+                        }
                         
                         const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
-                        if (data[campoBitacora]) document.getElementById("user-reflection").value = data[campoBitacora];
+                        const textArea = document.getElementById("user-reflection");
+                        const btn = document.getElementById("btn-next");
+
+                        // MODO SOLO LECTURA
+                        if (data[campoBitacora]) {
+                            textArea.value = data[campoBitacora];
+                            textArea.readOnly = true; 
+                            textArea.style.opacity = "0.7"; 
+                            textArea.style.cursor = "not-allowed";
+                            
+                            btn.innerText = "Continuar →";
+                            btn.onclick = function() { window.location.href = siguienteArchivo; };
+                        } else {
+                            // LÓGICA DE GUARDADO
+                            btn.onclick = function() {
+                                const textoUsuario = textArea.value;
+                                if (textoUsuario.trim() === "") { alert("La inmersión requiere registro."); return; }
+
+                                btn.innerText = "Guardando...";
+                                btn.disabled = true;
+
+                                userRef.update({ [campoBitacora]: textoUsuario }).then(() => {
+                                    window.location.href = siguienteArchivo;
+                                });
+                            };
+                        }
                     }
                 });
-
-                document.getElementById("btn-next").onclick = function() {
-                    const textoUsuario = document.getElementById("user-reflection").value;
-                    const btn = document.getElementById("btn-next");
-                    if (textoUsuario.trim() === "") { alert("La inmersión requiere registro."); return; }
-
-                    btn.innerText = "Guardando...";
-                    btn.disabled = true;
-
-                    const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
-                    userRef.update({ [nombreCampo]: textoUsuario }).then(() => {
-                        window.location.href = siguienteArchivo;
-                    });
-                };
             } else { window.location.href = "index.html"; }
         });
     </script>
