@@ -8,7 +8,7 @@
     <style>
         .meta-header {
             width: 100%;
-            margin-bottom: 35px; /* Simetría: 35px hacia la caja gris */
+            margin-bottom: 20px; /* Ajustado a 20px según instrucción */
         }
         .meta-item {
             font-size: 14px;
@@ -27,20 +27,20 @@
             letter-spacing: 0.5px;
         }
         
-        /* CONTROL ESTRICTO DE SIMETRÍA (35px exactos entre elementos) */
+        /* CONTROL DE SIMETRÍA: 35px para el bloque de acción */
         .work-area.card {
-            margin-bottom: 35px !important; /* Simetría: 35px hacia el Timer */
+            margin-bottom: 35px !important; 
         }
         .timer-container {
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            margin-top: 0 !important; /* Evita que se sumen márgenes con la caja gris */
-            margin-bottom: 35px !important; /* Simetría: 35px hacia el Botón */
+            margin-top: 0 !important; 
+            margin-bottom: 35px !important; 
         }
         .btn-mando {
-            margin-top: 0 !important; /* Evita que el botón agregue espacio extra hacia arriba */
+            margin-top: 0 !important; 
         }
 
         .timer-label {
@@ -71,7 +71,7 @@
         .time-box span {
             font-size: 18px;
             font-weight: bold;
-            color: #d93025;
+            color: #333333; /* Color actualizado a gris oscuro */
             font-family: monospace;
             line-height: 1.1;
         }
@@ -139,7 +139,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // CONFIGURACIÓN TIMER PARA 10 DE MAYO 2026 19:00 ECUADOR (-5 GMT)
         const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime();
 
         const timerInterval = setInterval(function() {
@@ -148,7 +147,7 @@
 
             if (distance < 0) {
                 clearInterval(timerInterval);
-                document.getElementById("countdown").innerHTML = "<div style='color:#d93025; font-weight:bold; font-size:16px;'>ESCOTILLA CERRADA</div>";
+                document.getElementById("countdown").innerHTML = "<div style='color:#333; font-weight:bold; font-size:16px;'>ESCOTILLA CERRADA</div>";
                 return; 
             }
 
@@ -168,7 +167,6 @@
             `;
         }, 1000);
 
-        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -187,10 +185,7 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        
                         document.getElementById("nombre-exp").innerText = data.nombre || "Aspirante a hombre profundo";
-                        
-                        // Actualizar fase a Finalizado
                         if (data.fase !== "Finalizado") {
                             userRef.update({ fase: "Finalizado" });
                         }
