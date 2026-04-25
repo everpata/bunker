@@ -27,29 +27,24 @@
             margin-left: 5px;
             letter-spacing: 0.5px;
         }
-        /* Tarjeta oscura para el Timer */
-        .timer-card {
-            background-color: #333333;
-            color: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
+        /* Contenedor del Timer en texto normal */
+        .timer-container {
             width: 100%;
-            text-align: center;
-            margin-bottom: 25px;
-            box-sizing: border-box;
-        }
-        .timer-display {
-            font-size: 24px;
-            font-weight: bold;
-            font-family: monospace;
-            letter-spacing: 2px;
+            text-align: left;
+            margin-top: 25px; /* Espacio simétrico arriba */
+            margin-bottom: 25px; /* Espacio simétrico abajo */
         }
         .timer-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            opacity: 0.7;
-            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
             display: block;
+            font-weight: normal;
+        }
+        .timer-display {
+            font-size: 15px;
+            font-weight: bold;
+            color: #d93025; /* En rojo para denotar la urgencia, pero sin competir como un botón */
         }
     </style>
 </head>
@@ -82,9 +77,9 @@
             </p>
         </div>
 
-        <div class="timer-card">
-            <span class="timer-label">La Inmersión empieza en:</span>
-            <div id="countdown" class="timer-display">Cargando...</div>
+        <div class="timer-container">
+            <span class="timer-label">La escotilla para entrar a la inmersión cierra en:</span>
+            <div id="countdown" class="timer-display">Calculando...</div>
         </div>
 
         <button class="btn-mando" onclick="window.location.href='hub.html'">Avanzar al Tramo 02 →</button>
@@ -108,8 +103,8 @@
 
             if (distance < 0) {
                 clearInterval(timerInterval);
-                document.getElementById("countdown").innerHTML = "OPERACIÓN INICIADA";
-                return; // Detiene el cálculo si ya pasó la fecha
+                document.getElementById("countdown").innerHTML = "ESCOTILLA CERRADA";
+                return; 
             }
 
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -117,11 +112,12 @@
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
+            // Formateo explícito con días, horas, minutos y segundos
             document.getElementById("countdown").innerHTML = 
-                (days < 10 ? "0" + days : days) + ":" + 
-                (hours < 10 ? "0" + hours : hours) + ":" + 
-                (minutes < 10 ? "0" + minutes : minutes) + ":" + 
-                (seconds < 10 ? "0" + seconds : seconds);
+                (days < 10 ? "0" + days : days) + " días, " + 
+                (hours < 10 ? "0" + hours : hours) + " horas, " + 
+                (minutes < 10 ? "0" + minutes : minutes) + " minutos y " + 
+                (seconds < 10 ? "0" + seconds : seconds) + " segundos.";
         }, 1000);
 
         // CONFIGURACIÓN FIREBASE
@@ -144,7 +140,6 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // Cambio del fallback de "Alfa" a "Aspirante a hombre profundo"
                         document.getElementById("nombre-exp").innerText = data.nombre || "Aspirante a hombre profundo";
                         
                         // Actualizar fase a Finalizado
