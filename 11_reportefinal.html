@@ -5,6 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Reporte de Descenso / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos específicos para los nuevos elementos de diseño */
+        .meta-header {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .meta-item {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        /* Etiqueta de estado crítico tipo Hub */
+        .status-chip {
+            background-color: #fce8e6; /* Rojo pálido */
+            color: #d93025; /* Rojo alerta */
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 12px;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+        /* Tarjeta oscura para el Timer */
+        .timer-card {
+            background-color: #333333;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 25px;
+            box-sizing: border-box;
+        }
+        .timer-display {
+            font-size: 24px;
+            font-weight: bold;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+        .timer-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            margin-bottom: 8px;
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -17,15 +65,14 @@
         </div>
         
         <h1 class="title">Fin del Descenso.</h1>
-        <p class="description">Lectura obligatoria antes de continuar.</p>
+
+        <div class="meta-header">
+            <div class="meta-item"><b>Expedicionario:</b> <span id="nombre-exp">Alfa</span></div>
+            <div class="meta-item"><b>Tramos completados:</b> 01 de 03</div>
+            <div class="status-chip">🔴 MÁSCARA ROTA (VULNERABLE)</div>
+        </div>
         
         <div class="work-area card">
-            <p class="text-base" style="margin-bottom: 15px;">
-                <b>Expedicionario:</b> <span id="nombre-exp">Cargando...</span><br>
-                <b>Tramos completados:</b> 01 de 03<br>
-                <b>Estado operativo:</b> <span style="color: #d93025; font-weight: bold;">🔴 MÁSCARA ROTA (VULNERABLE)</span>
-            </p>
-            
             <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
                 <b>DIAGNÓSTICO TÉCNICO:</b> Has completado el Descenso. Tu capacidad para mentirte ha sido neutralizada y tu máscara (el Salvador/Chico Bueno) ha sido fracturada. Sin embargo, te encuentras en la zona de mayor riesgo de la expedición: la exposición total.<br><br>
                 Has despertado al Monje, pero tu Anarquista sigue dormido. Tienes la verdad, pero no tienes el equipo para defenderla en la trinchera.
@@ -40,13 +87,14 @@
             </p>
         </div>
 
-        <p id="countdown-timer" class="indicator" style="color: #d93025; font-weight: bold; margin-bottom: 15px; text-align: center; width: 100%;">
-            La inmersión empieza en: 03:00
-        </p>
+        <div class="timer-card">
+            <span class="timer-label">La Inmersión empieza en:</span>
+            <div id="countdown" class="timer-display">00:00:00:00</div>
+        </div>
 
         <button class="btn-mando" onclick="window.location.href='hub.html'">Avanzar al Tramo 02 →</button>
 
-        <p class="description" style="margin-top: 20px; font-style: italic; text-align: center; font-size: 13px;">
+        <p class="description" style="margin-top: 25px; font-style: italic; text-align: center; font-size: 13px;">
             O conquistas tu densidad en el siguiente tramo, o aceptas ser un turista que se asustó cuando el aire empezó a faltar.
         </p>
     </div>
@@ -56,6 +104,31 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // CONFIGURACIÓN TIMER PARA 10 DE MAYO 19:00 ECUADOR (-5 GMT)
+        const targetDate = new Date("May 10, 2024 19:00:00 GMT-0500").getTime();
+
+        const timerInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerHTML = 
+                (days < 10 ? "0" + days : days) + ":" + 
+                (hours < 10 ? "0" + hours : hours) + ":" + 
+                (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+                (seconds < 10 ? "0" + seconds : seconds);
+
+            if (distance < 0) {
+                clearInterval(timerInterval);
+                document.getElementById("countdown").innerHTML = "OPERACIÓN INICIADA";
+            }
+        }, 1000);
+
+        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -68,42 +141,21 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // TIMER LÓGICA (3 minutos = 180 segundos)
-        let timeLeft = 180;
-        const timerElement = document.getElementById('countdown-timer');
-        const countdown = setInterval(() => {
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                timerElement.innerText = "TIEMPO EXPIRADO. INICIA AHORA.";
-            } else {
-                let minutes = Math.floor(timeLeft / 60);
-                let seconds = timeLeft % 60;
-                timerElement.innerText = `La inmersión empieza en: 0${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                timeLeft--;
-            }
-        }, 1000);
-
-        // LÓGICA DE FIREBASE Y AUTO-GUARDADO DE FASE
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
-                
-                // 1. Obtener datos para poner el nombre
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
                         document.getElementById("nombre-exp").innerText = data.nombre || "Alfa";
                         
-                        // 2. Actualizar el estatus a Finalizado automáticamente
+                        // Actualizar fase a Finalizado
                         if (data.fase !== "Finalizado") {
-                            userRef.update({ fase: "Finalizado" })
-                            .then(() => console.log("Usuario graduado exitosamente."))
-                            .catch((err) => console.error("Error al actualizar fase:", err));
+                            userRef.update({ fase: "Finalizado" });
                         }
                     }
                 });
             } else {
-                // Si no está logueado, expulsarlo al index
                 window.location.href = "index.html";
             }
         });
