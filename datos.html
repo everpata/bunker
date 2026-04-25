@@ -41,7 +41,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. Configuración Deepfall
+        // =======================================================
+        // PUNTO DE ENTRADA AL EMBUDO
+        // =======================================================
+        const primeraLeccion = "01_DF_texto.html"; // Asegúrate de que este nombre coincida con tu primera lección real
+
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -54,7 +58,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 2. Inicializar Teléfono con detección de país
+        // Inicializar Teléfono con detección de país
         const phoneInputField = document.querySelector("#phone");
         const phoneInput = window.intlTelInput(phoneInputField, {
             preferredCountries: ["mx", "es", "co", "ar"],
@@ -68,24 +72,33 @@
             }
         });
 
-        // 3. Centinela
+        // Centinela y Enrutador Inicial
         auth.onAuthStateChanged((user) => { 
-            if (!user) window.location.href = "index.html"; 
+            if (!user) {
+                window.location.href = "index.html"; 
+            } else {
+                // Si el usuario recarga la página pero ya tiene una lección guardada, lo manda a la lección
+                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                    if (doc.exists && doc.data().fase === "Operativo") {
+                        window.location.href = doc.data().leccion_actual || primeraLeccion;
+                    }
+                });
+            }
         });
 
-        // 4. Lógica de Guardado con Captura de Código de País Forzada
+        // Lógica de Guardado
         document.getElementById('btnGuardar').addEventListener('click', () => {
             const user = auth.currentUser;
             const age = document.getElementById('userAge').value;
             const job = document.getElementById('userJob').value;
+            const btn = document.getElementById('btnGuardar');
             
             // CAPTURA INTELIGENTE DEL TELÉFONO
-            let fullPhone = phoneInput.getNumber(); // Intenta el formato estándar (+52...)
+            let fullPhone = phoneInput.getNumber(); 
             
-            // Si el plugin falla o devuelve vacío, armamos el número con el código de la bandera
             if (!fullPhone || !fullPhone.includes('+')) {
-                const dialCode = phoneInput.getSelectedCountryData().dialCode; // saca el código (ej. 52)
-                const localNumber = phoneInputField.value.replace(/\s+/g, ''); // limpia espacios
+                const dialCode = phoneInput.getSelectedCountryData().dialCode; 
+                const localNumber = phoneInputField.value.replace(/\s+/g, ''); 
                 fullPhone = `+${dialCode}${localNumber}`;
             }
 
@@ -94,19 +107,25 @@
                 return; 
             }
 
-            // 5. Actualizar en Firestore (usamos .update para no borrar el nombre guardado en index.html)
+            btn.innerText = "Sincronizando...";
+            btn.disabled = true;
+
+            // Actualizar en Firestore e inyectar en el túnel
             db.collection("usuarios").doc(user.uid).update({
                 edad: age,
                 ocupacion: job,
                 telefono: fullPhone,
-                fase: "Perfil Completado",
+                fase: "Operativo", // Cambiamos de Registrado a Operativo
+                leccion_actual: primeraLeccion, // Le decimos al router dónde debe ir a partir de ahora
                 ultimaSincronizacion: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then(() => { 
-                window.location.href = "mision2.html"; 
+                window.location.href = primeraLeccion; 
             })
             .catch((error) => { 
                 alert("Error de sincronización: " + error.message); 
+                btn.innerText = "Continuar →";
+                btn.disabled = false;
             });
         });
     </script>
