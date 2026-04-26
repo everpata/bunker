@@ -11,12 +11,24 @@
         .victory-img { width: 100%; border-radius: 12px; margin-bottom: 20px; animation: floatIn 1.5s ease forwards; }
         .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; box-sizing: border-box; }
         @keyframes floatIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        #loading-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background: #fff;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
-    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
-        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando estatus operativo...</h2>
-        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con el búnker.</p>
+    <div id="loading-screen">
+        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
@@ -31,7 +43,7 @@
             <p class="text-base">Has asimilado las herramientas del Anarquista. Tu sistema está blindado contra el ruido externo. <b>Estás listo para el ascenso final.</b></p>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='08_DM_reportefinal.html'">Abrir Reporte de Estatus →</button>
+        <button id="btn-continuar" class="btn-mando">Abrir Reporte de Estatus →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -39,38 +51,49 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const archivoActual = "07_DM_exito.html";
+        // =======================================================
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
+        // =======================================================
+        const archivoActual = "07_DM_exito.html";         // GPS: Archivo actual
+        const archivoSiguiente = "08_DM_reportefinal.html"; // Destino al dar clic
+        const archivoExpulsion = "08_DF_reportefinal.html"; // Destino si no es VIP
 
+        // 🔴 ACTUALIZAR: Credenciales de Firebase
         const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const db = firebase.firestore();
+        const auth = firebase.auth(); 
+        const db = firebase.firestore();
 
+        // 1. ASIGNACIÓN DE BOTONES
+        document.getElementById("btn-continuar").addEventListener("click", () => {
+            window.location.href = archivoSiguiente;
+        });
+
+        // 2. MOTOR DE SEGURIDAD VIP Y CIERRE DE TRAMO
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
-                
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
                         
                         if (data.access_DM === true) {
-                            // ES VIP
+                            // ES VIP: MOSTRAR
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
                             
-                            // QUEMAMOS LAS NAVES DEL TRAMO 02
-                            userRef.update({
-                                fase: "Finalizado_DM",
-                                leccion_actual_DM: archivoActual
-                            });
+                            // QUEMAMOS LAS NAVES DEL TRAMO 02 (Si no ha avanzado ya)
+                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) {
+                                userRef.update({
+                                    estado: "Finalizado_DM",
+                                    leccion_actual_DM: archivoActual
+                                }).catch(err => console.log(err));
+                            }
                         } else {
-                            // NO HA PAGADO
-                            document.getElementById("status-text").innerText = "Acceso denegado.";
-                            document.getElementById("sub-text").innerText = "Redirigiendo a tu zona autorizada...";
-                            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+                            window.location.href = archivoExpulsion;
                         }
                     } else { window.location.href = "index.html"; }
-                });
+                }).catch(() => { window.location.href = "index.html"; });
             } else { window.location.href = "index.html"; }
         });
     </script>
