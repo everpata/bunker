@@ -7,7 +7,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
+        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando pase ULTRA-VIP...</h2>
+        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con la cúspide.</p>
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="deepmersion.jpeg"></div>
         <p class="indicator">Reporte / Deepquest</p>
         <div class="progress-container"><div class="progress-fill" style="width: 15%;"></div></div>
@@ -28,48 +33,48 @@
     <script>
         const archivoActual = "02_DQ_bitacora.html";
         const siguienteArchivo = "03_DQ_quiz.html"; 
+        const archivoDeVenta = "21_DM_reporte_final.html";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
-                
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        if (data.access_DQ !== true) { window.location.href = "21_DM_reporte_final.html"; return; }
-                        if (data.fase !== "Finalizado_DQ") { userRef.update({ leccion_actual_DQ: archivoActual }); }
-                        
-                        const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
-                        const textArea = document.getElementById("user-reflection");
-                        const btn = document.getElementById("btn-next");
+                        if (data.access_DQ === true) {
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
 
-                        if (data[campoBitacora]) {
-                            textArea.value = data[campoBitacora];
-                            textArea.readOnly = true; textArea.style.opacity = "0.7"; textArea.style.cursor = "not-allowed";
-                            btn.innerText = "Continuar →";
-                            btn.onclick = function() { window.location.href = siguienteArchivo; };
+                            if (data.fase !== "Finalizado_DQ") { userRef.update({ leccion_actual_DQ: archivoActual }); }
+                            
+                            const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
+                            const textArea = document.getElementById("user-reflection");
+                            const btn = document.getElementById("btn-next");
+
+                            if (data[campoBitacora]) {
+                                textArea.value = data[campoBitacora];
+                                textArea.readOnly = true; textArea.style.opacity = "0.7"; textArea.style.cursor = "not-allowed";
+                                btn.innerText = "Continuar →";
+                                btn.onclick = function() { window.location.href = siguienteArchivo; };
+                            } else {
+                                btn.onclick = function() {
+                                    const textoUsuario = textArea.value;
+                                    if (textoUsuario.trim() === "") { alert("El Rey debe dictar su ley."); return; }
+                                    btn.innerText = "Guardando..."; btn.disabled = true;
+                                    userRef.update({ [campoBitacora]: textoUsuario }).then(() => { window.location.href = siguienteArchivo; });
+                                };
+                            }
                         } else {
-                            btn.onclick = function() {
-                                const textoUsuario = textArea.value;
-                                if (textoUsuario.trim() === "") { alert("El Rey debe dictar su ley."); return; }
-                                btn.innerText = "Guardando..."; btn.disabled = true;
-                                userRef.update({ [campoBitacora]: textoUsuario }).then(() => { window.location.href = siguienteArchivo; });
-                            };
+                            document.getElementById("status-text").innerText = "Acceso denegado.";
+                            document.getElementById("sub-text").innerText = "Redirigiendo a tu estatus operativo...";
+                            setTimeout(() => { window.location.href = archivoDeVenta; }, 1500);
                         }
-                    }
+                    } else { window.location.href = "index.html"; }
                 });
             } else { window.location.href = "index.html"; }
         });
