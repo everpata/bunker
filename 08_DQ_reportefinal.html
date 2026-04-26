@@ -9,7 +9,11 @@
         .meta-header { width: 100%; margin-bottom: 20px; }
         .meta-item { font-size: 14px; margin-bottom: 6px; color: #333; }
         .status-chip { background-color: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; font-size: 12px; margin-left: 5px; letter-spacing: 0.5px; }
-        .work-area.card { margin-bottom: 35px !important; }
+        
+        /* AJUSTE DE ESPACIADO: Eliminado el exceso de margen */
+        .work-area.card { margin-bottom: 20px !important; }
+        .btn-mando { margin-top: 0 !important; }
+        
         .btn-secundario { width: 100%; background: transparent; color: #333; border: 1px solid #ccc; padding: 15px; border-radius: 14px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
         .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
     </style>
@@ -31,7 +35,7 @@
                 <b>DIAGNÓSTICO TÉCNICO:</b> El sistema ha sido purgado y reconfigurado. Posees el conocimiento estructural completo del hombre profundo.
             </p>
             <p class="text-base" style="margin-bottom: 0; font-size: 14px;">
-                <b>SIGUIENTE NIVEL:</b> La teoría terminó. Si deseas un acompañamiento implacable para aplicar estas leyes en tu negocio o vida personal, aplica a la mesa táctica 1 a 1.
+                <b>SIGUIENTE NIVEL:</b> La teoría terminó. Si deseas un acompañamiento implacable para aplicar estas leyes, aplica a la mesa táctica 1 a 1.
             </p>
         </div>
 
@@ -44,17 +48,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
         auth.onAuthStateChanged((user) => {
             if (user) {
