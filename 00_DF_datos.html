@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepfall / Perfil</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
-    <link rel="stylesheet" href="style.css"> <style>
+    <link rel="stylesheet" href="style.css"> 
+    <style>
         .iti { width: 100%; margin-top: 10px; } 
         .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; font-size: 16px !important; width: 100% !important; padding: 12px 0 12px 50px !important; background: transparent !important; }
         .form-area input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; font-family: inherit; margin-bottom: 10px; }
@@ -33,11 +34,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PUNTO DE ENTRADA AL EMBUDO (Siguiente lección)
-        // =======================================================
+        // 🔴 ACTUALIZAR: Archivo de la primera lección del Tramo 01
         const primeraLeccion = "01_DF_texto.html"; 
 
+        // 🔴 ACTUALIZAR: Credenciales de Firebase (Solo si cambias de base de datos)
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -67,10 +67,11 @@
         // Centinela y Enrutador Inicial
         auth.onAuthStateChanged((user) => { 
             if (!user) {
+                // 🔴 ACTUALIZAR: Archivo de inicio de sesión (Expulsión)
                 window.location.href = "index.html"; 
             } else {
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
-                    // Si ya es operativo, lo manda directo sin pedir datos de nuevo
+                    // Si ya es operativo, lo manda directo a su lección guardada
                     if (doc.exists && doc.data().estado === "Operativo") {
                         window.location.href = doc.data().leccion_actual_DF || primeraLeccion;
                     }
@@ -78,7 +79,7 @@
             }
         });
 
-        // Lógica de Guardado
+        // Lógica de Guardado 
         document.getElementById('btnGuardar').addEventListener('click', () => {
             const user = auth.currentUser;
             const age = document.getElementById('userAge').value;
@@ -100,13 +101,13 @@
             btn.innerText = "Sincronizando...";
             btn.disabled = true;
 
-            // Inyectar en Firebase y crear coordenadas
+            // Inyectar en Firebase y establecer variables de estado
             db.collection("usuarios").doc(user.uid).update({
                 edad: age,
                 ocupacion: job,
                 telefono: fullPhone,
-                estado: "Operativo", // <-- Estandarizado a "estado"
-                leccion_actual_DF: primeraLeccion, // <-- Estandarizado a _DF
+                estado: "Operativo", 
+                leccion_actual_DF: primeraLeccion, 
                 ultimaSincronizacion: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then(() => { 
