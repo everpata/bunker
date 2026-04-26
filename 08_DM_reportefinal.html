@@ -3,37 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reporte de Estatus / Deepmersion (T02)</title>
+    <title>Reporte Final / DM</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .meta-header { width: 100%; margin-bottom: 20px; }
         .meta-item { font-size: 14px; margin-bottom: 6px; color: #333; }
-        .status-chip {
-            background-color: #fce8e6; color: #d93025; padding: 4px 8px; border-radius: 4px;
-            display: inline-block; font-weight: bold; font-size: 12px; margin-left: 5px; letter-spacing: 0.5px;
-        }
-        .work-area.card { margin-bottom: 35px !important; }
-        .timer-container { width: 100%; display: flex; flex-direction: column; align-items: flex-start; margin-top: 0 !important; margin-bottom: 35px !important; }
-        .btn-mando { margin-top: 0 !important; }
-        .btn-secundario {
-            width: 100%; background: transparent; color: #333; border: 1px solid #ccc; 
-            padding: 15px; border-radius: 14px; font-size: 14px; font-weight: 500; 
-            cursor: pointer; margin-top: 15px; transition: all 0.3s;
-        }
-        .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
-        .timer-label { font-size: 14px; color: #333; margin-bottom: 10px; display: block; font-weight: normal; }
-        .timer-boxes { display: flex; align-items: center; gap: 6px; }
-        .time-box {
-            background-color: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 10px;
-            text-align: center; display: flex; flex-direction: column; min-width: 48px; box-sizing: border-box;
-        }
-        .time-box span { font-size: 18px; font-weight: bold; color: #333333; font-family: monospace; line-height: 1.1; }
-        .time-box small { font-size: 9px; color: #666; margin-top: 3px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
-        .time-separator { font-size: 18px; font-weight: bold; color: #999; margin-top: -14px; }
+        .status-chip { background-color: #fce8e6; color: #d93025; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; font-size: 12px; margin-left: 5px; }
+        .work-area.card { margin-bottom: 20px !important; } 
+        .timer-container { width: 100%; margin-bottom: 25px !important; }
+        .btn-mando { margin-top: 0 !important; } 
+        .btn-secundario { width: 100%; background: transparent; color: #333; border: 1px solid #ccc; padding: 15px; border-radius: 14px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
+        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Calculando diagnóstico...</h2>
+        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con el búnker.</p>
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="deepmersion.jpeg"></div>
         <p class="indicator">Reporte Operativo</p>
         <h1 class="title">Límite de Inmersión.</h1>
@@ -45,76 +33,44 @@
         </div>
         
         <div class="work-area card">
-            <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
-                <b>DIAGNÓSTICO TÉCNICO:</b> Has dominado la Inmersión. El Anarquista está activo, tienes las herramientas para destruir la mediocridad de tu entorno y proteger tu espacio. Sin embargo, te enfrentas al vacío del poder.<br><br>
-                Destruir lo que no sirve no construye un imperio. Tienes la fuerza, pero te falta la brújula y el trono.
+            <p class="text-base" style="font-size: 14px; margin-bottom: 15px;">
+                <b>DIAGNÓSTICO:</b> Has dominado la Inmersión. El Anarquista está activo, pero te falta la brújula del Rey.
             </p>
-            <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
-                <b>ADVERTENCIA DE SEGURIDAD:</b> Quedarte en este estado te convierte en un rebelde sin causa. Necesitas despertar al Rey para canalizar esta agresividad hacia la construcción de tu Legado.
-            </p>
-            <p class="text-base" style="margin-bottom: 0; font-size: 14px;">
-                <b>ORDEN DE MANDO:</b> Es imperativo iniciar el Deepquest (Tramo 03).
+            <p class="text-base" style="font-size: 14px; margin-bottom: 0;">
+                <b>ORDEN DE MANDO:</b> Es imperativo iniciar el Deepquest (Tramo 03) para canalizar tu poder.
             </p>
         </div>
 
         <div class="timer-container">
-            <span class="timer-label">La bóveda del Tramo 03 cierra en:</span>
-            <div id="countdown" class="timer-boxes">Calculando...</div>
+            <p style="font-size: 13px; color: #878787; margin-bottom: 10px;">La bóveda del Deepquest cierra en:</p>
+            <div id="countdown" style="font-weight: bold; color: #333; font-family: monospace; font-size: 18px;">Calculando...</div>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='https://TU_LINK_DE_PAGO_DQ_AQUI.com'">Aplicar al Deepquest (Tramo 03) →</button>
-
+        <button class="btn-mando" onclick="window.location.href='https://TU_LINK_DE_PAGO_DQ.com'">Avanzar al Deepquest →</button>
         <button class="btn-secundario" onclick="window.location.href='hub_dm.html'">← Dar mantenimiento al Anarquista</button>
-
-        <p class="description" style="margin-top: 25px; font-style: italic; text-align: center; font-size: 13px;">
-            El búnker te hizo fuerte, pero la superficie te exige ser un Rey. No te quedes a la mitad.
-        </p>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-
+    
     <script>
+        // Contador visual
         const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime();
-
-        const timerInterval = setInterval(function() {
+        setInterval(function() {
             const now = new Date().getTime();
             const distance = targetDate - now;
-
-            if (distance < 0) {
-                clearInterval(timerInterval);
-                document.getElementById("countdown").innerHTML = "<div style='color:#333; font-weight:bold; font-size:16px;'>BÓVEDA CERRADA</div>";
-                return; 
-            }
-
+            if (distance < 0) { document.getElementById("countdown").innerHTML = "BÓVEDA CERRADA"; return; }
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById("countdown").innerHTML = `
-                <div class="time-box"><span>${days < 10 ? '0' + days : days}</span><small>DÍAS</small></div>
-                <div class="time-separator">:</div>
-                <div class="time-box"><span>${hours < 10 ? '0' + hours : hours}</span><small>HRS</small></div>
-                <div class="time-separator">:</div>
-                <div class="time-box"><span>${minutes < 10 ? '0' + minutes : minutes}</span><small>MIN</small></div>
-                <div class="time-separator">:</div>
-                <div class="time-box"><span>${seconds < 10 ? '0' + seconds : seconds}</span><small>SEG</small></div>
-            `;
+            document.getElementById("countdown").innerHTML = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
         }, 1000);
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -123,20 +79,24 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        if (data.access_DQ === true) {
-                            window.location.href = "index.html";
-                            return; 
+                        // Si ya pagó el Tramo 03, al router principal.
+                        if (data.access_DQ === true) { window.location.href = "index.html"; return; }
+                        
+                        // Si SÍ pagó la Deepmersion, le mostramos el reporte.
+                        if (data.access_DM === true) {
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
+                            document.getElementById("nombre-exp").innerText = data.nombre || "Expedicionario";
+                            if (data.fase !== "Finalizado_DM") { userRef.update({ fase: "Finalizado_DM" }); }
+                        } else {
+                            // No ha pagado ni siquiera la DM
+                            document.getElementById("status-text").innerText = "Acceso denegado.";
+                            document.getElementById("sub-text").innerText = "Redirigiendo a tu zona autorizada...";
+                            setTimeout(() => { window.location.href = "index.html"; }, 1500);
                         }
-
-                        document.getElementById("nombre-exp").innerText = data.nombre || "Aspirante a hombre profundo";
-                        if (data.fase !== "Finalizado_DM") {
-                            userRef.update({ fase: "Finalizado_DM" });
-                        }
-                    }
+                    } else { window.location.href = "index.html"; }
                 });
-            } else {
-                window.location.href = "index.html";
-            }
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
