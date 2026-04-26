@@ -20,7 +20,11 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DF.png"></div>
         <p class="indicator">Tramo 01 Completado</p>
         
@@ -32,7 +36,7 @@
             <p class="text-base">Has asimilado los protocolos fundamentales. Tu mente ahora opera en una frecuencia distinta. <b>Estás listo para el siguiente tramo.</b></p>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='08_DM_reportefinal.html'">Abrir Reporte de Descenso →</button>
+        <button id="btn-continuar" class="btn-mando">Abrir Reporte de Descenso →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -41,10 +45,13 @@
 
     <script>
         // =======================================================
-        // COORDENADA ACTUAL
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
         // =======================================================
-        const archivoActual = "07_DF_exito.html";
+        const archivoActual = "07_DF_exito.html";         // GPS: Archivo actual
+        const archivoSiguiente = "08_DF_reportefinal.html"; // Destino al dar clic (Carta de Ventas)
+        const archivoExpulsion = "index.html";            // Destino si detecta intrusos
 
+        // 🔴 ACTUALIZAR: Credenciales de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -57,21 +64,39 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // 1. ASIGNACIÓN DEL BOTÓN CONTINUAR
+        document.getElementById("btn-continuar").addEventListener("click", () => {
+            window.location.href = archivoSiguiente;
+        });
+
+        // 2. MOTOR DE SEGURIDAD Y EJECUCIÓN DEL CERROJO
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
                 
-                // EL CEROJO: Quema las naves inmediatamente
-                userRef.update({
-                    fase: "Finalizado",
-                    leccion_actual: archivoActual
-                }).then(() => {
-                    console.log("Expedicionario graduado. Naves quemadas.");
-                }).catch((error) => {
-                    console.error("Error al ejecutar cierre:", error);
-                });
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+
+                        // Autorizado: Quitar escudo de carga (Como es la página de victoria, siempre se muestra si está logueado)
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+
+                        // EL CERROJO: Quema las naves solo si no tiene un rango superior
+                        if (!data.access_DM && !data.access_DQ && data.estado !== "Finalizado_DF") {
+                            userRef.update({
+                                estado: "Finalizado_DF",
+                                leccion_actual_DF: archivoActual
+                            }).then(() => {
+                                console.log("Expedicionario graduado. Naves quemadas. Rango: Finalizado_DF");
+                            }).catch((error) => console.error("Error al ejecutar cierre:", error));
+                        }
+                    } else {
+                        window.location.href = archivoExpulsion;
+                    }
+                }).catch(() => { window.location.href = archivoExpulsion; });
             } else {
-                window.location.href = "index.html";
+                window.location.href = archivoExpulsion;
             }
         });
     </script>
