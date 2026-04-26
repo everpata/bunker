@@ -5,17 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quiz / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        #loading-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background: #fff;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
+    </style>
 </head>
 <body>
-    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
-        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando pase VIP...</h2>
-        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con el búnker.</p>
+    <div id="loading-screen">
+        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DM.png"></div>
         <p class="indicator">Sincronización / DM</p>
         <div class="progress-container"><div class="progress-fill" style="width: 30%;"></div></div>
+        
         <h1 class="title">Evaluación.</h1>
         <p id="quiz-desc" class="description">¿Qué parte de tu vieja identidad pesa más?</p>
         
@@ -25,6 +39,7 @@
         </div>
         
         <button id="btn-next" class="btn-mando">Sincronizar →</button>
+        <button id="btn-hub" class="btn-mando" style="display: none; background: transparent; color: #878787; border: 1px solid #eaeaea; margin-top: 15px;">Regresar al Hub</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -32,13 +47,24 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // =======================================================
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
+        // =======================================================
         const archivoActual = "03_DM_quiz.html";
-        const siguienteArchivo = "04_DM_imagen.html"; 
+        const archivoSiguiente = "04_DM_imagen.html";
+        const archivoHub = "09_DM_hub.html";
+        const archivoExpulsion = "08_DF_reportefinal.html";
 
+        // 🔴 ACTUALIZAR: Credenciales de Firebase
         const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const db = firebase.firestore();
+        const auth = firebase.auth(); 
+        const db = firebase.firestore();
 
+        // 1. MOTORES DE NAVEGACIÓN
+        document.getElementById("btn-hub").addEventListener("click", () => { window.location.href = archivoHub; });
+
+        // 2. MOTOR DE SEGURIDAD VIP
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -47,39 +73,50 @@
                         const data = doc.data();
                         
                         if (data.access_DM === true) {
-                            // ES VIP: MOSTRAR CONTENIDO
+                            // ES VIP: MOSTRAR
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            if (data.fase !== "Finalizado_DM") { userRef.update({ leccion_actual_DM: archivoActual }); }
+                            // GPS Y HABILITACIÓN DE HUB
+                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) { 
+                                userRef.update({ leccion_actual_DM: archivoActual }); 
+                            }
+                            if (data.estado === "Finalizado_DM" || data.estado === "Finalizado_DQ" || data.access_DQ === true) {
+                                document.getElementById("btn-hub").style.display = "block";
+                            }
                             
+                            // LÓGICA DE QUIZ
                             const campoQuiz = "quiz_" + archivoActual.replace(/\./g, "_");
                             const botones = document.querySelectorAll('.option-btn');
                             const btnSiguiente = document.getElementById("btn-next");
 
+                            // Si ya respondió, bloquea edición
                             if (data[campoQuiz] && Array.isArray(data[campoQuiz])) {
                                 botones.forEach(btn => {
                                     if (data[campoQuiz].includes(btn.innerText.trim())) btn.classList.add('selected');
                                     btn.style.pointerEvents = "none";
                                 });
                                 btnSiguiente.innerText = "Continuar →";
-                                btnSiguiente.onclick = function() { window.location.href = siguienteArchivo; };
+                                btnSiguiente.addEventListener("click", () => { window.location.href = archivoSiguiente; });
                             } else {
-                                btnSiguiente.onclick = function() {
+                                // Modo activo: Guardar
+                                btnSiguiente.addEventListener("click", () => {
                                     const seleccionados = Array.from(document.querySelectorAll('.option-btn.selected')).map(btn => btn.innerText.trim());
                                     if (seleccionados.length === 0) { alert("Selecciona una opción."); return; }
-                                    btnSiguiente.innerText = "Sincronizando..."; btnSiguiente.disabled = true;
-                                    userRef.update({ [campoQuiz]: seleccionados }).then(() => { window.location.href = siguienteArchivo; });
-                                };
+                                    
+                                    btnSiguiente.innerText = "Sincronizando..."; 
+                                    btnSiguiente.disabled = true;
+                                    
+                                    userRef.update({ [campoQuiz]: seleccionados }).then(() => { 
+                                        window.location.href = archivoSiguiente; 
+                                    }).catch(err => { alert("Error: " + err.message); btnSiguiente.disabled = false; });
+                                });
                             }
                         } else {
-                            // NO HA PAGADO
-                            document.getElementById("status-text").innerText = "Acceso denegado.";
-                            document.getElementById("sub-text").innerText = "Redirigiendo a tu zona autorizada...";
-                            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+                            window.location.href = archivoExpulsion;
                         }
                     } else { window.location.href = "index.html"; }
-                });
+                }).catch(() => { window.location.href = "index.html"; });
             } else { window.location.href = "index.html"; }
         });
     </script>
