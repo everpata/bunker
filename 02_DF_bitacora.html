@@ -35,7 +35,7 @@
         // CONFIGURACIÓN DE COORDENADAS
         // =======================================================
         const archivoActual = "02_DF_bitacora.html";
-        const siguienteArchivo = "03_DF_video.html";
+        const siguienteArchivo = "03_DF_quiz.html";
 
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
@@ -58,7 +58,7 @@
                     if (doc.exists) {
                         const data = doc.data();
                         if (data.fase === "Finalizado") {
-                            window.location.href = "21_DF_reporte_final.html";
+                            window.location.href = "08_DF_reportefinal.html";
                         } else {
                             userRef.update({ leccion_actual: archivoActual });
                             
