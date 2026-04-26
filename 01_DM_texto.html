@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Texto / Deepmersion (Tramo 02)</title>
+    <title>Texto / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="deepmersion.jpeg"></div>
         
         <p class="indicator">Lección 01 / Inmersión</p>
@@ -31,9 +31,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // =======================================================
-        // COORDENADA EXACTA DE LA DEEPMERSION
-        // =======================================================
         const archivoActual = "01_DM_texto.html";
 
         const firebaseConfig = {
@@ -55,23 +52,21 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // CENTINELA 1: Si NO tiene la llave maestra (No ha pagado), patada al Tramo 01
                         if (data.access_DM !== true) {
                             window.location.href = "21_DF_reporte_final.html"; 
                         } 
-                        // CENTINELA 2: Si ya terminó la DM, patada al reporte final de la DM
                         else if (data.fase === "Finalizado_DM") {
-                            window.location.href = "21_DM_reporte_final.html"; // Archivo que crearemos luego
+                            window.location.href = "21_DM_reporte_final.html"; 
                         } 
-                        // AUTOGUARDADO: Fija sus coordenadas en la variable exclusiva de la DM
                         else {
+                            // ES VIP: LEVANTAMOS EL TELÓN Y GUARDAMOS
+                            document.getElementById("bunker-content").style.display = "flex";
                             userRef.update({ leccion_actual_DM: archivoActual })
                                 .catch((err) => console.log("Guardando coordenadas DM...", err));
                         }
                     }
                 });
             } else {
-                // CENTINELA BASE: Si no está logueado, lo manda al Login
                 window.location.href = "index.html";
             }
         });
