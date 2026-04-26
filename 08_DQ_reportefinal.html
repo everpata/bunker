@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reporte Definitivo / Deepquest</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .meta-header { width: 100%; margin-bottom: 20px; }
+        .meta-item { font-size: 14px; margin-bottom: 6px; color: #333; }
+        .status-chip { background-color: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; font-size: 12px; margin-left: 5px; letter-spacing: 0.5px; }
+        .work-area.card { margin-bottom: 35px !important; }
+        .btn-secundario { width: 100%; background: transparent; color: #333; border: 1px solid #ccc; padding: 15px; border-radius: 14px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
+        .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        <p class="indicator">Reporte Definitivo</p>
+        <h1 class="title">Estatus: Rey.</h1>
+
+        <div class="meta-header">
+            <div class="meta-item"><b>Expedicionario:</b> <span id="nombre-exp">Cargando...</span></div>
+            <div class="meta-item"><b>Tramos completados:</b> 03 de 03</div>
+            <div class="meta-item"><b>Estado operativo:</b><span class="status-chip">SISTEMA BLINDADO (DOMINIO)</span></div>
+        </div>
+        
+        <div class="work-area card">
+            <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
+                <b>DIAGNÓSTICO TÉCNICO:</b> El sistema ha sido purgado y reconfigurado. Posees el conocimiento estructural completo del hombre profundo.
+            </p>
+            <p class="text-base" style="margin-bottom: 0; font-size: 14px;">
+                <b>SIGUIENTE NIVEL:</b> La teoría terminó. Si deseas un acompañamiento implacable para aplicar estas leyes en tu negocio o vida personal, aplica a la mesa táctica 1 a 1.
+            </p>
+        </div>
+
+        <button class="btn-mando" onclick="window.location.href='https://TU_LINK_DE_MENTORIA_AQUI.com'">Aplicar a Mentoría 1 a 1 →</button>
+        <button class="btn-secundario" onclick="window.location.href='hub_dq.html'">← Volver a repasar el Deepquest</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById("nombre-exp").innerText = data.nombre || "Hombre profundo";
+                        if (data.fase !== "Finalizado_DQ") { userRef.update({ fase: "Finalizado_DQ" }); }
+                    }
+                });
+            } else { window.location.href = "index.html"; }
+        });
+    </script>
+</body>
+</html>
