@@ -5,11 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Texto / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilo local para asegurar el centrado perfecto del logo de carga */
+        #loading-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background: #fff;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
+    </style>
 </head>
 <body>
-    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
-        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando pase VIP...</h2>
-        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con la base de datos.</p>
+    <div id="loading-screen">
+        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
@@ -24,7 +38,9 @@
             <p class="text-base">Aquí comienza la verdadera reconstrucción operativa.</p>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='02_DM_bitacora.html'">Continuar →</button>
+        <button id="btn-continuar" class="btn-mando">Continuar →</button>
+        
+        <button id="btn-hub" class="btn-mando" style="display: none; background: transparent; color: #878787; border: 1px solid #eaeaea; margin-top: 15px;">Regresar al Hub</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -32,37 +48,64 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const archivoActual = "01_DM_texto.html";
-        
-        // EL NOMBRE EXACTO DEL ARCHIVO AL QUE LO VAMOS A PATEAR
-        const archivoDeVenta = "08_DM_reportefinal.html"; 
+        // =======================================================
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
+        // =======================================================
+        const archivoActual = "01_DM_texto.html";         // GPS: Archivo actual
+        const archivoSiguiente = "02_DM_bitacora.html";   // Destino al dar clic en Continuar
+        const archivoHub = "09_DM_hub.html";              // Destino del Hub
+        const archivoExpulsion = "08_DF_reportefinal.html"; // Destino si rechaza el pase VIP
 
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        // 🔴 ACTUALIZAR: Credenciales de Firebase
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // 1. ASIGNACIÓN DE BOTONES
+        document.getElementById("btn-continuar").addEventListener("click", () => {
+            window.location.href = archivoSiguiente;
+        });
+        document.getElementById("btn-hub").addEventListener("click", () => {
+            window.location.href = archivoHub;
+        });
+
+        // 2. MOTOR DE SEGURIDAD VIP
         auth.onAuthStateChanged((user) => {
             if (user) {
-                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // SI ES VIP
+                        // VALIDACIÓN VIP: ¿Tiene el pase comprado de la DM?
                         if (data.access_DM === true) {
+                            
+                            // Autorizado: Quitar escudo de carga (Solo el logo parpadeante desaparece)
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
-                            db.collection("usuarios").doc(user.uid).update({ leccion_actual_DM: archivoActual });
-                        } 
-                        // SI NO HA PAGADO
-                        else {
-                            document.getElementById("status-text").innerText = "Acceso denegado.";
-                            document.getElementById("sub-text").innerText = `Redirigiendo a ${archivoDeVenta}...`;
-                            
-                            // Lo pateamos después de 1 segundo para que alcances a leer el mensaje
-                            setTimeout(() => {
-                                window.location.href = archivoDeVenta; 
-                            }, 1500);
+
+                            // Revelar Botón Fantasma si ya terminó este tramo o superiores
+                            if (data.estado === "Finalizado_DM" || data.estado === "Finalizado_DQ" || data.access_DQ === true) {
+                                document.getElementById("btn-hub").style.display = "block";
+                            }
+
+                            // Autoguardado GPS (Solo si es su primera vez)
+                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) {
+                                userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
+                            }
+
+                        } else {
+                            // Intruso detectado: Expulsión inmediata y silenciosa
+                            // No ponemos textos de "error", simplemente lo sacamos.
+                            window.location.href = archivoExpulsion; 
                         }
                     } else {
                         window.location.href = "index.html";
