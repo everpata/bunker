@@ -11,12 +11,24 @@
         .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
         .lesson-info b { display: block; font-size: 14px; margin-bottom: 4px; }
         .lesson-info span { font-size: 12px; color: #878787; }
+        
+        #loading-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background: #fff;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
-    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
-        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando pase VIP...</h2>
-        <p id="sub-text" style="font-size: 14px; color: #878787;">Cargando centro de mando.</p>
+    <div id="loading-screen">
+        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
     <div class="container" id="bunker-content" style="display: none; justify-content: flex-start; padding-top: 40px; overflow-y: auto;">
@@ -35,34 +47,66 @@
             <a href="03_DM_quiz.html" class="lesson-card">
                 <div class="lesson-info"><b>03. Sincronización</b><span>Evaluación de peso</span></div>
             </a>
-        </div>
+            </div>
 
-        <button class="btn-mando" onclick="window.location.href='08_DM_reportefinal.html'" style="margin-top: 30px; background: transparent; color: #333; border: 1px solid #333;">← Volver al Reporte de Estatus</button>
+        <button id="btn-retorno" class="btn-mando" style="margin-top: 30px; background: transparent; color: #333; border: 1px solid #333;">← Volver al Reporte de Estatus</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const db = firebase.firestore();
+        // =======================================================
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
+        // =======================================================
+        const archivoRetorno = "08_DM_reportefinal.html"; 
+        const archivoExpulsion = "index.html"; 
 
+        // 🔴 ACTUALIZAR: Credenciales de Firebase
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(); 
+        const db = firebase.firestore();
+
+        // 1. ASIGNACIÓN DE BOTONES
+        document.getElementById("btn-retorno").addEventListener("click", () => {
+            window.location.href = archivoRetorno;
+        });
+
+        // 2. MOTOR DE SEGURIDAD VIP
         auth.onAuthStateChanged((user) => {
             if (user) {
-                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
                     if (doc.exists) {
-                        if (doc.data().access_DM === true) {
+                        const data = doc.data();
+                        
+                        // VALIDACIÓN VIP: Solo entra si tiene acceso a la DM
+                        if (data.access_DM === true) {
+                            // Autorizado: Retirar escudo de carga
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
                         } else {
-                            document.getElementById("status-text").innerText = "Acceso denegado.";
-                            document.getElementById("sub-text").innerText = "Redirigiendo a tu zona autorizada...";
-                            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+                            // Intruso detectado: Expulsión silenciosa
+                            window.location.href = archivoExpulsion;
                         }
-                    } else { window.location.href = "index.html"; }
+                    } else {
+                        window.location.href = archivoExpulsion;
+                    }
+                }).catch(() => {
+                    window.location.href = archivoExpulsion;
                 });
-            } else { window.location.href = "index.html"; }
+            } else {
+                window.location.href = archivoExpulsion;
+            }
         });
     </script>
 </body>
