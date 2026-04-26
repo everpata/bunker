@@ -13,12 +13,12 @@
         .timer-container { width: 100%; margin-bottom: 25px !important; }
         .btn-mando { margin-top: 0 !important; } 
         .btn-secundario { width: 100%; background: transparent; color: #333; border: 1px solid #ccc; padding: 15px; border-radius: 14px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 15px; }
+        #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: absolute; top: 0; left: 0; z-index: 9999; }
     </style>
 </head>
 <body>
-    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
-        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Calculando diagnóstico...</h2>
-        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con el búnker.</p>
+    <div id="loading-screen">
+        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
@@ -46,8 +46,8 @@
             <div id="countdown" style="font-weight: bold; color: #333; font-family: monospace; font-size: 18px;">Calculando...</div>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='https://TU_LINK_DE_PAGO_DQ.com'">Avanzar al Deepquest →</button>
-        <button class="btn-secundario" onclick="window.location.href='09_DM_hub.html'">← Dar mantenimiento al Anarquista</button>
+        <button id="btn-comprar" class="btn-mando">Avanzar al Deepquest →</button>
+        <button id="btn-hub" class="btn-secundario">← Dar mantenimiento al Anarquista</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -55,12 +55,27 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     
     <script>
-        // Contador visual
+        // =======================================================
+        // 🔴 ACTUALIZAR: PANEL DE CONTROL
+        // =======================================================
+        const linkDePago = "https://TU_LINK_DE_PAGO_DQ.com";
+        const archivoHub = "09_DM_hub.html";
+        const archivoExpulsion = "index.html";
         const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime();
-        setInterval(function() {
+
+        // 1. ASIGNACIÓN DE BOTONES
+        document.getElementById("btn-comprar").addEventListener("click", () => { window.location.href = linkDePago; });
+        document.getElementById("btn-hub").addEventListener("click", () => { window.location.href = archivoHub; });
+
+        // 2. TEMPORIZADOR
+        const timerInterval = setInterval(function() {
             const now = new Date().getTime();
             const distance = targetDate - now;
-            if (distance < 0) { document.getElementById("countdown").innerHTML = "BÓVEDA CERRADA"; return; }
+            if (distance < 0) { 
+                clearInterval(timerInterval); 
+                document.getElementById("countdown").innerHTML = "BÓVEDA CERRADA"; 
+                return; 
+            }
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -68,6 +83,7 @@
             document.getElementById("countdown").innerHTML = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
         }, 1000);
 
+        // 3. MOTOR DE SEGURIDAD
         const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
@@ -80,23 +96,20 @@
                         const data = doc.data();
                         
                         // Si ya pagó el Tramo 03, al router principal.
-                        if (data.access_DQ === true) { window.location.href = "index.html"; return; }
+                        if (data.access_DQ === true) { window.location.href = archivoExpulsion; return; }
                         
-                        // Si SÍ pagó la Deepmersion, le mostramos el reporte.
+                        // Si es VIP de DM, mostramos reporte
                         if (data.access_DM === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
                             document.getElementById("nombre-exp").innerText = data.nombre || "Expedicionario";
-                            if (data.fase !== "Finalizado_DM") { userRef.update({ fase: "Finalizado_DM" }); }
+                            if (data.estado !== "Finalizado_DM") { userRef.update({ estado: "Finalizado_DM" }); }
                         } else {
-                            // No ha pagado ni siquiera la DM
-                            document.getElementById("status-text").innerText = "Acceso denegado.";
-                            document.getElementById("sub-text").innerText = "Redirigiendo a tu zona autorizada...";
-                            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+                            window.location.href = archivoExpulsion;
                         }
-                    } else { window.location.href = "index.html"; }
-                });
-            } else { window.location.href = "index.html"; }
+                    } else { window.location.href = archivoExpulsion; }
+                }).catch(() => { window.location.href = archivoExpulsion; });
+            } else { window.location.href = archivoExpulsion; }
         });
     </script>
 </body>
