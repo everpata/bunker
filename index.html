@@ -1,49 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Deepmersion / Acceso</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; max-width: 460px; padding: 0 45px; display: flex; flex-direction: column; align-items: flex-start; }
-        .logo { margin: 0 0 30px -15px; }
-        .logo img { height: 60px; width: auto; display: block; }
-        .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 12px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .title { font-size: 30px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; }
-        .description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; }
-        .form-area { width: 100%; display: flex; flex-direction: column; }
-        input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; font-family: inherit; margin-bottom: 5px; }
-        input:focus { border-bottom: 1px solid #333333; }
-        .btn-mando { width: 100%; background: #333333; color: #ffffff; border: none; padding: 20px; border-radius: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 30px; }
-        .link-toggle { font-size: 13px; color: #878787; text-decoration: none; align-self: center; margin-top: 24px; cursor: pointer; background: none; border: none; font-family: inherit; width: 100%; text-align: center; }
-        .link-toggle b { color: #333333; }
-        @media (max-width: 480px) { .logo img { height: 45px; } .title { font-size: 26px; } }
-    </style>
-</head>
-<body>
-    <div class="container" id="main-content">
-        <div class="logo"><img src="DQ.png" alt="logo"></div>
-        <p id="auth-indicator" class="indicator">Acceso / Registro</p>
-        <h1 id="auth-title" class="title">Iniciar expedición.</h1>
-        <p id="auth-desc" class="description">Crea tus credenciales de acceso para entrar al búnker.</p>
-        
-        <div class="form-area">
-            <input type="text" id="userName" placeholder="Nombre completo">
-            <input type="email" id="userEmail" placeholder="Correo electrónico">
-            <input type="password" id="userPass" placeholder="Contraseña">
-        </div>
-
-        <button id="btnAuth" class="btn-mando">Crear cuenta &#8594;</button>
-        <button id="toggle-auth" class="link-toggle">¿Ya tienes cuenta? <b>Inicia sesión</b></button>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-
-    <script>
+<script>
+        // 🔴 ACTUALIZAR: Tus credenciales de Firebase (si cambian en el futuro)
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -66,26 +22,31 @@
                         
                         // FILTRO 1: ULTRA-VIP (Tramo 03 pagado)
                         if (data.access_DQ === true) {
+                            // 🔴 ACTUALIZAR: Si tu Hub del DQ o primera lección cambia
                             window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html"; 
                         }
-                        // FILTRO 2: BLOQUEO TRAMO 02 (Terminó DM, se estrella contra el reporte rojo)
-                        else if (data.fase === "Finalizado_DM") {
+                        // FILTRO 2: BLOQUEO TRAMO 02 (Terminó DM, se estrella contra su reporte)
+                        else if (data.estado === "Finalizado_DM") {
+                            // 🔴 ACTUALIZAR: Ruta al reporte donde se vende el DQ
                             window.location.href = "08_DM_reportefinal.html"; 
                         }
                         // FILTRO 3: VIP (Tramo 02 pagado, sigue operando)
                         else if (data.access_DM === true) {
+                            // 🔴 ACTUALIZAR: Si tu Hub de DM o primera lección cambia
                             window.location.href = data.leccion_actual_DM || "01_DM_texto.html"; 
                         }
-                        // FILTRO 4: BLOQUEO TRAMO 01 (Terminó DF, se estrella contra el reporte rojo)
-                        else if (data.fase === "Finalizado") {
+                        // FILTRO 4: BLOQUEO TRAMO 01 (Terminó DF, se estrella contra su reporte)
+                        else if (data.estado === "Finalizado_DF") { 
+                            // 🔴 ACTUALIZAR: Ruta al reporte donde se vende la DM
                             window.location.href = "08_DF_reportefinal.html"; 
                         } 
                         // FILTRO 5: ENTRENAMIENTO BÁSICO (Tramo 01)
-                        else if (data.leccion_actual) {
-                            window.location.href = data.leccion_actual;
+                        else if (data.leccion_actual_DF) { 
+                            window.location.href = data.leccion_actual_DF;
                         } 
                         // FILTRO 6: NUEVO INGRESO
                         else {
+                            // 🔴 ACTUALIZAR: Ruta al formulario de datos operativos
                             window.location.href = "00_DF_datos.html"; 
                         }
                     } else {
@@ -95,6 +56,7 @@
             }
         });
 
+        // Lógica de interfaz (botones)
         document.getElementById('toggle-auth').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             const nameInput = document.getElementById('userName');
@@ -132,12 +94,10 @@
                 auth.createUserWithEmailAndPassword(email, pass)
                     .then((res) => {
                         return db.collection("usuarios").doc(res.user.uid).set({
-                            nombre: name, email: email, fase: "Registrado"
+                            nombre: name, email: email, estado: "Registrado"
                         });
                     })
                     .catch(err => alert("Error: " + err.message));
             }
         });
     </script>
-</body>
-</html>
