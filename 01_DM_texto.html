@@ -7,14 +7,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
+        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando pase VIP...</h2>
+        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con la base de datos.</p>
+    </div>
+
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="deepmersion.jpeg"></div>
-        
         <p class="indicator">Lección 01 / Inmersión</p>
-        
-        <div class="progress-container">
-            <div class="progress-fill" style="width: 5%;"></div>
-        </div>
+        <div class="progress-container"><div class="progress-fill" style="width: 5%;"></div></div>
         
         <h1 class="title">El Anarquista.</h1>
         <p class="description">Bienvenido al Tramo 02. La máscara se ha roto.</p>
@@ -23,7 +24,7 @@
             <p class="text-base">Aquí comienza la verdadera reconstrucción operativa.</p>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='02_DM_video.html'">Continuar →</button>
+        <button class="btn-mando" onclick="window.location.href='02_DM_bitacora.html'">Continuar →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -32,40 +33,41 @@
 
     <script>
         const archivoActual = "01_DM_texto.html";
+        
+        // EL NOMBRE EXACTO DEL ARCHIVO AL QUE LO VAMOS A PATEAR
+        const archivoDeVenta = "21_DF_reporte_final.html"; 
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                const userRef = db.collection("usuarios").doc(user.uid);
-                userRef.get().then((doc) => {
+                db.collection("usuarios").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        if (data.access_DM !== true) {
-                            window.location.href = "21_DF_reporte_final.html"; 
-                        } 
-                        else if (data.fase === "Finalizado_DM") {
-                            window.location.href = "21_DM_reporte_final.html"; 
-                        } 
-                        else {
-                            // ES VIP: LEVANTAMOS EL TELÓN Y GUARDAMOS
+                        // SI ES VIP
+                        if (data.access_DM === true) {
+                            document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
-                            userRef.update({ leccion_actual_DM: archivoActual })
-                                .catch((err) => console.log("Guardando coordenadas DM...", err));
+                            db.collection("usuarios").doc(user.uid).update({ leccion_actual_DM: archivoActual });
+                        } 
+                        // SI NO HA PAGADO
+                        else {
+                            document.getElementById("status-text").innerText = "Acceso denegado.";
+                            document.getElementById("sub-text").innerText = `Redirigiendo a ${archivoDeVenta}...`;
+                            
+                            // Lo pateamos después de 1 segundo para que alcances a leer el mensaje
+                            setTimeout(() => {
+                                window.location.href = archivoDeVenta; 
+                            }, 1500);
                         }
+                    } else {
+                        window.location.href = "index.html";
                     }
-                });
+                }).catch(() => { window.location.href = "index.html"; });
             } else {
                 window.location.href = "index.html";
             }
