@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Texto / Deepquest (T03)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        <p class="indicator">Lección 01 / Deepquest</p>
+        <div class="progress-container"><div class="progress-fill" style="width: 5%;"></div></div>
+        
+        <h1 class="title">El Rey.</h1>
+        <p class="description">Bienvenido a la cúspide. La construcción comienza.</p>
+        
+        <div class="work-area card">
+            <p class="text-base">Aquí no hay teorías, solo ejecución y dominio de tu entorno.</p>
+        </div>
+
+        <button class="btn-mando" onclick="window.location.href='02_DQ_bitacora.html'">Continuar →</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const archivoActual = "01_DQ_texto.html";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        
+                        // CENTINELAS TRAMO 03
+                        if (data.access_DQ !== true) { window.location.href = "21_DM_reporte_final.html"; } 
+                        else if (data.fase === "Finalizado_DQ") { window.location.href = "21_DQ_reporte_final.html"; } 
+                        else {
+                            userRef.update({ leccion_actual_DQ: archivoActual }).catch((err) => console.log(err));
+                        }
+                    }
+                });
+            } else { window.location.href = "index.html"; }
+        });
+    </script>
+</body>
+</html>
