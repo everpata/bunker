@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DF.png"></div>
         
         <p class="indicator">Reporte</p>
@@ -32,11 +36,14 @@
 
     <script>
         // =======================================================
-        // CONFIGURACIÓN DE COORDENADAS
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
         // =======================================================
-        const archivoActual = "02_DF_bitacora.html";
-        const siguienteArchivo = "03_DF_quiz.html";
+        const archivoActual = "02_DF_bitacora.html";      // GPS: Archivo actual
+        const archivoSiguiente = "03_DF_quiz.html";       // Destino al guardar
+        const archivoReporte = "08_DF_reportefinal.html"; // Destino si choca contra el final
+        const archivoExpulsion = "index.html";            // Destino si detecta intrusos
 
+        // 🔴 ACTUALIZAR: Credenciales de Firebase (Solo si cambias de base de datos)
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -53,54 +60,67 @@
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
                 
-                // 1. RASTREO DE POSICIÓN AL CARGAR
+                // 1. RASTREO DE POSICIÓN Y VALIDACIÓN DE ACCESO
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        if (data.fase === "Finalizado") {
-                            window.location.href = "08_DF_reportefinal.html";
+                        
+                        // CENTINELA: Si terminó la fase gratis y no es VIP, a ventas
+                        if (data.estado === "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                            window.location.href = archivoReporte;
                         } else {
-                            userRef.update({ leccion_actual: archivoActual });
+                            // Autorizado: Retirar escudo de carga
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
+
+                            // AUTOGUARDADO GPS: Solo se activa si es su primera vez pasando por aquí
+                            if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                                userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            }
                             
-                            // Si ya había escrito algo antes y recarga, se lo mostramos
+                            // RECUPERACIÓN DE MEMORIA (Si el usuario ya había escrito algo y recarga la página)
                             const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
                             if (data[campoBitacora]) {
                                 document.getElementById("user-reflection").value = data[campoBitacora];
                             }
                         }
+                    } else {
+                        window.location.href = archivoExpulsion;
                     }
-                });
+                }).catch(() => { window.location.href = archivoExpulsion; });
 
-                // 2. LÓGICA DE GUARDADO AL HACER CLIC
-                document.getElementById("btn-next").onclick = function() {
+                // 2. LÓGICA DE GUARDADO DE LA BITÁCORA AL HACER CLIC
+                document.getElementById("btn-next").addEventListener("click", () => {
                     const textoUsuario = document.getElementById("user-reflection").value;
                     const btn = document.getElementById("btn-next");
                     
+                    // Bloqueo de avance si el campo está vacío
                     if (textoUsuario.trim() === "") {
                         alert("El búnker exige honestidad. No dejes el reporte vacío.");
                         return;
                     }
 
-                    btn.innerText = "Guardando...";
+                    // Feedback visual
+                    btn.innerText = "Sincronizando...";
                     btn.disabled = true;
 
-                    // Creamos un nombre de campo único basado en el archivo
+                    // Nombre del campo en Firebase (Generado automáticamente basado en el nombre del archivo)
                     const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
 
+                    // Inyección de la respuesta en la base de datos y avance
                     userRef.update({
                         [nombreCampo]: textoUsuario
                     }).then(() => {
-                        console.log("Reporte archivado con éxito.");
-                        window.location.href = siguienteArchivo;
+                        window.location.href = archivoSiguiente;
                     }).catch((error) => {
-                        console.error("Error al guardar:", error);
-                        btn.innerText = "Error al guardar";
+                        alert("Error al sincronizar: " + error.message);
+                        btn.innerText = "Guardar reporte →";
                         btn.disabled = false;
                     });
-                };
+                });
 
             } else {
-                window.location.href = "index.html";
+                window.location.href = archivoExpulsion;
             }
         });
     </script>
