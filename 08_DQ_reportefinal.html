@@ -9,17 +9,19 @@
         .meta-header { width: 100%; margin-bottom: 20px; }
         .meta-item { font-size: 14px; margin-bottom: 6px; color: #333; }
         .status-chip { background-color: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; font-size: 12px; margin-left: 5px; letter-spacing: 0.5px; }
-        
-        /* AJUSTE DE ESPACIADO: Eliminado el exceso de margen */
         .work-area.card { margin-bottom: 20px !important; }
         .btn-mando { margin-top: 0 !important; }
-        
         .btn-secundario { width: 100%; background: transparent; color: #333; border: 1px solid #ccc; padding: 15px; border-radius: 14px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
         .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
+        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Calculando diagnóstico definitivo...</h2>
+        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con la base de datos.</p>
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="deepmersion.jpeg"></div>
         <p class="indicator">Reporte Definitivo</p>
         <h1 class="title">Estatus: Rey.</h1>
@@ -48,6 +50,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
+        const archivoDeVenta = "21_DM_reporte_final.html";
+
         const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
@@ -58,9 +62,21 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        document.getElementById("nombre-exp").innerText = data.nombre || "Hombre profundo";
-                        if (data.fase !== "Finalizado_DQ") { userRef.update({ fase: "Finalizado_DQ" }); }
-                    }
+                        
+                        if (data.access_DQ === true) {
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
+                            document.getElementById("nombre-exp").innerText = data.nombre || "Hombre profundo";
+                            
+                            // Aseguramos que quede como finalizado
+                            if (data.fase !== "Finalizado_DQ") { userRef.update({ fase: "Finalizado_DQ" }); }
+                        } else {
+                            // NO HA PAGADO
+                            document.getElementById("status-text").innerText = "Acceso denegado.";
+                            document.getElementById("sub-text").innerText = "Redirigiendo a tu estatus operativo...";
+                            setTimeout(() => { window.location.href = archivoDeVenta; }, 1500);
+                        }
+                    } else { window.location.href = "index.html"; }
                 });
             } else { window.location.href = "index.html"; }
         });
