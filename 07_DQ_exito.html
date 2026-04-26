@@ -14,10 +14,16 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
+        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando estatus operativo...</h2>
+        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con la cúspide.</p>
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="deepmersion.jpeg"></div>
         <p class="indicator">Tramo 03 Completado</p>
         <h1 class="title">Ascenso Finalizado.</h1>
+        
         <img src="victoria.jpeg" class="victory-img">
 
         <div class="work-area card victory-card">
@@ -33,25 +39,36 @@
 
     <script>
         const archivoActual = "20_DQ_exito.html";
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
-        };
+        const archivoDeVenta = "21_DM_reporte_final.html";
+
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
                 userRef.get().then((doc) => {
-                    if (doc.exists && doc.data().access_DQ === true) {
-                        userRef.update({ fase: "Finalizado_DQ", leccion_actual_DQ: archivoActual });
-                    } else { window.location.href = "21_DM_reporte_final.html"; }
+                    if (doc.exists) {
+                        const data = doc.data();
+                        
+                        if (data.access_DQ === true) {
+                            // ES VIP
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
+                            
+                            // QUEMAMOS LAS NAVES DEL TRAMO 03
+                            userRef.update({
+                                fase: "Finalizado_DQ",
+                                leccion_actual_DQ: archivoActual
+                            });
+                        } else {
+                            // NO HA PAGADO
+                            document.getElementById("status-text").innerText = "Acceso denegado.";
+                            document.getElementById("sub-text").innerText = "Redirigiendo a tu estatus operativo...";
+                            setTimeout(() => { window.location.href = archivoDeVenta; }, 1500);
+                        }
+                    } else { window.location.href = "index.html"; }
                 });
             } else { window.location.href = "index.html"; }
         });
