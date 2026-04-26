@@ -5,11 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bitácora / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        #loading-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background: #fff;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
+    </style>
 </head>
 <body>
-    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
-        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando pase VIP...</h2>
-        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con el búnker.</p>
+    <div id="loading-screen">
+        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
@@ -24,6 +37,7 @@
         </div>
         
         <button id="btn-next" class="btn-mando">Archivar reporte →</button>
+        <button id="btn-hub" class="btn-mando" style="display: none; background: transparent; color: #878787; border: 1px solid #eaeaea; margin-top: 15px;">Regresar al Hub</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -31,13 +45,28 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const archivoActual = "02_DM_bitacora.html";
-        const siguienteArchivo = "03_DM_quiz.html"; 
+        // =======================================================
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
+        // =======================================================
+        const archivoActual = "02_DM_bitacora.html";        // GPS: Archivo actual
+        const archivoSiguiente = "03_DM_quiz.html";         // Destino al guardar
+        const archivoHub = "09_DM_hub.html";                // Destino del Hub
+        const archivoExpulsion = "08_DF_reportefinal.html"; // Destino si rechaza el pase VIP
 
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        // 🔴 ACTUALIZAR: Credenciales de Firebase
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const db = firebase.firestore();
+        const auth = firebase.auth(); 
+        const db = firebase.firestore();
 
+        // MOTOR DE SEGURIDAD VIP
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -50,33 +79,58 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            if (data.fase !== "Finalizado_DM") { userRef.update({ leccion_actual_DM: archivoActual }); }
+                            // Revelar Botón Fantasma si ya terminó este tramo o superiores
+                            if (data.estado === "Finalizado_DM" || data.estado === "Finalizado_DQ" || data.access_DQ === true) {
+                                document.getElementById("btn-hub").style.display = "block";
+                                document.getElementById("btn-hub").addEventListener("click", () => { window.location.href = archivoHub; });
+                            }
+
+                            // Autoguardado GPS (Solo si es su primera vez en la DM)
+                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) { 
+                                userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err)); 
+                            }
                             
+                            // RECUPERACIÓN DE MEMORIA Y LÓGICA DEL BOTÓN PRINCIPAL
                             const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
                             const textArea = document.getElementById("user-reflection");
                             const btn = document.getElementById("btn-next");
 
+                            // Si ya había escrito en esta bitácora...
                             if (data[campoBitacora]) {
                                 textArea.value = data[campoBitacora];
-                                textArea.readOnly = true; textArea.style.opacity = "0.7"; textArea.style.cursor = "not-allowed";
+                                textArea.readOnly = true; 
+                                textArea.style.opacity = "0.7"; 
+                                textArea.style.cursor = "not-allowed";
                                 btn.innerText = "Continuar →";
-                                btn.onclick = function() { window.location.href = siguienteArchivo; };
-                            } else {
-                                btn.onclick = function() {
+                                btn.addEventListener("click", () => { window.location.href = archivoSiguiente; });
+                            } 
+                            // Si es la primera vez que la responde...
+                            else {
+                                btn.addEventListener("click", () => {
                                     const textoUsuario = textArea.value;
-                                    if (textoUsuario.trim() === "") { alert("La inmersión requiere registro."); return; }
-                                    btn.innerText = "Guardando..."; btn.disabled = true;
-                                    userRef.update({ [campoBitacora]: textoUsuario }).then(() => { window.location.href = siguienteArchivo; });
-                                };
+                                    if (textoUsuario.trim() === "") { 
+                                        alert("La inmersión requiere registro. No dejes el reporte vacío."); 
+                                        return; 
+                                    }
+                                    
+                                    btn.innerText = "Sincronizando..."; 
+                                    btn.disabled = true;
+                                    
+                                    userRef.update({ [campoBitacora]: textoUsuario }).then(() => { 
+                                        window.location.href = archivoSiguiente; 
+                                    }).catch((err) => {
+                                        alert("Error al sincronizar: " + err.message);
+                                        btn.innerText = "Archivar reporte →";
+                                        btn.disabled = false;
+                                    });
+                                });
                             }
                         } else {
-                            // NO HA PAGADO
-                            document.getElementById("status-text").innerText = "Acceso denegado.";
-                            document.getElementById("sub-text").innerText = "Redirigiendo a tu zona autorizada...";
-                            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+                            // Intruso detectado: Expulsión inmediata
+                            window.location.href = archivoExpulsion;
                         }
                     } else { window.location.href = "index.html"; }
-                });
+                }).catch(() => { window.location.href = "index.html"; });
             } else { window.location.href = "index.html"; }
         });
     </script>
