@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bitácora / Deepmersion</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="deepmersion.jpeg"></div>
+        
+        <p class="indicator">Reporte</p>
+        
+        <div class="progress-container">
+            <div class="progress-fill" style="width: 80%;"></div>
+        </div>
+        
+        <h1 class="title">Análisis.</h1>
+        <p id="log-desc" class="description">Resume tu hallazgo clave.</p>
+        
+        <div id="log-area" class="work-area card">
+            <textarea id="user-reflection" placeholder="Escribe aquí..."></textarea>
+        </div>
+        
+        <button id="btn-next" class="btn-mando">Guardar reporte →</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // =======================================================
+        // CONFIGURACIÓN DE COORDENADAS
+        // =======================================================
+        const archivoActual = "02_DF_bitacora.html";
+        const siguienteArchivo = "03_DF_video.html";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                
+                // 1. RASTREO DE POSICIÓN AL CARGAR
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data.fase === "Finalizado") {
+                            window.location.href = "21_DF_reporte_final.html";
+                        } else {
+                            userRef.update({ leccion_actual: archivoActual });
+                            
+                            // Si ya había escrito algo antes y recarga, se lo mostramos
+                            const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
+                            if (data[campoBitacora]) {
+                                document.getElementById("user-reflection").value = data[campoBitacora];
+                            }
+                        }
+                    }
+                });
+
+                // 2. LÓGICA DE GUARDADO AL HACER CLIC
+                document.getElementById("btn-next").onclick = function() {
+                    const textoUsuario = document.getElementById("user-reflection").value;
+                    const btn = document.getElementById("btn-next");
+                    
+                    if (textoUsuario.trim() === "") {
+                        alert("El búnker exige honestidad. No dejes el reporte vacío.");
+                        return;
+                    }
+
+                    btn.innerText = "Guardando...";
+                    btn.disabled = true;
+
+                    // Creamos un nombre de campo único basado en el archivo
+                    const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
+
+                    userRef.update({
+                        [nombreCampo]: textoUsuario
+                    }).then(() => {
+                        console.log("Reporte archivado con éxito.");
+                        window.location.href = siguienteArchivo;
+                    }).catch((error) => {
+                        console.error("Error al guardar:", error);
+                        btn.innerText = "Error al guardar";
+                        btn.disabled = false;
+                    });
+                };
+
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>
