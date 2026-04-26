@@ -27,7 +27,11 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DF.png"></div>
         <p class="indicator">Reporte Final</p>
         <h1 class="title">Fin del Descenso.</h1>
@@ -40,14 +44,14 @@
         
         <div class="work-area card">
             <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
-                <b>DIAGNÓSTICO TÉCNICO:</b> Has completado el Descenso. Tu capacidad para mentirte ha sido neutralizada y tu máscara (el Salvador/Chico Bueno) ha sido fracturada. Sin embargo, te encuentras en la zona de mayor riesgo de la expedición: la exposición total.<br><br>
+                <b>DIAGNÓSTICO TÉCNICO:</b> Has completado el Descenso. Tu capacidad para mentirte ha sido neutralizada y tu máscara ha sido fracturada. Sin embargo, te encuentras en la zona de mayor riesgo: la exposición total.<br><br>
                 Has despertado al Monje, pero tu Anarquista sigue dormido. Tienes la verdad, pero no tienes el equipo para defenderla en la trinchera.
             </p>
             <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
-                <b>ADVERTENCIA DE SEGURIDAD:</b> Acampar en este punto es un error crítico. Un hombre con la máscara rota pero sin blindaje táctico es una presa fácil para la superficie. Si regresas a tu entorno ahora, la presión social y emocional te obligará a intentar "pegar" los pedazos de tu vieja máscara, pero el pegamento ya no servirá. El resultado será una humillación mayor.
+                <b>ADVERTENCIA DE SEGURIDAD:</b> Acampar en este punto es un error crítico. Un hombre con la máscara rota pero sin blindaje táctico es una presa fácil para la superficie. 
             </p>
             <p class="text-base" style="margin-bottom: 0; font-size: 14px;">
-                <b>ORDEN DE MANDO:</b> Es imperativo iniciar la Inmersión (Tramo 02) de inmediato. Necesitas dotar a tu sistema nervioso de las herramientas del Anarquista para blindar tu nueva verdad.
+                <b>ORDEN DE MANDO:</b> Es imperativo iniciar la Inmersión (Tramo 02) de inmediato.
             </p>
         </div>
 
@@ -56,7 +60,7 @@
             <div id="countdown" class="timer-boxes">Calculando...</div>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='https://TU_LINK_DE_PAGO_AQUI.com'">Avanzar al Tramo 02 →</button>
+        <button id="btn-comprar" class="btn-mando">Avanzar al Tramo 02 →</button>
 
         <p class="description" style="margin-top: 25px; font-style: italic; text-align: center; font-size: 13px;">
             O conquistas tu densidad en el siguiente tramo, o aceptas ser un turista que se asustó cuando el aire empezó a faltar.
@@ -68,8 +72,21 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime();
+        // =======================================================
+        // 🔴 ACTUALIZAR: PANEL DE CONTROL DE VENTAS Y ENRUTAMIENTO
+        // =======================================================
+        const linkDePago = "https://TU_LINK_DE_PAGO_AQUI.com";
+        const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime(); // Fecha límite
+        const archivoExpulsion = "index.html"; // Destino si es intruso o si ya pagó (al Router)
 
+        // Asignación del botón de compra
+        document.getElementById("btn-comprar").addEventListener("click", () => {
+            window.location.href = linkDePago;
+        });
+
+        // =======================================================
+        // LÓGICA DEL TEMPORIZADOR
+        // =======================================================
         const timerInterval = setInterval(function() {
             const now = new Date().getTime();
             const distance = targetDate - now;
@@ -96,6 +113,9 @@
             `;
         }, 1000);
 
+        // =======================================================
+        // MOTOR DE SEGURIDAD DE FIREBASE
+        // =======================================================
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -115,21 +135,29 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // EL CENTINELA VIP: Si ya pagó DM o DQ, lo enviamos al router principal.
+                        // EL CENTINELA VIP: Si ya pagó la DM o DQ, lo enviamos al router principal.
                         if (data.access_DM === true || data.access_DQ === true) {
-                            window.location.href = "index.html";
+                            window.location.href = archivoExpulsion;
                             return; 
                         }
 
-                        // Si no ha pagado, sigue el protocolo normal
-                        document.getElementById("nombre-exp").innerText = data.nombre || "Aspirante a hombre profundo";
-                        if (data.fase !== "Finalizado") {
-                            userRef.update({ fase: "Finalizado" });
+                        // Si no ha pagado, sigue el protocolo normal de ventas
+                        document.getElementById("nombre-exp").innerText = data.nombre || "Aspirante";
+                        
+                        // Retirar escudo de carga
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+
+                        // Si llegó directo saltándose la tarjeta de éxito, actualizamos su estado por seguridad
+                        if (data.estado !== "Finalizado_DF") {
+                            userRef.update({ estado: "Finalizado_DF" }).catch(err => console.log(err));
                         }
+                    } else {
+                        window.location.href = archivoExpulsion;
                     }
-                });
+                }).catch(() => { window.location.href = archivoExpulsion; });
             } else {
-                window.location.href = "index.html";
+                window.location.href = archivoExpulsion;
             }
         });
     </script>
