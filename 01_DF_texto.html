@@ -27,9 +27,7 @@
             <p class="text-base">El búnker no es una prisión, es tu <b>laboratorio</b>.</p>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='02_DF_bitacora.html'">Continuar →</button>
-        
-        <button id="btn-hub" class="btn-mando" style="display: none; background: transparent; color: #878787; border: 1px solid #eaeaea; margin-top: 15px;" onclick="window.location.href='index.html'">Regresar al Mando</button>
+        <button id="btn-continuar" class="btn-mando">Continuar →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -38,10 +36,12 @@
 
     <script>
         // =======================================================
-        // 🔴 ACTUALIZAR: COORDENADAS DEL SISTEMA
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
         // =======================================================
-        const archivoActual = "01_DF_texto.html"; // Para el autoguardado (GPS)
-        const archivoDeVenta = "index.html";      // Para expulsar intrusos
+        const archivoActual = "01_DF_texto.html";         // GPS: Archivo actual
+        const archivoSiguiente = "02_DF_bitacora.html";   // Destino al dar clic en Continuar
+        const archivoReporte = "08_DF_reportefinal.html"; // Destino si choca contra el final
+        const archivoExpulsion = "index.html";            // Destino si detecta intrusos no logueados
 
         // 🔴 ACTUALIZAR: Credenciales de Firebase (Solo si cambias de base de datos)
         const firebaseConfig = {
@@ -56,7 +56,12 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Motor de Seguridad y Rastreo
+        // 1. ASIGNACIÓN DEL BOTÓN CONTINUAR
+        document.getElementById("btn-continuar").addEventListener("click", () => {
+            window.location.href = archivoSiguiente;
+        });
+
+        // 2. MOTOR DE SEGURIDAD Y RASTREO
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -64,25 +69,26 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // 1. Autorización concedida: Quitar escudo de carga
-                        document.getElementById("loading-screen").style.display = "none";
-                        document.getElementById("bunker-content").style.display = "flex";
+                        // CENTINELA: Si ya terminó el Tramo 01 y no ha pagado, lo expulsa a ventas
+                        if (data.estado === "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                            window.location.href = archivoReporte; 
+                        } else {
+                            // Autorizado: Quitar escudo de carga
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
 
-                        // 2. Revelar botón de escape si es un Veterano repasando
-                        if (data.estado === "Finalizado_DF" || data.access_DM === true || data.access_DQ === true) {
-                            document.getElementById("btn-hub").style.display = "block";
-                        }
-
-                        // 3. Autoguardado (Solo guarda el GPS si es su primera vez pasando por aquí)
-                        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                            userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            // AUTOGUARDADO GPS: Solo se activa si es su primera vez cursando
+                            if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                                userRef.update({ leccion_actual_DF: archivoActual })
+                                    .catch((err) => console.log("Error guardando coordenadas...", err));
+                            }
                         }
                     } else {
-                        window.location.href = archivoDeVenta;
+                        window.location.href = archivoExpulsion;
                     }
-                });
+                }).catch(() => { window.location.href = archivoExpulsion; });
             } else {
-                window.location.href = archivoDeVenta;
+                window.location.href = archivoExpulsion;
             }
         });
     </script>
