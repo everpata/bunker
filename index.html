@@ -70,7 +70,7 @@
                         }
                         // FILTRO 2: BLOQUEO TRAMO 02 (Terminó DM, se estrella contra el reporte rojo)
                         else if (data.fase === "Finalizado_DM") {
-                            window.location.href = "21_DM_reporte_final.html"; 
+                            window.location.href = "08_DM_reportefinal.html"; 
                         }
                         // FILTRO 3: VIP (Tramo 02 pagado, sigue operando)
                         else if (data.access_DM === true) {
@@ -78,7 +78,7 @@
                         }
                         // FILTRO 4: BLOQUEO TRAMO 01 (Terminó DF, se estrella contra el reporte rojo)
                         else if (data.fase === "Finalizado") {
-                            window.location.href = "21_DF_reporte_final.html"; 
+                            window.location.href = "08_DF_reportefinal.html"; 
                         } 
                         // FILTRO 5: ENTRENAMIENTO BÁSICO (Tramo 01)
                         else if (data.leccion_actual) {
