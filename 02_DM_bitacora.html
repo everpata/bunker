@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="deepmersion.jpeg"></div>
         <p class="indicator">Reporte / Inmersión</p>
         <div class="progress-container"><div class="progress-fill" style="width: 15%;"></div></div>
@@ -49,10 +49,12 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // CENTINELAS TRAMO 02
+                        // CENTINELA
                         if (data.access_DM !== true) { window.location.href = "21_DF_reporte_final.html"; return; }
 
-                        // AUTOGUARDADO (Solo si no ha finalizado)
+                        // ES VIP: LEVANTAMOS EL TELÓN
+                        document.getElementById("bunker-content").style.display = "flex";
+
                         if (data.fase !== "Finalizado_DM") {
                             userRef.update({ leccion_actual_DM: archivoActual });
                         }
@@ -61,7 +63,6 @@
                         const textArea = document.getElementById("user-reflection");
                         const btn = document.getElementById("btn-next");
 
-                        // MODO SOLO LECTURA
                         if (data[campoBitacora]) {
                             textArea.value = data[campoBitacora];
                             textArea.readOnly = true; 
@@ -71,7 +72,6 @@
                             btn.innerText = "Continuar →";
                             btn.onclick = function() { window.location.href = siguienteArchivo; };
                         } else {
-                            // LÓGICA DE GUARDADO
                             btn.onclick = function() {
                                 const textoUsuario = textArea.value;
                                 if (textoUsuario.trim() === "") { alert("La inmersión requiere registro."); return; }
