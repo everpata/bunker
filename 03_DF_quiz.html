@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DF.png"></div>
         
         <p class="indicator">Quiz 01</p>
@@ -33,11 +37,14 @@
 
     <script>
         // =======================================================
-        // CONFIGURACIÓN DE COORDENADAS
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
         // =======================================================
-        const archivoActual = "03_DF_quiz.html";
-        const siguienteArchivo = "04_DF_imagen.html"; // Cambia esto al archivo que siga
+        const archivoActual = "03_DF_quiz.html";          // GPS: Archivo actual
+        const archivoSiguiente = "04_DF_imagen.html";     // Destino al guardar
+        const archivoReporte = "08_DF_reportefinal.html"; // Destino si choca contra el final
+        const archivoExpulsion = "index.html";            // Destino si detecta intrusos
 
+        // 🔴 ACTUALIZAR: Credenciales de Firebase (Solo si cambias de base de datos)
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -59,12 +66,18 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // CENTINELA: Patea a los finalizados
-                        if (data.fase === "Finalizado") {
-                            window.location.href = "08_DF_reportefinal.html"; 
+                        // CENTINELA: Patea a los finalizados sin pase
+                        if (data.estado === "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                            window.location.href = archivoReporte; 
                         } else {
-                            // Fija coordenadas
-                            userRef.update({ leccion_actual: archivoActual });
+                            // Autorizado: Retirar escudo
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
+
+                            // AUTOGUARDADO GPS
+                            if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                                userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            }
                             
                             // MEMORIA VISUAL: Si ya había respondido esto antes, marca los botones
                             const campoQuiz = "quiz_" + archivoActual.replace(/\./g, "_");
@@ -77,12 +90,13 @@
                                 });
                             }
                         }
+                    } else {
+                        window.location.href = archivoExpulsion;
                     }
-                });
+                }).catch(() => { window.location.href = archivoExpulsion; });
 
                 // 2. GUARDADO DE RESPUESTAS AL AVANZAR
-                document.getElementById("btn-next").onclick = function() {
-                    // Extraer los textos de los botones que tengan la clase 'selected'
+                document.getElementById("btn-next").addEventListener("click", () => {
                     const seleccionados = Array.from(document.querySelectorAll('.option-btn.selected')).map(btn => btn.innerText.trim());
                     const btn = document.getElementById("btn-next");
 
@@ -95,25 +109,23 @@
                     btn.innerText = "Sincronizando...";
                     btn.disabled = true;
 
-                    // Crea un campo único en Firebase (ej. "quiz_03_DF_quiz_html")
+                    // Crea un campo único en Firebase basado en el archivo
                     const nombreCampo = "quiz_" + archivoActual.replace(/\./g, "_");
 
                     // Guarda el array de respuestas seleccionadas
                     userRef.update({
                         [nombreCampo]: seleccionados
                     }).then(() => {
-                        console.log("Quiz archivado.");
-                        window.location.href = siguienteArchivo;
+                        window.location.href = archivoSiguiente;
                     }).catch((error) => {
-                        console.error("Error al guardar:", error);
-                        btn.innerText = "Error de sincronización";
+                        alert("Error de sincronización: " + error.message);
+                        btn.innerText = "Sincronizar →";
                         btn.disabled = false;
                     });
-                };
+                });
 
             } else {
-                // CENTINELA BASE
-                window.location.href = "index.html";
+                window.location.href = archivoExpulsion;
             }
         });
     </script>
