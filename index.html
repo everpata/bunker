@@ -66,7 +66,7 @@
                         
                         // FILTRO 1: ULTRA-VIP (Tramo 03 pagado)
                         if (data.access_DQ === true) {
-                            window.location.href = data.leccion_actual_DQ || "quest/01_DQ_bienvenida.html"; 
+                            window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html"; 
                         }
                         // FILTRO 2: BLOQUEO TRAMO 02 (Terminó DM, se estrella contra el reporte rojo)
                         else if (data.fase === "Finalizado_DM") {
@@ -76,7 +76,7 @@
                         else if (data.access_DM === true) {
                             window.location.href = data.leccion_actual_DM || "01_DM_texto.html"; 
                         }
-                        // FILTRO 4: BLOQUEO TRAMO 01 (Terminó DF, se estrella contra el reporte de DM)
+                        // FILTRO 4: BLOQUEO TRAMO 01 (Terminó DF, se estrella contra el reporte rojo)
                         else if (data.fase === "Finalizado") {
                             window.location.href = "21_DF_reporte_final.html"; 
                         } 
