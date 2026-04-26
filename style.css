@@ -22,7 +22,7 @@ html, body {
 }
 
 /* --- CABECERA --- */
-.logo { margin: 0 0 30px -10px; flex-shrink: 0; }
+.logo { margin: 0 0 30px -12px; flex-shrink: 0; }
 .logo img { height: 55px; width: auto; display: block; }
 
 .indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; }
