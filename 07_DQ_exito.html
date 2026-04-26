@@ -6,17 +6,35 @@
     <title>Misión Cumplida / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Estética de graduación y victoria */
         html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
         .container { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: auto; width: 100%; }
+        
         .victory-img { width: 100%; border-radius: 12px; margin-bottom: 20px; animation: floatIn 1.5s ease forwards; }
         .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; box-sizing: border-box; }
-        @keyframes floatIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #loading-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background: #fff;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
-    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
-        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando estatus operativo...</h2>
-        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con la cúspide.</p>
+    <div id="loading-screen">
+        <img src="DQ.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
@@ -30,7 +48,7 @@
             <p class="text-base">Has asimilado el poder del Rey. Eres dueño absoluto de tu realidad. <b>Tu expedición base ha concluido.</b></p>
         </div>
 
-        <button class="btn-mando" onclick="window.location.href='08_DQ_reportefinal.html'">Abrir Reporte Definitivo →</button>
+        <button id="btn-continuar" class="btn-mando">Abrir Reporte Definitivo →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -38,13 +56,25 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const archivoActual = "07_DQ_exito.html";
-        const archivoDeVenta = "index.html";
+        // =======================================================
+        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
+        // =======================================================
+        const archivoActual = "07_DQ_exito.html";         // GPS Actual
+        const archivoSiguiente = "08_DQ_reportefinal.html"; // Reporte final (Graduación)
+        const archivoExpulsion = "08_DM_reportefinal.html"; // Destino si no es VIP T3
 
+        // 🔴 ACTUALIZAR: Credenciales de Firebase
         const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const db = firebase.firestore();
+        const auth = firebase.auth(); 
+        const db = firebase.firestore();
 
+        // 1. ASIGNACIÓN DE BOTONES
+        document.getElementById("btn-continuar").addEventListener("click", () => {
+            window.location.href = archivoSiguiente;
+        });
+
+        // 2. MOTOR DE SEGURIDAD Y CIERRE DEFINITIVO (EL CERROJO DEL REY)
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -52,24 +82,26 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
+                        // VALIDACIÓN ULTRA-VIP
                         if (data.access_DQ === true) {
-                            // ES VIP
+                            // Autorizado: Mostrar victoria
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
-                            
-                            // QUEMAMOS LAS NAVES DEL TRAMO 03
-                            userRef.update({
-                                fase: "Finalizado_DQ",
-                                leccion_actual_DQ: archivoActual
-                            });
+
+                            // EL CERROJO FINAL: Quema todas las naves
+                            if (data.estado !== "Finalizado_DQ") {
+                                userRef.update({
+                                    estado: "Finalizado_DQ",
+                                    leccion_actual_DQ: archivoActual
+                                }).then(() => {
+                                    console.log("Expedición concluida. Rango: REY.");
+                                }).catch(err => console.log(err));
+                            }
                         } else {
-                            // NO HA PAGADO
-                            document.getElementById("status-text").innerText = "Acceso denegado.";
-                            document.getElementById("sub-text").innerText = "Redirigiendo a tu estatus operativo...";
-                            setTimeout(() => { window.location.href = archivoDeVenta; }, 1500);
+                            window.location.href = archivoExpulsion;
                         }
                     } else { window.location.href = "index.html"; }
-                });
+                }).catch(() => { window.location.href = "index.html"; });
             } else { window.location.href = "index.html"; }
         });
     </script>
