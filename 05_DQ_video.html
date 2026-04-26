@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Video / Deepmersion (T02)</title>
+    <title>Video / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; font-family: sans-serif; color: #333; background: #fff; position: absolute; z-index: 9999;">
+        <h2 id="status-text" style="font-size: 18px; margin-bottom: 10px;">Verificando pase ULTRA-VIP...</h2>
+        <p id="sub-text" style="font-size: 14px; color: #878787;">Conectando con la cúspide.</p>
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="deepmersion.jpeg"></div>
-        <p class="indicator">Módulo 01 / DM</p>
+        <p class="indicator">Módulo 01 / Deepquest</p>
         <div class="progress-container"><div class="progress-fill" style="width: 60%;"></div></div>
         
         <h1 class="title">Análisis Visual.</h1>
-        <p class="description">Identifica las mecánicas de tu Anarquista interior.</p>
+        <p class="description">Identifica las mecánicas de dominio.</p>
         
         <div class="work-area">
             <div class="video-container">
@@ -21,7 +26,7 @@
             </div>
         </div>
         
-        <button class="btn-mando" onclick="window.location.href='06_DM_principio.html'">He visto el video →</button>
+        <button class="btn-mando" onclick="window.location.href='06_DQ_principio.html'">He visto el video →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -29,19 +34,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const archivoActual = "05_DM_video.html";
+        const archivoActual = "05_DQ_video.html";
+        const archivoDeVenta = "21_DM_reporte_final.html";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -50,21 +48,20 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // CENTINELAS TRAMO 02
-                        if (data.access_DM !== true) {
-                            window.location.href = "21_DF_reporte_final.html"; 
-                        } else if (data.fase === "Finalizado_DM") {
-                            window.location.href = "21_DM_reporte_final.html"; 
+                        if (data.access_DQ === true) {
+                            // ES VIP
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
+                            if (data.fase !== "Finalizado_DQ") { userRef.update({ leccion_actual_DQ: archivoActual }); }
                         } else {
-                            // AUTOGUARDADO TRAMO 02
-                            userRef.update({ leccion_actual_DM: archivoActual })
-                                .catch((err) => console.log("Guardando coordenadas DM...", err));
+                            // NO HA PAGADO
+                            document.getElementById("status-text").innerText = "Acceso denegado.";
+                            document.getElementById("sub-text").innerText = "Redirigiendo a tu estatus operativo...";
+                            setTimeout(() => { window.location.href = archivoDeVenta; }, 1500);
                         }
-                    }
+                    } else { window.location.href = "index.html"; }
                 });
-            } else {
-                window.location.href = "index.html";
-            }
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
