@@ -8,12 +8,37 @@
     <link rel="stylesheet" href="style.css"> 
     <style>
         .iti { width: 100%; margin-top: 10px; } 
-        .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; font-size: 16px !important; width: 100% !important; padding: 12px 0 12px 50px !important; background: transparent !important; }
-        .form-area input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; font-family: inherit; margin-bottom: 10px; }
+        .iti__input { 
+            border: none !important; 
+            border-bottom: 1px solid #eaeaea !important; 
+            border-radius: 0 !important; 
+            font-size: 16px !important; 
+            width: 100% !important; 
+            padding: 12px 0 12px 50px !important; 
+            background: transparent !important; 
+        }
+        .form-area input { 
+            width: 100%; 
+            border: none; 
+            border-bottom: 1px solid #eaeaea; 
+            padding: 12px 0; 
+            font-size: 16px; 
+            color: #333333; 
+            outline: none; 
+            background: transparent; 
+            font-family: inherit; 
+            margin-bottom: 10px; 
+        }
+        /* Ajuste para que el input de edad no tenga flechas */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="loading-screen" style="display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: fixed; z-index: 9999;">
+        <img src="DF.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DF.png" alt="logo"></div>
         <p class="indicator">Paso 01 / Perfil</p>
         <h1 class="title">Datos de contacto.</h1>
@@ -25,7 +50,7 @@
             <input id="phone" type="tel">
         </div>
         
-        <button id="btnGuardar" class="btn-mando">Continuar &#8594;</button>
+        <button id="btnGuardar" class="btn-mando" style="margin-top: 35px;">Continuar →</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
@@ -34,10 +59,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 🔴 ACTUALIZAR: Archivo de la primera lección del Tramo 01
         const primeraLeccion = "01_DF_texto.html"; 
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase (Solo si cambias de base de datos)
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -64,22 +87,28 @@
             }
         });
 
-        // Centinela y Enrutador Inicial
+        // 🧠 CENTINELA INTELIGENTE V4.1
         auth.onAuthStateChanged((user) => { 
             if (!user) {
-                // 🔴 ACTUALIZAR: Archivo de inicio de sesión (Expulsión)
                 window.location.href = "index.html"; 
             } else {
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
-                    // Si ya es operativo, lo manda directo a su lección guardada
                     if (doc.exists && doc.data().estado === "Operativo") {
-                        window.location.href = doc.data().leccion_actual_DF || primeraLeccion;
+                        const data = doc.data();
+                        // Enrutamiento por prioridad de tramo
+                        if (data.leccion_actual_DQ) { window.location.href = data.leccion_actual_DQ; }
+                        else if (data.leccion_actual_DM) { window.location.href = data.leccion_actual_DM; }
+                        else { window.location.href = data.leccion_actual_DF || primeraLeccion; }
+                    } else {
+                        // Usuario nuevo o incompleto: Quitar loading
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
                     }
                 });
             }
         });
 
-        // Lógica de Guardado 
+        // Lógica de Guardado Blindada
         document.getElementById('btnGuardar').addEventListener('click', () => {
             const user = auth.currentUser;
             const age = document.getElementById('userAge').value;
@@ -101,15 +130,17 @@
             btn.innerText = "Sincronizando...";
             btn.disabled = true;
 
-            // Inyectar en Firebase y establecer variables de estado
-            db.collection("usuarios").doc(user.uid).update({
+            // 🛡️ EL CERROJO: .set(..., { merge: true }) 
+            // Crea el documento si no existe, evita el error de sincronización
+            db.collection("usuarios").doc(user.uid).set({
                 edad: age,
                 ocupacion: job,
                 telefono: fullPhone,
-                estado: "Operativo", 
+                estado: "Operativo",
+                access_DF: true, // Acceso inicial concedido
                 leccion_actual_DF: primeraLeccion, 
                 ultimaSincronizacion: firebase.firestore.FieldValue.serverTimestamp()
-            })
+            }, { merge: true })
             .then(() => { 
                 window.location.href = primeraLeccion; 
             })
