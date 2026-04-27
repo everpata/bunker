@@ -68,7 +68,7 @@ html, body {
     font-size: 16px; 
     font-weight: 600; 
     cursor: pointer; 
-    margin-top: 7px !important; /* Espacio exacto desde la tarjeta/grid */
+    margin-top: 35px !important; /* Espacio exacto desde la tarjeta/grid */
     margin-bottom: 0 !important;
     -webkit-appearance: none;
     transition: transform 0.1s;
