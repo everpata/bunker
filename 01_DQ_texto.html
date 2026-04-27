@@ -6,41 +6,56 @@
     <title>Texto / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Centrado del logo de carga ULTRA-VIP */
-        #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+        /* 🚨 COMPONENTES TÁCTICOS SOBERANOS */
+        
+        .status-badge-sovereign {
+            background-color: #333;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
+
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
+        }
+
+        /* Ocultar inicialmente para el cerebro de navegación */
+        #btn-continuar, #btn-hub { display: none; }
     </style>
 </head>
 <body>
     <div id="loading-screen">
-        <img src="DQ.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DQ.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DQ.png"></div>
-        <p class="indicator">Lección 01 / Deepquest</p>
-        <div class="progress-container"><div class="progress-fill" style="width: 5%;"></div></div>
+        
+        <div class="status-badge-sovereign">ESTATUS: SOBERANO</div>
+        
+        <p class="indicator">Lección 01 / Cúspide</p>
+        <div class="progress-container">
+            <div class="progress-fill" style="width: 10%;"></div>
+        </div>
         
         <h1 class="title">El Rey.</h1>
         <p class="description">Bienvenido a la cúspide. La construcción comienza.</p>
         
         <div class="work-area card">
-            <p class="text-base">Aquí no hay teorías, solo ejecución y dominio de tu entorno.</p>
+            <p class="text-base">Aquí no hay teorías, solo ejecución y dominio de tu entorno. El búnker es ahora tu fortaleza y tú eres su única autoridad.</p>
         </div>
 
         <button id="btn-continuar" class="btn-mando">Continuar →</button>
         
-        <button id="btn-hub" class="btn-mando" style="display: none; background: transparent; color: #878787; border: 1px solid #eaeaea; margin-top: 15px;">Regresar a la Cúspide</button>
+        <button id="btn-hub" class="btn-ghost">← Volver al Hub de la Cúspide</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -48,15 +63,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
-        // =======================================================
-        const archivoActual = "01_DQ_texto.html";         // GPS: Archivo actual
-        const archivoSiguiente = "02_DQ_bitacora.html";   // Destino al dar clic en Continuar
-        const archivoHub = "09_DQ_hub.html";              // Destino del Hub DQ
-        const archivoExpulsion = "08_DM_reportefinal.html"; // Destino si no tiene pase ULTRA-VIP
+        const archivoActual = "01_DQ_texto.html"; 
+        const archivoSiguiente = "02_DQ_bitacora.html"; 
+        const archivoHub = "09_DQ_hub.html"; 
+        const archivoExpulsion = "08_DM_reportefinal.html"; 
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
             authDomain: "deepfall-b3601.firebaseapp.com", 
@@ -69,15 +80,9 @@
         const auth = firebase.auth(); 
         const db = firebase.firestore();
 
-        // 1. ASIGNACIÓN DE BOTONES
-        document.getElementById("btn-continuar").addEventListener("click", () => {
-            window.location.href = archivoSiguiente;
-        });
-        document.getElementById("btn-hub").addEventListener("click", () => {
-            window.location.href = archivoHub;
-        });
+        document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+        document.getElementById("btn-hub").onclick = () => { window.location.href = archivoHub; };
 
-        // 2. MOTOR DE SEGURIDAD ULTRA-VIP
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -85,34 +90,37 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // VALIDACIÓN ULTRA-VIP: Acceso al Tramo 03
+                        // 1. FILTRO SOBERANO
                         if (data.access_DQ === true) {
-                            
-                            // Autorizado: Quitar escudo de carga
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // Revelar Botón Fantasma si ya terminó la expedición completa
+                            const btnNext = document.getElementById("btn-continuar");
+                            const btnHub = document.getElementById("btn-hub");
+
+                            // 🧠 CEREBRO DE NAVEGACIÓN DQ
                             if (data.estado === "Finalizado_DQ") {
-                                document.getElementById("btn-hub").style.display = "block";
+                                // Modo Repaso Soberano
+                                btnNext.style.display = "block";
+                                btnHub.style.display = "block";
+                            } else {
+                                // Modo Construcción (Primera vez)
+                                btnNext.style.display = "block";
+                                btnHub.style.display = "none";
                             }
 
-                            // Autoguardado GPS DQ
+                            // GPS DQ
                             if (data.estado !== "Finalizado_DQ") {
                                 userRef.update({ leccion_actual_DQ: archivoActual }).catch(err => console.log(err));
                             }
 
                         } else {
-                            // Intruso detectado: Expulsión silenciosa a la carta de ventas anterior
+                            // Expulsión a reporte de daños de la DM para que compre la DQ
                             window.location.href = archivoExpulsion; 
                         }
-                    } else {
-                        window.location.href = "index.html";
-                    }
-                }).catch(() => { window.location.href = "index.html"; });
-            } else {
-                window.location.href = "index.html";
-            }
+                    } else { window.location.href = "index.html"; }
+                });
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
