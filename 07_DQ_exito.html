@@ -6,12 +6,12 @@
     <title>Misión Cumplida / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ATMÓSFERA DE VICTORIA FINAL */
+        /* 🚨 ATMÓSFERA DE VICTORIA FINAL V4.9 */
         html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
         
         .victory-img { 
             width: 100%; 
-            border-radius: 16px; /* Sincronizado V4.0 */
+            border-radius: 16px; 
             margin-bottom: 20px; 
             animation: floatIn 1.5s ease forwards; 
             display: block;
@@ -30,8 +30,13 @@
             position: fixed; top: 0; left: 0; z-index: 9999;
         }
 
-        /* Ocultar inicialmente para el cerebro de navegación */
-        #btn-continuar { display: none; }
+        /* 🔒 BLOQUEO RADICAL DE FUGA: Ocultos por defecto */
+        #btn-continuar { display: none; margin-top: 35px !important; }
+        
+        #btn-hub { 
+            display: none !important; 
+            margin-top: 20px !important; 
+        }
     </style>
 </head>
 <body>
@@ -52,6 +57,7 @@
         </div>
 
         <button id="btn-continuar" class="btn-mando">Abrir Reporte Definitivo →</button>
+        <button id="btn-hub" class="btn-ghost">← Volver al Hub de la Cúspide</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -76,6 +82,7 @@
         const db = firebase.firestore();
 
         document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+        document.getElementById("btn-hub").onclick = () => { window.location.href = "09_DQ_hub.html"; };
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -84,11 +91,24 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // 1. FILTRO SOBERANO
                         if (data.access_DQ === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
-                            document.getElementById("btn-continuar").style.display = "block";
+
+                            const btnNext = document.getElementById("btn-continuar");
+                            const btnHub = document.getElementById("btn-hub");
+
+                            // 🧠 CEREBRO DE NAVEGACIÓN V4.9
+                            btnNext.style.display = "block";
+
+                            // Función para manejar la visibilidad del Hub según el estatus
+                            const gestionarHub = (status) => {
+                                if (status === "Finalizado_DQ") {
+                                    btnHub.style.setProperty('display', 'block', 'important');
+                                } else {
+                                    btnHub.style.setProperty('display', 'none', 'important');
+                                }
+                            };
 
                             // 🔒 EL CERROJO FINAL: Quema todas las naves
                             if (data.estado !== "Finalizado_DQ") {
@@ -97,14 +117,17 @@
                                     leccion_actual_DQ: archivoActual
                                 }).then(() => {
                                     console.log("Expedición concluida. Rango: REY.");
+                                    gestionarHub("Finalizado_DQ"); // Se libera tras el éxito
                                 }).catch(err => console.log("Error en el cerrojo:", err));
+                            } else {
+                                gestionarHub("Finalizado_DQ"); // Ya era Rey (Modo Repaso)
                             }
+
                         } else {
-                            // Expulsión al reporte de la DM si intentan saltar niveles
                             window.location.href = archivoExpulsion; 
                         }
                     } else { window.location.href = "index.html"; }
-                }).catch(() => { window.location.href = "index.html"; });
+                });
             } else { window.location.href = "index.html"; }
         });
     </script>
