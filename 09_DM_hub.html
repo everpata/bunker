@@ -6,14 +6,20 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 UNIFICACIÓN ESTRUCTURAL */
+        /* 🚨 AJUSTE DE ESTRUCTURA PARA ELIMINAR HUECOS */
         .container {
-            justify-content: flex-start !important; /* Mismo comportamiento que los reportes */
+            justify-content: flex-start !important;
             padding-top: 30px; 
-            padding-bottom: 40px;
+            padding-bottom: 30px;
         }
 
-        .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .hub-grid { 
+            width: 100%; 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 12px;
+            margin-bottom: 0; /* Aseguramos que el grid no empuje hacia abajo */
+        }
         
         .lesson-card { 
             background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 16px; 
@@ -26,7 +32,7 @@
 
         .btn-ghost-hub {
             background: transparent; border: none; color: #878787; font-size: 13px; 
-            font-weight: 500; cursor: pointer; margin-top: 20px; width: 100%;
+            font-weight: 500; cursor: pointer; margin-top: 15px; width: 100%;
             text-align: center; font-family: inherit;
         }
         .btn-ghost-hub:hover { color: #333; }
@@ -77,7 +83,7 @@
             </a>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 35px; width: 100%;">
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px; width: 100%;">
             
             <button id="btn-reporte-dm" class="btn-mando" style="display: none;">Revisar el reporte de daños →</button>
             
