@@ -6,7 +6,7 @@
     <title>Reporte de Daños / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ESTILO DE CAJITAS GRISES (TIMER) */
+        /* 🚨 ESTILO DE CAJITAS TÉCNICAS (TIMER) */
         .stats-container {
             display: flex;
             gap: 10px;
@@ -38,7 +38,7 @@
             margin-top: 8px;
         }
 
-        /* Etiqueta Máscara Rota (Rojo Alerta) */
+        /* Etiqueta Roja de Alerta */
         .status-badge {
             background-color: #fce8e6;
             color: #d93025;
@@ -49,6 +49,7 @@
             display: inline-block;
             margin-bottom: 15px;
             border: 1px solid #d93025;
+            text-transform: uppercase;
         }
 
         #loading-screen { 
@@ -56,6 +57,13 @@
             height: 100vh; width: 100vw; background: #fff; 
             position: fixed; top: 0; left: 0; z-index: 9999; 
         }
+
+        /* Animación para el nombre */
+        #user-name {
+            opacity: 0;
+            animation: fadeInName 1s ease forwards 0.5s;
+        }
+        @keyframes fadeInName { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -66,6 +74,8 @@
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DM.png"></div>
+        
+        <p id="user-name" class="indicator" style="margin-bottom: 5px; color: #333;">EXPEDICIONARIO: ---</p>
         
         <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
         
@@ -94,12 +104,12 @@
 
         <div class="work-area">
             <p class="indicator">Acceso al siguiente nivel:</p>
-            <button id="btn-mentoría" class="btn-mando" onclick="window.open('https://wa.me/tu-numero', '_blank')" style="margin-top: 10px;">
+            <button id="btn-mentoria" class="btn-mando" onclick="window.open('https://wa.me/tu-numero', '_blank')" style="margin-top: 10px;">
                 SOLICITAR MENTORÍA 1 A 1 (DQ) →
             </button>
             
             <button onclick="window.location.href='09_DM_hub.html'" style="background: transparent; border: none; color: #878787; font-size: 13px; cursor: pointer; margin-top: 20px; width: 100%;">
-                ← Volver al Hub de Inmersión
+                ← Volver al Centro de Mando
             </button>
         </div>
     </div>
@@ -126,12 +136,15 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // Solo permitimos ver el reporte si ha terminado la DM
                         if (data.access_DM === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // 🚨 LÓGICA DEL CRONÓMETRO (Convertir segundos totales a H:M:S)
+                            // 🚨 MOSTRAR NOMBRE
+                            const nombreExp = data.nombre || "SIN NOMBRE";
+                            document.getElementById("user-name").innerText = "EXPEDICIONARIO: " + nombreExp.toUpperCase();
+
+                            // LÓGICA DEL CRONÓMETRO
                             const totalSegundos = data.total_time_DM || 0;
                             const hrs = Math.floor(totalSegundos / 3600);
                             const min = Math.floor((totalSegundos % 3600) / 60);
