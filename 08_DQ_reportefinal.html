@@ -6,7 +6,7 @@
     <title>Reporte Definitivo / Deepquest</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES DE PRECISIÓN V4.1 */
+        /* 🚨 IDENTIFICACIÓN DEL EXPEDICIONARIO */
         #user-name {
             font-size: 11px; font-weight: 600; color: #878787;
             letter-spacing: 1.5px; text-transform: uppercase;
@@ -22,13 +22,12 @@
             text-transform: uppercase;
         }
 
-        /* 🎯 FIX DE ESPACIADO: 35px exactos tras la tarjeta */
-        #btn-hub-principal {
+        /* 🎯 PRECISIÓN V4.6: Espaciado de 35px tras la tarjeta */
+        #btn-hub-final {
             margin-top: 35px !important;
         }
 
-        /* 🎯 FIX DE BOTÓN FANTASMA: 20px tras el botón principal */
-        #btn-logout-soberano {
+        #btn-logout-final {
             margin-top: 20px !important;
         }
 
@@ -59,15 +58,15 @@
         <div class="work-area card" style="margin-bottom: 0;">
             <p class="text-base">
                 <b>Diagnóstico:</b> Posees el conocimiento estructural completo del hombre profundo. Tu sistema operativo ha sido blindado contra el ruido y la fragmentación externa.<br><br>
-                <b>Orden:</b> Mantener la soberanía absoluta. Si deseas acompañamiento táctico 1 a 1, aplica a la mesa táctica.
+                <b>Orden:</b> Mantener la soberanía absoluta. El búnker está bajo tu mando total.
             </p>
         </div>
 
-        <button id="btn-hub-principal" onclick="window.location.href='09_DQ_hub.html'" class="btn-mando">
+        <button id="btn-hub-final" onclick="window.location.href='09_DQ_hub.html'" class="btn-mando">
             Ir al Centro de Mando (DQ) →
         </button>
         
-        <button id="btn-logout-soberano" onclick="firebase.auth().signOut().then(() => window.location.href='index.html')" class="btn-ghost">
+        <button id="btn-logout-final" onclick="firebase.auth().signOut().then(() => window.location.href='index.html')" class="btn-ghost">
             Cerrar sesión segura
         </button>
     </div>
@@ -94,19 +93,20 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
+                        
                         if (data.access_DQ === true) {
-                            document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "flex";
+                            // 🛰️ SELLO DE GPS FINAL: Trackeo hasta el reporte
+                            userRef.update({ 
+                                leccion_actual_DQ: "08_DQ_reportefinal.html", 
+                                estado: "Finalizado_DQ" 
+                            });
 
                             const nombreExp = data.nombre || "SIN NOMBRE";
                             document.getElementById("user-name").innerText = "EXPEDICIONARIO: " + nombreExp.toUpperCase();
+                            
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
 
-                            if (data.estado !== "Finalizado_DQ") {
-                                userRef.update({ 
-                                    leccion_actual_DQ: "08_DQ_reportefinal.html", 
-                                    estado: "Finalizado_DQ" 
-                                });
-                            }
                         } else { window.location.href = "08_DM_reportefinal.html"; }
                     } else { window.location.href = "index.html"; }
                 });
