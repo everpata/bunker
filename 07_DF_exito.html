@@ -6,12 +6,11 @@
     <title>Misión Cumplida / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Ajustes específicos para la atmósfera de victoria */
         html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
         
         .victory-img { 
             width: 100%; 
-            border-radius: 16px; /* Sincronizado V4.0 */
+            border-radius: 16px; 
             margin-bottom: 20px; 
             animation: floatIn 1.5s ease forwards; 
             display: block;
@@ -24,8 +23,31 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Ocultar inicialmente para el cerebro de navegación */
-        #btn-continuar, #btn-volver-hub { display: none; }
+        /* 🚨 COMPONENTE DE ALERTA ROJA */
+        .btn-status-alert {
+            display: none; 
+            background-color: #fce8e6 !important;
+            color: #d93025 !important;
+            border: 1px solid #d93025 !important;
+            font-weight: 700 !important;
+            width: 100%;
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
+            animation: btnElastic 4s ease-in-out infinite;
+            text-align: center;
+            margin-top: 35px !important;
+        }
+
+        @keyframes btnElastic {
+            0% { padding-top: 18px; padding-bottom: 18px; }
+            50% { padding-top: 24px; padding-bottom: 24px; }
+            100% { padding-top: 18px; padding-bottom: 18px; }
+        }
+
+        #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
 
         #loading-screen {
             display: flex; align-items: center; justify-content: center;
@@ -52,6 +74,9 @@
         </div>
 
         <button id="btn-continuar" class="btn-mando">Abrir Reporte Final →</button>
+        
+        <button id="btn-alerta-reporte" class="btn-status-alert">ABRIR REPORTE FINAL →</button>
+        
         <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
     </div>
 
@@ -78,12 +103,12 @@
         const db = firebase.firestore();
 
         document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoSiguiente; }; // Ambos llevan al reporte
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
-                
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
@@ -91,33 +116,33 @@
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
 
-                        // 🧠 CEREBRO DE NAVEGACIÓN RESTRINGIDO
-                        // Solo mostramos el Hub si ya tiene acceso a la siguiente etapa (DM o superior)
+                        const btnNegro = document.getElementById("btn-continuar");
+                        const btnRojo = document.getElementById("btn-alerta-reporte");
+                        const btnHub = document.getElementById("btn-volver-hub");
+
+                        // 🧠 CEREBRO DE NAVEGACIÓN V4.0
                         if (data.access_DM === true || data.access_DQ === true) {
-                            document.getElementById("btn-continuar").style.display = "block";
-                            document.getElementById("btn-volver-hub").style.display = "block";
+                            // Si ya es un veterano de niveles superiores
+                            btnNegro.style.display = "block";
+                            btnRojo.style.display = "none";
+                            btnHub.style.display = "block"; // Habilitamos hub
                         } else {
-                            // Si solo tiene DF, solo puede ir al reporte (Ventas)
-                            document.getElementById("btn-continuar").style.display = "block";
-                            document.getElementById("btn-volver-hub").style.display = "none";
+                            // Si es su primera graduación o no ha comprado
+                            btnNegro.style.display = "none";
+                            btnRojo.style.display = "block";
+                            btnHub.style.display = "none"; // No hay hub para "Solo DF"
                         }
 
-                        // 🔒 EL CERROJO DF: Quema las naves del primer tramo
+                        // 🔒 EL CERROJO DF
                         if (data.estado !== "Finalizado_DF" && data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
                             userRef.update({
                                 estado: "Finalizado_DF",
                                 leccion_actual_DF: archivoActual
-                            }).then(() => {
-                                console.log("Descenso completado. Rango actualizado: Finalizado_DF");
                             });
                         }
-                    } else {
-                        window.location.href = archivoExpulsion;
                     }
-                }).catch(() => { window.location.href = archivoExpulsion; });
-            } else {
-                window.location.href = archivoExpulsion;
-            }
+                });
+            } else { window.location.href = archivoExpulsion; }
         });
     </script>
 </body>
