@@ -6,24 +6,20 @@
     <title>Principio / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilo para el escudo de carga minimalista */
+        /* 🚨 AJUSTES ESPECÍFICOS DQ */
         #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
         }
+
+        /* Ocultar botones inicialmente para el cerebro de navegación */
+        #btn-continuar, #btn-hub { display: none; }
     </style>
 </head>
 <body>
     <div id="loading-screen">
-        <img src="DQ.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DQ.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
@@ -35,7 +31,7 @@
         
         <div class="revelation-screen">
             <div class="logo"><img src="DQ.png"></div>
-            <p class="indicator">Regla I / Deepquest</p>
+            <p class="indicator">Regla I / Cúspide</p>
             
             <div class="work-area card">
                 <span class="principle-statement">"El Rey no pide permiso, establece el estándar."</span>
@@ -44,7 +40,7 @@
             
             <button id="btn-continuar" class="btn-mando">Asimilado →</button>
             
-            <button id="btn-hub" class="btn-mando" style="display: none; background: transparent; color: #878787; border: 1px solid #eaeaea; margin-top: 15px;">Regresar a la Cúspide</button>
+            <button id="btn-hub" class="btn-ghost">← Volver al Hub de la Cúspide</button>
         </div>
     </div>
 
@@ -53,35 +49,31 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
-        // =======================================================
-        const archivoActual = "06_DQ_principios.html";    // GPS Actual
-        const archivoSiguiente = "07_DQ_exito.html";      // Destino al avanzar
-        const archivoHub = "09_DQ_hub.html";              // Centro de mando DQ
-        const archivoExpulsion = "08_DM_reportefinal.html"; // Destino si no es ULTRA-VIP
+        const archivoActual = "06_DQ_principios.html"; 
+        const archivoSiguiente = "07_DQ_exito.html"; 
+        const archivoHub = "09_DQ_hub.html"; 
+        const archivoExpulsion = "08_DM_reportefinal.html"; 
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); 
         const db = firebase.firestore();
 
-        // 1. LÓGICA DE INTERFAZ Y BOTONES
-        // Función de revelación centralizada
-        document.getElementById("pantalla-reliquia").addEventListener("click", () => {
+        // 1. Lógica de Interfaz
+        document.getElementById("pantalla-reliquia").onclick = () => {
             document.body.classList.add('revealed');
-        });
+        };
 
-        document.getElementById("btn-continuar").addEventListener("click", () => {
-            window.location.href = archivoSiguiente;
-        });
+        document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+        document.getElementById("btn-hub").onclick = () => { window.location.href = archivoHub; };
 
-        document.getElementById("btn-hub").addEventListener("click", () => {
-            window.location.href = archivoHub;
-        });
-
-        // 2. MOTOR DE SEGURIDAD ULTRA-VIP
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -89,28 +81,30 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // VALIDACIÓN ULTRA-VIP
+                        // 1. FILTRO SOBERANO
                         if (data.access_DQ === true) {
-                            // Autorizado: Quitar escudo de carga
                             document.getElementById("loading-screen").style.display = "none";
-                            // OJO: display block para que la tarjeta de revelación funcione con CSS
+                            // Se usa block para que la lógica de revelación CSS funcione correctamente
                             document.getElementById("bunker-content").style.display = "block";
 
-                            // Revelar Botón Fantasma para Reyes graduados
-                            if (data.estado === "Finalizado_DQ") {
-                                document.getElementById("btn-hub").style.display = "block";
-                            }
+                            const btnNext = document.getElementById("btn-continuar");
+                            const btnHub = document.getElementById("btn-hub");
 
-                            // GPS (Solo si está cursando por primera vez)
+                            // 🧠 CEREBRO DE NAVEGACIÓN DQ
+                            // El Hub siempre está disponible para el estatus Soberano
+                            btnNext.style.display = "block";
+                            btnHub.style.display = "block";
+
+                            // GPS DQ (Solo primera vuelta)
                             if (data.estado !== "Finalizado_DQ") {
                                 userRef.update({ leccion_actual_DQ: archivoActual }).catch(err => console.log(err));
                             }
+
                         } else {
-                            // No es ULTRA-VIP: Expulsión
-                            window.location.href = archivoExpulsion;
+                            window.location.href = archivoExpulsion; 
                         }
                     } else { window.location.href = "index.html"; }
-                }).catch(() => { window.location.href = "index.html"; });
+                });
             } else { window.location.href = "index.html"; }
         });
     </script>
