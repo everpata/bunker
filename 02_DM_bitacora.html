@@ -3,85 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bitácora / Deepmersion (T02)</title>
+    <title>Bitácora / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 COMPONENTES TÁCTICOS DE REPASO */
+        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
         
-        .btn-status-alert {
-            display: none; 
-            background-color: #fce8e6 !important;
-            color: #d93025 !important;
-            border: 1px solid #d93025 !important;
-            font-weight: 700 !important;
-            width: 100%;
-            padding: 20px;
-            border-radius: 14px;
-            font-size: 16px;
-            cursor: pointer;
-            font-family: inherit;
-            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
-            animation: btnElastic 4s ease-in-out infinite;
-            text-align: center;
-        }
-
-        @keyframes btnElastic {
-            0% { padding-top: 18px; padding-bottom: 18px; }
-            50% { padding-top: 24px; padding-bottom: 24px; }
-            100% { padding-top: 18px; padding-bottom: 18px; }
-        }
-
-        .btn-ghost {
-            display: none; 
-            background: transparent;
-            border: none;
-            color: #878787;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 100%;
-            text-align: center;
-            font-family: inherit;
-        }
-        .btn-ghost:hover { color: #333; }
+        /* Visibilidad controlada por JS para el repaso */
+        #btn-volver-hub { display: none; }
 
         #loading-screen {
-            display: flex; align-items: center; justify-content: center;
-            height: 100vh; width: 100vw; background: #fff;
-            position: fixed; top: 0; left: 0; z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            background: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
         }
-
-        /* Ajuste para el textarea en modo lectura */
-        textarea:read-only { opacity: 0.7; cursor: not-allowed; }
     </style>
 </head>
 <body>
     <div id="loading-screen">
-        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DM.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DM.png"></div>
-        <p class="indicator">Reporte / Inmersión</p>
-        <div class="progress-container"><div class="progress-fill" style="width: 15%;"></div></div>
         
-        <h1 class="title">Análisis Crítico.</h1>
-        <p id="log-desc" class="description">Documenta la fractura de tu máscara.</p>
+        <p class="indicator">Lección 02 / Inmersión</p>
+        
+        <div class="progress-container">
+            <div class="progress-fill" style="width: 33%;"></div>
+        </div>
+        
+        <h1 class="title">Análisis.</h1>
+        <p id="log-desc" class="description">Resume tu hallazgo clave en esta fase.</p>
         
         <div id="log-area" class="work-area card">
-            <textarea id="user-reflection" placeholder="Escribe aquí tu análisis operativo..."></textarea>
+            <textarea id="user-reflection" placeholder="Escribe aquí tu reporte operativo..."></textarea>
         </div>
-
-        <div id="nav-container" style="width: 100%; margin-top: 35px; display: flex; flex-direction: column; align-items: center;">
-            
-            <button id="btn-next" class="btn-mando">Archivar reporte →</button>
-            
-            <button id="btn-alerta-reporte" class="btn-status-alert">REVISAR REPORTE DE DAÑOS →</button>
-            
-            <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
-
-        </div>
+        
+        <button id="btn-next" class="btn-mando">Guardar reporte →</button>
+        
+        <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -89,84 +56,89 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // PANEL DE ENRUTAMIENTO
         const archivoActual = "02_DM_bitacora.html"; 
         const archivoSiguiente = "03_DM_quiz.html"; 
         const archivoHub = "09_DM_hub.html"; 
-        const archivoReporte = "08_DM_reportefinal.html";
         const archivoExpulsion = "index.html"; 
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
-            authDomain: "deepfall-b3601.firebaseapp.com", 
-            projectId: "deepfall-b3601", 
-            storageBucket: "deepfall-b3601.firebasestorage.app", 
-            messagingSenderId: "207043962011", 
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        const firebaseConfig = {
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
+            authDomain: "deepfall-b3601.firebaseapp.com",
+            projectId: "deepfall-b3601",
+            storageBucket: "deepfall-b3601.firebasestorage.app",
+            messagingSenderId: "207043962011",
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Eventos de botones de alerta/repaso
-        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
+                
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
+                        
                         if (data.access_DM === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
+                            // Lógica de Repaso / Visibilidad
+                            if (data.estado === "Finalizado_DM" || data.access_DQ === true) {
+                                document.getElementById("btn-volver-hub").style.display = "block";
+                            }
+
+                            // Autoguardado GPS (Solo primera vuelta)
+                            if (data.estado !== "Finalizado_DM" && !data.access_DQ) {
+                                userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
+                            }
+                            
+                            // Recuperación de memoria
                             const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
-                            const textArea = document.getElementById("user-reflection");
-                            const btnNext = document.getElementById("btn-next");
-
-                            // 🚨 LÓGICA DE MEMORIA (Si ya respondió)
                             if (data[campoBitacora]) {
-                                textArea.value = data[campoBitacora];
-                                textArea.readOnly = true;
-                                btnNext.innerText = "Continuar →";
-                                btnNext.onclick = () => { window.location.href = archivoSiguiente; };
-                            } else {
-                                // Lógica para guardar por primera vez
-                                btnNext.onclick = () => {
-                                    const texto = textArea.value.trim();
-                                    if (texto === "") { alert("La inmersión requiere registro."); return; }
-                                    
-                                    btnNext.disabled = true;
-                                    btnNext.innerText = "Sincronizando...";
-                                    userRef.update({ [campoBitacora]: texto }).then(() => {
-                                        window.location.href = archivoSiguiente;
-                                    });
-                                };
+                                document.getElementById("user-reflection").value = data[campoBitacora];
                             }
+                        } else {
+                            window.location.href = archivoExpulsion;
+                        }
+                    } else {
+                        window.location.href = archivoExpulsion;
+                    }
+                }).catch(() => { window.location.href = archivoExpulsion; });
 
-                            // 🚨 LÓGICA DE REPASO (MODO MÁSCARA ROTA)
-                            if (data.estado === "Finalizado_DM" && !data.access_DQ) {
-                                // Ocultamos el botón negro de avance y mostramos alerta + fantasma
-                                btnNext.style.display = "none";
-                                document.getElementById("btn-alerta-reporte").style.display = "block";
-                                document.getElementById("btn-volver-hub").style.display = "block";
-                            } 
-                            // Si tiene DQ, mostramos fantasma pero mantenemos botón negro de navegación fluida
-                            else if (data.access_DQ === true) {
-                                document.getElementById("btn-volver-hub").style.display = "block";
-                            }
+                // Lógica de Guardado
+                document.getElementById("btn-next").addEventListener("click", () => {
+                    const textoUsuario = document.getElementById("user-reflection").value;
+                    const btn = document.getElementById("btn-next");
+                    
+                    if (textoUsuario.trim() === "") {
+                        alert("El búnker exige honestidad. No dejes el reporte vacío.");
+                        return;
+                    }
 
-                            // GPS (Solo primera vuelta)
-                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) {
-                                userRef.update({ leccion_actual_DM: archivoActual });
-                            }
+                    btn.innerText = "Sincronizando...";
+                    btn.disabled = true;
 
-                        } else { window.location.href = archivoExpulsion; }
-                    } else { window.location.href = "index.html"; }
+                    const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
+
+                    userRef.update({
+                        [nombreCampo]: textoUsuario
+                    }).then(() => {
+                        window.location.href = archivoSiguiente;
+                    }).catch((error) => {
+                        alert("Error al sincronizar: " + error.message);
+                        btn.innerText = "Guardar reporte →";
+                        btn.disabled = false;
+                    });
                 });
-            } else { window.location.href = "index.html"; }
+
+            } else {
+                window.location.href = archivoExpulsion;
+            }
         });
     </script>
 </body>
