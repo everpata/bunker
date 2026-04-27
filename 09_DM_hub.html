@@ -6,7 +6,13 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ESTÉTICA DEL HUB DE INMERSIÓN */
+        /* 1. FIX DE ESPACIADO: Alineamos todo al inicio y no al centro */
+        .container {
+            justify-content: flex-start !important;
+            padding-top: 30px; 
+            padding-bottom: 30px;
+        }
+
         .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; }
         
         .lesson-card { 
@@ -20,7 +26,7 @@
 
         .btn-ghost-hub {
             background: transparent; border: none; color: #878787; font-size: 13px; 
-            font-weight: 500; cursor: pointer; margin-top: 20px; width: 100%;
+            font-weight: 500; cursor: pointer; margin-top: 15px; width: 100%;
             text-align: center; font-family: inherit;
         }
         .btn-ghost-hub:hover { color: #333; }
@@ -71,7 +77,7 @@
             </a>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 35px; width: 100%;">
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px; width: 100%;">
             
             <button id="btn-reporte-dm" class="btn-mando" style="display: none;">Revisar el reporte de daños →</button>
             
@@ -88,7 +94,7 @@
     <script>
         const rutaReporteDM = "08_DM_reportefinal.html";
         const rutaHubDQ = "09_DQ_hub.html";
-        const rutaHubDF = "09_DF_hub.html"; // Asegúrate que este sea el nombre de tu Hub de Tramo 1
+        const rutaHubDF = "09_DF_hub.html"; 
 
         document.getElementById("btn-reporte-dm").onclick = () => { window.location.href = rutaReporteDM; };
         document.getElementById("btn-ir-dq").onclick = () => { window.location.href = rutaHubDQ; };
@@ -114,13 +120,10 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // 🚨 LÓGICA DE BOTONES DINÁMICOS
                             if (data.access_DQ === true) {
-                                // Es un Rey/Hombre Profundo: Ocultar reporte de daños y mostrar acceso a DQ
                                 document.getElementById("btn-reporte-dm").style.display = "none";
                                 document.getElementById("btn-ir-dq").style.display = "block";
                             } else {
-                                // Sigue en proceso de Inmersión: Mostrar reporte de daños
                                 document.getElementById("btn-reporte-dm").style.display = "block";
                                 document.getElementById("btn-ir-dq").style.display = "none";
                             }
