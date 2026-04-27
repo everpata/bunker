@@ -8,20 +8,19 @@
     <style>
         /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
         
-        /* Visibilidad controlada por JS para el repaso */
+        /* Visibilidad controlada por JS */
         #btn-volver-hub { display: none; }
 
+        /* Estilo visual para bitácora sellada */
+        textarea.locked {
+            color: #b0b0b0;
+            cursor: not-allowed;
+        }
+
         #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
         }
     </style>
 </head>
@@ -47,7 +46,6 @@
         </div>
         
         <button id="btn-next" class="btn-mando">Guardar reporte →</button>
-        
         <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
     </div>
 
@@ -70,8 +68,7 @@
             appId: "1:207043962011:web:681397c7d540b4b3d4523e"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
@@ -87,30 +84,33 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // Lógica de Repaso / Visibilidad
+                            const areaTexto = document.getElementById("user-reflection");
+                            const btnGuardar = document.getElementById("btn-next");
+
+                            // 🚨 LÓGICA DE SELLADO (REPASO)
                             if (data.estado === "Finalizado_DM" || data.access_DQ === true) {
                                 document.getElementById("btn-volver-hub").style.display = "block";
+                                areaTexto.readOnly = true;
+                                areaTexto.classList.add("locked");
+                                btnGuardar.innerText = "Reporte Sellado";
+                                btnGuardar.disabled = true;
                             }
 
-                            // Autoguardado GPS (Solo primera vuelta)
+                            // Autoguardado GPS (Primera vuelta)
                             if (data.estado !== "Finalizado_DM" && !data.access_DQ) {
-                                userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
+                                userRef.update({ leccion_actual_DM: archivoActual });
                             }
                             
                             // Recuperación de memoria
                             const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
                             if (data[campoBitacora]) {
-                                document.getElementById("user-reflection").value = data[campoBitacora];
+                                areaTexto.value = data[campoBitacora];
                             }
-                        } else {
-                            window.location.href = archivoExpulsion;
-                        }
-                    } else {
-                        window.location.href = archivoExpulsion;
+                        } else { window.location.href = archivoExpulsion; }
                     }
-                }).catch(() => { window.location.href = archivoExpulsion; });
+                });
 
-                // Lógica de Guardado
+                // Lógica de Guardado (Solo activa si no está bloqueada)
                 document.getElementById("btn-next").addEventListener("click", () => {
                     const textoUsuario = document.getElementById("user-reflection").value;
                     const btn = document.getElementById("btn-next");
@@ -124,21 +124,12 @@
                     btn.disabled = true;
 
                     const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
-
-                    userRef.update({
-                        [nombreCampo]: textoUsuario
-                    }).then(() => {
+                    userRef.update({ [nombreCampo]: textoUsuario }).then(() => {
                         window.location.href = archivoSiguiente;
-                    }).catch((error) => {
-                        alert("Error al sincronizar: " + error.message);
-                        btn.innerText = "Guardar reporte →";
-                        btn.disabled = false;
                     });
                 });
 
-            } else {
-                window.location.href = archivoExpulsion;
-            }
+            } else { window.location.href = archivoExpulsion; }
         });
     </script>
 </body>
