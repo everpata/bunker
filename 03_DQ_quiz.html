@@ -6,40 +6,54 @@
     <title>Quiz / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+        /* 🚨 COMPONENTES TÁCTICOS DQ */
+        
+        /* Bloqueo visual del Quiz (Sello de Decisión) */
+        .quiz-locked .option-btn {
+            pointer-events: none;
+            opacity: 0.7;
         }
+        .quiz-locked .option-btn.selected {
+            opacity: 1;
+            border-color: #333333 !important;
+            color: #333333 !important;
+            font-weight: 700;
+        }
+
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
+        }
+
+        /* Ocultar botones inicialmente */
+        #btn-next, #btn-hub { display: none; }
     </style>
 </head>
 <body>
     <div id="loading-screen">
-        <img src="DQ.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DQ.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DQ.png"></div>
-        <p class="indicator">Sincronización / Deepquest</p>
-        <div class="progress-container"><div class="progress-fill" style="width: 30%;"></div></div>
+        <p class="indicator">Evaluación 03 / Cúspide</p>
+        
+        <div class="progress-container">
+            <div class="progress-fill" style="width: 30%;"></div>
+        </div>
         
         <h1 class="title">Evaluación.</h1>
-        <p id="quiz-desc" class="description">¿Dónde implementarás tu primer límite?</p>
+        <p id="quiz-desc" class="description">¿Dónde implementarás tu primer límite operativo?</p>
         
         <div id="quiz-area" class="work-area">
             <button class="option-btn" onclick="this.classList.toggle('selected')">Círculo social.</button>
             <button class="option-btn" onclick="this.classList.toggle('selected')">Negocios.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">Gestión del tiempo.</button>
         </div>
-        
+
         <button id="btn-next" class="btn-mando">Sincronizar →</button>
-        <button id="btn-hub" class="btn-mando" style="display: none; background: transparent; color: #878787; border: 1px solid #eaeaea; margin-top: 15px;">Regresar a la Cúspide</button>
+        <button id="btn-hub" class="btn-ghost">← Volver al Hub de la Cúspide</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -47,24 +61,22 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
-        // =======================================================
         const archivoActual = "03_DQ_quiz.html";
         const archivoSiguiente = "04_DQ_imagen.html";
         const archivoHub = "09_DQ_hub.html";
         const archivoExpulsion = "08_DM_reportefinal.html";
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); 
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
-        // 1. MOTORES DE NAVEGACIÓN
-        document.getElementById("btn-hub").addEventListener("click", () => { window.location.href = archivoHub; });
-
-        // 2. MOTOR DE SEGURIDAD ULTRA-VIP
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -72,53 +84,66 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
+                        // 1. FILTRO SOBERANO
                         if (data.access_DQ === true) {
-                            // ES ULTRA-VIP: MOSTRAR
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // GPS Y HABILITACIÓN DE HUB
-                            if (data.estado !== "Finalizado_DQ") { 
-                                userRef.update({ leccion_actual_DQ: archivoActual }); 
-                            }
-                            if (data.estado === "Finalizado_DQ") {
-                                document.getElementById("btn-hub").style.display = "block";
-                            }
-                            
-                            // LÓGICA DE QUIZ
+                            const btnNext = document.getElementById("btn-next");
+                            const btnHub = document.getElementById("btn-hub");
+                            const areaQuiz = document.getElementById("quiz-area");
                             const campoQuiz = "quiz_" + archivoActual.replace(/\./g, "_");
-                            const botones = document.querySelectorAll('.option-btn');
-                            const btnSiguiente = document.getElementById("btn-next");
 
-                            // Si ya respondió, bloquea edición y habilita paso directo
+                            // 🏰 EL HUB SIEMPRE VISIBLE PARA EL REY
+                            btnHub.style.display = "block";
+                            btnHub.onclick = () => { window.location.href = archivoHub; };
+
+                            // 🧠 CEREBRO DE NAVEGACIÓN Y BLOQUEO
                             if (data[campoQuiz] && Array.isArray(data[campoQuiz])) {
+                                // MODO REPASO (Ya respondió)
+                                areaQuiz.classList.add("quiz-locked");
+                                const botones = document.querySelectorAll('.option-btn');
                                 botones.forEach(btn => {
-                                    if (data[campoQuiz].includes(btn.innerText.trim())) btn.classList.add('selected');
-                                    btn.style.pointerEvents = "none";
+                                    if (data[campoQuiz].includes(btn.innerText.trim())) {
+                                        btn.classList.add('selected');
+                                    }
                                 });
-                                btnSiguiente.innerText = "Continuar →";
-                                btnSiguiente.addEventListener("click", () => { window.location.href = archivoSiguiente; });
+
+                                btnNext.innerText = "Continuar →";
+                                btnNext.style.display = "block";
+                                btnNext.onclick = () => { window.location.href = archivoSiguiente; };
                             } else {
-                                // Modo activo: Guardar selección
-                                btnSiguiente.addEventListener("click", () => {
-                                    const seleccionados = Array.from(document.querySelectorAll('.option-btn.selected')).map(btn => btn.innerText.trim());
-                                    if (seleccionados.length === 0) { alert("Toma una decisión operativa para continuar."); return; }
-                                    
-                                    btnSiguiente.innerText = "Sincronizando..."; 
-                                    btnSiguiente.disabled = true;
-                                    
-                                    userRef.update({ [campoQuiz]: seleccionados }).then(() => { 
-                                        window.location.href = archivoSiguiente; 
-                                    }).catch(err => { alert("Error: " + err.message); btnSiguiente.disabled = false; });
-                                });
+                                // MODO CONSTRUCCIÓN (Primera vez)
+                                btnNext.style.display = "block";
+                                btnNext.onclick = () => { ejecutarSincronizacion(userRef, btnNext); };
                             }
-                        } else {
-                            window.location.href = archivoExpulsion;
-                        }
+
+                            // GPS DQ (Solo primera vuelta)
+                            if (data.estado !== "Finalizado_DQ") {
+                                userRef.update({ leccion_actual_DQ: archivoActual });
+                            }
+
+                        } else { window.location.href = archivoExpulsion; }
                     } else { window.location.href = "index.html"; }
-                }).catch(() => { window.location.href = "index.html"; });
+                });
             } else { window.location.href = "index.html"; }
         });
+
+        function ejecutarSincronizacion(userRef, btn) {
+            const seleccionados = Array.from(document.querySelectorAll('.option-btn.selected')).map(btn => btn.innerText.trim());
+            if (seleccionados.length === 0) { 
+                alert("El Rey debe tomar una decisión operativa."); 
+                return; 
+            }
+            
+            btn.innerText = "Sincronizando...";
+            btn.disabled = true;
+            const campoQuiz = "quiz_" + archivoActual.replace(/\./g, "_");
+            
+            userRef.update({ [campoQuiz]: seleccionados }).then(() => {
+                window.location.href = archivoSiguiente;
+            });
+        }
     </script>
 </body>
 </html>
