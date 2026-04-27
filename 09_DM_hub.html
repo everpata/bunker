@@ -6,20 +6,21 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 BANNER ELÁSTICO CON TEXTO ANCLADO AL BORDE INFERIOR */
+        /* 🚨 BANNER ELÁSTICO - ESTILO "MÁSCARA ROTA" */
         #banner-upsell {
             display: none; 
             position: fixed; 
             top: 0; 
             left: 50%; 
             transform: translateX(-50%);
-            width: 92%; 
-            max-width: 440px; 
-            background-color: #333333; 
-            color: #ffffff; 
-            text-align: center; 
+            width: 90%; 
+            max-width: 390px; /* 🚨 ANCHO AJUSTADO PARA COHERENCIA VISUAL */
             
-            /* Padding base */
+            /* COLORES DE ESTATUS ALERTA (ROJO SUAVE) */
+            background-color: #fce8e6; 
+            color: #d93025; 
+            
+            text-align: center; 
             padding-top: 14px; 
             padding-bottom: 14px;
             padding-left: 15px;
@@ -31,37 +32,34 @@
             cursor: pointer; 
             border-radius: 0 0 12px 12px; 
             letter-spacing: 1px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.15); /* Sombra con tinte rojo */
             
-            /* Animaciones: Entrada + Bucle Elástico */
+            /* Animaciones: Entrada + Estiramiento Elástico */
             animation: slideDown 0.8s ease-out, elasticLoop 3s ease-in-out infinite;
             
             font-family: sans-serif;
             box-sizing: border-box;
-            
-            /* Flexbox para asegurar que el texto sea una unidad */
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
         }
 
-        /* Entrada desde el techo */
         @keyframes slideDown { 
             from { transform: translate(-50%, -100%); } 
             to { transform: translate(-50%, 0); } 
         }
 
-        /* 🚨 BUCLE ELÁSTICO: El padding-top empuja el texto hacia abajo sincronizadamente */
+        /* 🚨 BUCLE ELÁSTICO (TEXTO ANCLADO) */
         @keyframes elasticLoop {
             0% { padding-top: 14px; }
-            50% { padding-top: 28px; } /* Crece hacia arriba, empujando el texto al fondo */
+            50% { padding-top: 26px; } /* Se estira hacia abajo */
             100% { padding-top: 14px; }
         }
 
-        /* Evita que el contenido choque con el banner */
-        body.with-banner .container { margin-top: 80px !important; }
+        /* Espacio para que el banner no pise el logo */
+        body.with-banner .container { margin-top: 75px !important; }
 
-        /* Estética del Hub */
+        /* Estética Hub */
         .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
         .lesson-card { background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #333; transition: all 0.3s; }
         .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
@@ -83,7 +81,7 @@
 </head>
 <body>
     <div id="banner-upsell" onclick="window.location.href='08_DM_reportefinal.html'">
-        ⚠️ SISTEMA EN RIESGO: FALTA BRÚJULA DEL REY. HAZ CLIC PARA BLINDAR DQ →
+        ⚠️ SISTEMA EN RIESGO: HAZ CLIC PARA BLINDAR DQ →
     </div>
 
     <div id="loading-screen">
