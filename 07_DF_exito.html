@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Misión Cumplida / Deepmersion</title>
+    <title>Misión Cumplida / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
         /* Ajustes específicos para la atmósfera de victoria */
@@ -36,22 +36,22 @@
 </head>
 <body>
     <div id="loading-screen">
-        <img src="DM.png" class="loading-logo" alt="Cargando...">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
-        <div class="logo"><img src="DM.png"></div>
-        <p class="indicator">Tramo 02 Completado</p>
+        <div class="logo"><img src="DF.png"></div>
+        <p class="indicator">Tramo 01 Completado</p>
         
-        <h1 class="title">Inmersión Exitosa.</h1>
+        <h1 class="title">Descenso Exitoso.</h1>
 
         <img src="victoria.jpeg" class="victory-img">
 
         <div class="work-area card victory-card">
-            <p class="text-base">Has desmantelado la máscara y confrontado la densidad. Tu antigua identidad ha sido procesada. <b>Estás listo para reclamar la soberanía.</b></p>
+            <p class="text-base">Has asimilado los protocolos fundamentales de la superficie. Tu mente ha comenzado a filtrar el ruido. <b>Estás listo para la verdadera Inmersión.</b></p>
         </div>
 
-        <button id="btn-continuar" class="btn-mando">Abrir Reporte de Inmersión →</button>
+        <button id="btn-continuar" class="btn-mando">Abrir Reporte Final →</button>
         <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
     </div>
 
@@ -60,9 +60,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const archivoActual = "07_DM_exito.html"; 
-        const archivoSiguiente = "08_DM_reportefinal.html"; 
-        const archivoHub = "09_DM_hub.html";
+        const archivoActual = "07_DF_exito.html"; 
+        const archivoSiguiente = "08_DF_reportefinal.html"; 
+        const archivoHub = "09_DF_hub.html";
         const archivoExpulsion = "index.html"; 
 
         const firebaseConfig = {
@@ -91,23 +91,24 @@
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
 
-                        // 🧠 CEREBRO DE NAVEGACIÓN
-                        if (data.access_DQ === true || data.estado === "Finalizado_DQ") {
-                            // Modo Soberano
+                        // 🧠 CEREBRO DE NAVEGACIÓN RESTRINGIDO
+                        // Solo mostramos el Hub si ya tiene acceso a la siguiente etapa (DM o superior)
+                        if (data.access_DM === true || data.access_DQ === true) {
                             document.getElementById("btn-continuar").style.display = "block";
                             document.getElementById("btn-volver-hub").style.display = "block";
                         } else {
-                            // Modo Graduación (Primera vez)
+                            // Si solo tiene DF, solo puede ir al reporte (Ventas)
                             document.getElementById("btn-continuar").style.display = "block";
+                            document.getElementById("btn-volver-hub").style.display = "none";
                         }
 
-                        // 🔒 EL CERROJO: Quema las naves de la DM
-                        if (!data.access_DQ && data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
+                        // 🔒 EL CERROJO DF: Quema las naves del primer tramo
+                        if (data.estado !== "Finalizado_DF" && data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
                             userRef.update({
-                                estado: "Finalizado_DM",
-                                leccion_actual_DM: archivoActual
+                                estado: "Finalizado_DF",
+                                leccion_actual_DF: archivoActual
                             }).then(() => {
-                                console.log("Inmersión completada. Rango actualizado: Finalizado_DM");
+                                console.log("Descenso completado. Rango actualizado: Finalizado_DF");
                             });
                         }
                     } else {
