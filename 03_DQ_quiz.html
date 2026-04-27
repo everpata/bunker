@@ -6,7 +6,7 @@
     <title>Quiz / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 COMPONENTES TÁCTICOS DQ */
+        /* 🚨 AJUSTES ESPECÍFICOS DQ V4.9 */
         
         /* Bloqueo visual del Quiz (Sello de Decisión) */
         .quiz-locked .option-btn {
@@ -26,8 +26,9 @@
             position: fixed; top: 0; left: 0; z-index: 9999;
         }
 
-        /* Ocultar botones inicialmente */
-        #btn-next, #btn-hub { display: none; }
+        /* 🔒 BLOQUEO RADICAL DE FUGA */
+        #btn-next { display: none; margin-top: 35px !important; }
+        #btn-hub { display: none !important; margin-top: 20px !important; }
     </style>
 </head>
 <body>
@@ -94,13 +95,9 @@
                             const areaQuiz = document.getElementById("quiz-area");
                             const campoQuiz = "quiz_" + archivoActual.replace(/\./g, "_");
 
-                            // 🏰 EL HUB SIEMPRE VISIBLE PARA EL REY
-                            btnHub.style.display = "block";
-                            btnHub.onclick = () => { window.location.href = archivoHub; };
-
-                            // 🧠 CEREBRO DE NAVEGACIÓN Y BLOQUEO
+                            // 🧠 CEREBRO DE NAVEGACIÓN V4.9
+                            // Paso A: Manejo del estado del Quiz
                             if (data[campoQuiz] && Array.isArray(data[campoQuiz])) {
-                                // MODO REPASO (Ya respondió)
                                 areaQuiz.classList.add("quiz-locked");
                                 const botones = document.querySelectorAll('.option-btn');
                                 botones.forEach(btn => {
@@ -108,14 +105,25 @@
                                         btn.classList.add('selected');
                                     }
                                 });
-
                                 btnNext.innerText = "Continuar →";
-                                btnNext.style.display = "block";
-                                btnNext.onclick = () => { window.location.href = archivoSiguiente; };
+                            }
+
+                            // Paso B: Mostrar botón de continuar
+                            btnNext.style.display = "block";
+                            btnNext.onclick = () => {
+                                if (data[campoQuiz]) {
+                                    window.location.href = archivoSiguiente;
+                                } else {
+                                    ejecutarSincronizacion(userRef, btnNext);
+                                }
+                            };
+
+                            // Paso C: 🔒 EL CANDADO DEL HUB (Solo para Graduados)
+                            if (data.estado === "Finalizado_DQ") {
+                                btnHub.style.setProperty('display', 'block', 'important');
+                                btnHub.onclick = () => { window.location.href = archivoHub; };
                             } else {
-                                // MODO CONSTRUCCIÓN (Primera vez)
-                                btnNext.style.display = "block";
-                                btnNext.onclick = () => { ejecutarSincronizacion(userRef, btnNext); };
+                                btnHub.style.setProperty('display', 'none', 'important');
                             }
 
                             // GPS DQ (Solo primera vuelta)
