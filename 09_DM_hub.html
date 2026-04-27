@@ -6,36 +6,31 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTE DE ESTRUCTURA PARA ELIMINAR HUECOS */
-        .container {
-            justify-content: flex-start !important;
-            padding-top: 30px; 
-            padding-bottom: 30px;
-        }
-
+        /* 🚨 ESTILOS ESPECÍFICOS DEL HUB */
+        
         .hub-grid { 
             width: 100%; 
             display: grid; 
             grid-template-columns: 1fr; 
             gap: 12px;
-            margin-bottom: 0; /* Aseguramos que el grid no empuje hacia abajo */
+            margin-bottom: 0 !important; /* El margen lo maneja el botón siguiente */
         }
         
         .lesson-card { 
-            background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 16px; 
-            padding: 22px; display: flex; align-items: center; justify-content: space-between; 
-            text-decoration: none; color: #333; transition: all 0.3s; 
+            background: #f5f5f7; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 16px; /* Silueta 16px */
+            padding: 22px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            text-decoration: none; 
+            color: #333; 
+            transition: all 0.3s; 
         }
         .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
         .lesson-info b { display: block; font-size: 15px; margin-bottom: 4px; color: #333; }
         .lesson-info span { font-size: 12px; color: #878787; font-weight: 500; }
-
-        .btn-ghost-hub {
-            background: transparent; border: none; color: #878787; font-size: 13px; 
-            font-weight: 500; cursor: pointer; margin-top: 15px; width: 100%;
-            text-align: center; font-family: inherit;
-        }
-        .btn-ghost-hub:hover { color: #333; }
 
         #loading-screen { 
             display: flex; align-items: center; justify-content: center; 
@@ -83,14 +78,11 @@
             </a>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 7px; width: 100%;">
-            
-            <button id="btn-reporte-dm" class="btn-mando" style="display: none;">Revisar el reporte de daños →</button>
-            
-            <button id="btn-ir-dq" class="btn-mando" style="display: none; background-color: #333;">Ir al Hub de la Cúspide (DQ) →</button>
-            
-            <button id="btn-volver-df" class="btn-ghost-hub">← Regresar al Descenso</button>
-        </div>
+        <button id="btn-reporte-dm" class="btn-mando" style="display: none;">Revisar el reporte de daños →</button>
+        
+        <button id="btn-ir-dq" class="btn-mando" style="display: none; background-color: #333;">Ir al Hub de la Cúspide (DQ) →</button>
+        
+        <button id="btn-volver-df" class="btn-ghost">← Regresar al Descenso</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -126,6 +118,7 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
+                            // Lógica de visualización de botones principales
                             if (data.access_DQ === true) {
                                 document.getElementById("btn-reporte-dm").style.display = "none";
                                 document.getElementById("btn-ir-dq").style.display = "block";
