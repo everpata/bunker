@@ -3,40 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Misión Cumplida / Deepfall</title>
+    <title>Misión Cumplida / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Centrado perfecto para la graduación y animaciones de victoria */
+        /* Ajustes específicos para la atmósfera de victoria */
         html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
-        .container { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: auto; width: 100%; }
         
-        .victory-img { width: 100%; border-radius: 12px; margin-bottom: 20px; animation: floatIn 1.5s ease forwards; }
-        .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; box-sizing: border-box; }
+        .victory-img { 
+            width: 100%; 
+            border-radius: 16px; /* Sincronizado V4.0 */
+            margin-bottom: 20px; 
+            animation: floatIn 1.5s ease forwards; 
+            display: block;
+        }
+
+        .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; }
 
         @keyframes floatIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Ocultar inicialmente para el cerebro de navegación */
+        #btn-continuar, #btn-volver-hub { display: none; }
+
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
+        }
     </style>
 </head>
 <body>
     <div id="loading-screen">
-        <img src="DF.png" class="loading-logo" alt="Cargando...">
+        <img src="DM.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
-        <div class="logo"><img src="DF.png"></div>
-        <p class="indicator">Tramo 01 Completado</p>
+        <div class="logo"><img src="DM.png"></div>
+        <p class="indicator">Tramo 02 Completado</p>
         
-        <h1 class="title">Misión Cumplida.</h1>
+        <h1 class="title">Inmersión Exitosa.</h1>
 
         <img src="victoria.jpeg" class="victory-img">
 
         <div class="work-area card victory-card">
-            <p class="text-base">Has asimilado los protocolos fundamentales. Tu mente ahora opera en una frecuencia distinta. <b>Estás listo para el siguiente tramo.</b></p>
+            <p class="text-base">Has desmantelado la máscara y confrontado la densidad. Tu antigua identidad ha sido procesada. <b>Estás listo para reclamar la soberanía.</b></p>
         </div>
 
-        <button id="btn-continuar" class="btn-mando">Abrir Reporte de Descenso →</button>
+        <button id="btn-continuar" class="btn-mando">Abrir Reporte de Inmersión →</button>
+        <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -44,14 +60,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
-        // =======================================================
-        const archivoActual = "07_DF_exito.html";         // GPS: Archivo actual
-        const archivoSiguiente = "08_DF_reportefinal.html"; // Destino al dar clic (Carta de Ventas)
-        const archivoExpulsion = "index.html";            // Destino si detecta intrusos
+        const archivoActual = "07_DM_exito.html"; 
+        const archivoSiguiente = "08_DM_reportefinal.html"; 
+        const archivoHub = "09_DM_hub.html";
+        const archivoExpulsion = "index.html"; 
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -64,12 +77,9 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 1. ASIGNACIÓN DEL BOTÓN CONTINUAR
-        document.getElementById("btn-continuar").addEventListener("click", () => {
-            window.location.href = archivoSiguiente;
-        });
+        document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
-        // 2. MOTOR DE SEGURIDAD Y EJECUCIÓN DEL CERROJO
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -78,18 +88,27 @@
                     if (doc.exists) {
                         const data = doc.data();
 
-                        // Autorizado: Quitar escudo de carga (Como es la página de victoria, siempre se muestra si está logueado)
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
 
-                        // EL CERROJO: Quema las naves solo si no tiene un rango superior
-                        if (!data.access_DM && !data.access_DQ && data.estado !== "Finalizado_DF") {
+                        // 🧠 CEREBRO DE NAVEGACIÓN
+                        if (data.access_DQ === true || data.estado === "Finalizado_DQ") {
+                            // Modo Soberano
+                            document.getElementById("btn-continuar").style.display = "block";
+                            document.getElementById("btn-volver-hub").style.display = "block";
+                        } else {
+                            // Modo Graduación (Primera vez)
+                            document.getElementById("btn-continuar").style.display = "block";
+                        }
+
+                        // 🔒 EL CERROJO: Quema las naves de la DM
+                        if (!data.access_DQ && data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
                             userRef.update({
-                                estado: "Finalizado_DF",
-                                leccion_actual_DF: archivoActual
+                                estado: "Finalizado_DM",
+                                leccion_actual_DM: archivoActual
                             }).then(() => {
-                                console.log("Expedicionario graduado. Naves quemadas. Rango: Finalizado_DF");
-                            }).catch((error) => console.error("Error al ejecutar cierre:", error));
+                                console.log("Inmersión completada. Rango actualizado: Finalizado_DM");
+                            });
                         }
                     } else {
                         window.location.href = archivoExpulsion;
