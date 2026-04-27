@@ -21,7 +21,7 @@
             text-transform: uppercase;
         }
 
-        /* Botón Upsell T03 (DQ) */
+        /* 🎯 PRECISIÓN V4.6: Espaciado de 35px tras la tarjeta */
         .btn-status-alert {
             margin-top: 35px !important;
             background-color: #fce8e6 !important;
@@ -64,7 +64,7 @@
         <h1 class="title">Fin de la Inmersión.</h1>
         <p class="description">Análisis final del Tramo 02 completado.</p>
 
-        <div class="work-area card">
+        <div class="work-area card" style="margin-bottom: 0;">
             <p class="text-base">
                 <b>Diagnóstico:</b> Has descendido a las profundidades, pero tu estructura soberana sigue fragmentada. El búnker está incompleto.<br><br>
                 <b>Orden:</b> Ascender a la Cúspide (Tramo 03) para consolidar el mando absoluto.
@@ -108,18 +108,18 @@
                     if (doc.exists) {
                         const data = doc.data();
 
-                        // 🧠 1. MOTOR DE TRAYECTORIA DINÁMICA (REDIRECCIÓN DQ)
+                        // 🧠 1. MOTOR DE TRAYECTORIA (REDIRECCIÓN DQ)
                         if (data.access_DQ === true) {
-                            // Si detecta acceso, salta directamente a la lección 1 de DQ o a su progreso
                             window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html";
                             return; 
                         }
                         
-                        // 🛰️ 2. SELLO DE GPS (TRACKING DEL REPORTE)
-                        // Esto asegura que en Firebase se guarde que llegó hasta aquí
+                        // 🛰️ 2. SELLO DE GPS DM (SOLUCIÓN AL TRACKING)
                         userRef.update({ 
                             leccion_actual_DM: "08_DM_reportefinal.html", 
                             estado: "Finalizado_DM" 
+                        }).then(() => {
+                            console.log("GPS DM Sincronizado");
                         });
 
                         document.getElementById("nombre-exp").innerText = "EXPEDICIONARIO: " + (data.nombre || "SIN NOMBRE").toUpperCase();
