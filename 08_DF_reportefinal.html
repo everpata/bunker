@@ -20,13 +20,14 @@
         .time-box span { font-size: 18px; font-weight: bold; color: #333; font-family: monospace; }
         .time-box small { font-size: 9px; color: #666; display: block; font-weight: bold; }
         
-        /* MEJORA 1: BOTÓN SECUNDARIO SIMÉTRICO */
         .btn-secundario { 
             width: 100%; background: transparent; color: #333; border: 1px solid #ccc; 
             padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; 
             cursor: pointer; margin-top: 15px; transition: all 0.3s; font-family: inherit;
         }
         .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
+
+        /* 🚨 MINIMALISMO ABSOLUTO EN CARGA */
         #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: absolute; top: 0; left: 0; z-index: 9999; }
     </style>
 </head>
@@ -48,10 +49,10 @@
         
         <div class="work-area card">
             <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
-                <b>DIAGNÓSTICO TÉCNICO:</b> Tu capacidad para mentirte ha sido neutralizada y tu máscara ha sido fracturada. Estás en la zona de mayor riesgo: la exposición total.
+                <b>DIAGNÓSTICO TÉCNICO:</b> Tu capacidad para mentirte ha sido neutralizada y tu máscara ha sido fracturada.
             </p>
             <p class="text-base" style="margin-bottom: 0; font-size: 14px;">
-                <b>ORDEN DE MANDO:</b> Es imperativo iniciar la Inmersión (Tramo 02) de inmediato para blindar tu nueva verdad.
+                <b>ORDEN DE MANDO:</b> Es imperativo iniciar la Inmersión (Tramo 02) de inmediato.
             </p>
         </div>
 
@@ -69,11 +70,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const linkPago = "https://TU_LINK_DE_PAGO_AQUI.com";
-        const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime();
+        // 🚨 CENTRALIZACIÓN DE RUTAS Y CONFIGURACIÓN
+        const linkPago = "https://TU_LINK_DE_PAGO_AQUI.com"; // 🚨 ACTUALIZAR
+        const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime(); // 🚨 ACTUALIZAR
+        const rutaRepaso = "06_DF_principios.html"; 
 
         document.getElementById("btn-comprar").onclick = () => { window.location.href = linkPago; };
-        document.getElementById("btn-repasar").onclick = () => { window.location.href = "06_DF_principios.html"; };
+        document.getElementById("btn-repasar").onclick = () => { window.location.href = rutaRepaso; };
 
         // Temporizador
         setInterval(function() {
@@ -98,7 +101,7 @@
                         const data = doc.data();
                         if (data.access_DM || data.access_DQ) { window.location.href = "index.html"; return; }
                         
-                        // MEJORA 2: ACTUALIZAR GPS AL ENTRAR AL REPORTE
+                        // 🚨 ACTUALIZACIÓN DEFINITIVA DE VARIABLES (GPS Y ESTADO)
                         userRef.update({ 
                             leccion_actual_DF: "08_DF_reportefinal.html", 
                             estado: "Finalizado_DF" 
