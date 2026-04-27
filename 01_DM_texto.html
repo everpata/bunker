@@ -6,23 +6,23 @@
     <title>Texto / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ESTILOS LOCALES PARA EL BOTÓN ROJO (MÁSCARA ROTA) */
+        /* 🚨 ESTILOS LOCALES: BOTÓN ROJO ELÁSTICO */
         .btn-status-alert {
-            display: none; /* JS decide si se muestra */
+            display: none; 
             background-color: #fce8e6 !important;
             color: #d93025 !important;
             border: 1px solid #d93025 !important;
             font-weight: 700 !important;
             width: 100%;
             padding: 20px;
-            border-radius: 16px; /* Tu estándar */
+            border-radius: 16px; 
             font-size: 16px;
             cursor: pointer;
             font-family: inherit;
             box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
             animation: btnElastic 4s ease-in-out infinite;
             text-align: center;
-            /* El margen de 35px ya viene del style.css */
+            margin-top: 35px !important;
         }
 
         @keyframes btnElastic {
@@ -31,7 +31,7 @@
             100% { padding-top: 18px; padding-bottom: 18px; }
         }
 
-        /* Ocultamos todo inicialmente para evitar parpadeos */
+        /* Ocultar botones para que el JS decida la visibilidad sin parpadeos */
         #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
 
         #loading-screen {
@@ -42,6 +42,7 @@
     </style>
 </head>
 <body>
+
     <div id="loading-screen">
         <img src="DM.png" class="loading-logo" alt="Cargando...">
     </div>
@@ -59,9 +60,7 @@
         </div>
 
         <button id="btn-continuar" class="btn-mando">Continuar →</button>
-        
         <button id="btn-alerta-reporte" class="btn-status-alert">REVISAR REPORTE DE DAÑOS →</button>
-        
         <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
 
     </div>
@@ -89,7 +88,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Acciones de los botones
         document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
         document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
@@ -105,29 +103,33 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // 🧠 CEREBRO DE NAVEGACIÓN (Tres Estados)
-                            
-                            // Caso A: Terminó la DM pero NO ha comprado el DQ (Máscara Rota)
+                            const btnNegro = document.getElementById("btn-continuar");
+                            const btnRojo = document.getElementById("btn-alerta-reporte");
+                            const btnHub = document.getElementById("btn-volver-hub");
+
+                            // 🧠 CEREBRO DE NAVEGACIÓN (3 ESTADOS)
+
                             if (data.estado === "Finalizado_DM" && !data.access_DQ) {
-                                document.getElementById("btn-continuar").style.display = "none";
-                                document.getElementById("btn-alerta-reporte").style.display = "block";
-                                document.getElementById("btn-volver-hub").style.display = "block";
+                                // ESTADO: MÁSCARA ROTA
+                                btnNegro.style.display = "none";
+                                btnRojo.style.display = "block";
+                                btnHub.style.display = "block";
                             } 
-                            // Caso B: Es un soberano (Tiene DQ) -> Puede ir lineal o al hub
-                            else if (data.access_DQ === true) {
-                                document.getElementById("btn-continuar").style.display = "block";
-                                document.getElementById("btn-alerta-reporte").style.display = "none";
-                                document.getElementById("btn-volver-hub").style.display = "block";
+                            else if (data.access_DQ === true || data.estado === "Finalizado_DQ") {
+                                // ESTADO: REY / SOBERANO
+                                btnNegro.style.display = "block";
+                                btnRojo.style.display = "none";
+                                btnHub.style.display = "block";
                             }
-                            // Caso C: Es un explorador (Haciendo la DM por primera vez)
                             else {
-                                document.getElementById("btn-continuar").style.display = "block";
-                                document.getElementById("btn-alerta-reporte").style.display = "none";
-                                document.getElementById("btn-volver-hub").style.display = "none";
+                                // ESTADO: EXPLORADOR (Primera vez)
+                                btnNegro.style.display = "block";
+                                btnRojo.style.display = "none";
+                                btnHub.style.display = "none";
                             }
 
-                            // GPS: Solo se actualiza si no es modo repaso
-                            if (data.estado !== "Finalizado_DM" && !data.access_DQ) {
+                            // GPS (Solo si no es modo repaso final)
+                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
                                 userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
                             }
 
