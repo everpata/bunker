@@ -6,48 +6,23 @@
     <title>Misión Cumplida / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ATMÓSFERA DE VICTORIA FINAL V4.9 */
         html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
-        
-        .victory-img { 
-            width: 100%; 
-            border-radius: 16px; 
-            margin-bottom: 20px; 
-            animation: floatIn 1.5s ease forwards; 
-            display: block;
-        }
-
+        .victory-img { width: 100%; border-radius: 16px; margin-bottom: 20px; animation: floatIn 1.5s ease forwards; display: block; }
         .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; }
+        @keyframes floatIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes floatIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #loading-screen {
-            display: flex; align-items: center; justify-content: center;
-            height: 100vh; width: 100vw; background: #fff;
-            position: fixed; top: 0; left: 0; z-index: 9999;
-        }
-
-        /* 🔒 BLOQUEO RADICAL DE FUGA: Ocultos por defecto */
-        #btn-continuar { display: none; margin-top: 35px !important; }
+        #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: fixed; top: 0; left: 0; z-index: 9999; }
         
-        #btn-hub { 
-            display: none !important; 
-            margin-top: 20px !important; 
-        }
+        /* 🔒 EMBUDO CIEGO: Sin distracciones */
+        #btn-continuar { display: none; margin-top: 35px !important; }
     </style>
 </head>
 <body>
-    <div id="loading-screen">
-        <img src="DQ.png" class="loading-logo" alt="Cargando...">
-    </div>
+    <div id="loading-screen"><img src="DQ.png" class="loading-logo" alt="Cargando..."></div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DQ.png"></div>
         <p class="indicator">Tramo 03 Completado</p>
-        
         <h1 class="title">Ascenso Finalizado.</h1>
 
         <img src="victoria.jpeg" class="victory-img" alt="Victoria Soberana">
@@ -57,7 +32,6 @@
         </div>
 
         <button id="btn-continuar" class="btn-mando">Abrir Reporte Definitivo →</button>
-        <button id="btn-hub" class="btn-ghost">← Volver al Hub de la Cúspide</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -67,7 +41,6 @@
     <script>
         const archivoActual = "07_DQ_exito.html"; 
         const archivoSiguiente = "08_DQ_reportefinal.html"; 
-        const archivoExpulsion = "08_DM_reportefinal.html"; 
 
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
@@ -78,55 +51,24 @@
             appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); 
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
         document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
-        document.getElementById("btn-hub").onclick = () => { window.location.href = "09_DQ_hub.html"; };
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
                 userRef.get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        
-                        if (data.access_DQ === true) {
-                            document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "flex";
+                    if (doc.exists && doc.data().access_DQ === true) {
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+                        document.getElementById("btn-continuar").style.display = "block";
 
-                            const btnNext = document.getElementById("btn-continuar");
-                            const btnHub = document.getElementById("btn-hub");
-
-                            // 🧠 CEREBRO DE NAVEGACIÓN V4.9
-                            btnNext.style.display = "block";
-
-                            // Función para manejar la visibilidad del Hub según el estatus
-                            const gestionarHub = (status) => {
-                                if (status === "Finalizado_DQ") {
-                                    btnHub.style.setProperty('display', 'block', 'important');
-                                } else {
-                                    btnHub.style.setProperty('display', 'none', 'important');
-                                }
-                            };
-
-                            // 🔒 EL CERROJO FINAL: Quema todas las naves
-                            if (data.estado !== "Finalizado_DQ") {
-                                userRef.update({
-                                    estado: "Finalizado_DQ",
-                                    leccion_actual_DQ: archivoActual
-                                }).then(() => {
-                                    console.log("Expedición concluida. Rango: REY.");
-                                    gestionarHub("Finalizado_DQ"); // Se libera tras el éxito
-                                }).catch(err => console.log("Error en el cerrojo:", err));
-                            } else {
-                                gestionarHub("Finalizado_DQ"); // Ya era Rey (Modo Repaso)
-                            }
-
-                        } else {
-                            window.location.href = archivoExpulsion; 
+                        // Sellar estado para preparar la revelación del Hub en la siguiente página
+                        if (doc.data().estado !== "Finalizado_DQ") {
+                            userRef.update({ estado: "Finalizado_DQ", leccion_actual_DQ: archivoActual });
                         }
-                    } else { window.location.href = "index.html"; }
+                    } else { window.location.href = "08_DM_reportefinal.html"; }
                 });
             } else { window.location.href = "index.html"; }
         });
