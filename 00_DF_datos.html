@@ -29,12 +29,17 @@
             font-family: inherit; 
             margin-bottom: 10px; 
         }
-        /* Ajuste para que el input de edad no tenga flechas */
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
+        }
     </style>
 </head>
 <body>
-    <div id="loading-screen" style="display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: fixed; z-index: 9999;">
+    <div id="loading-screen">
         <img src="DF.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
@@ -59,7 +64,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const primeraLeccion = "01_DF_texto.html"; 
+        // 🚩 COORDENADAS DE ENTRADA
+        const leccion1DF = "01_DF_texto.html";
+        const leccion1DM = "01_DM_texto.html";
+        const leccion1DQ = "01_DQ_texto.html";
 
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
@@ -73,34 +81,27 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Inicializar Teléfono
         const phoneInputField = document.querySelector("#phone");
         const phoneInput = window.intlTelInput(phoneInputField, {
             preferredCountries: ["mx", "es", "co", "ar"],
             separateDialCode: true,
             initialCountry: "auto",
             geoIpLookup: function(success) {
-                fetch("https://ipapi.co/json")
-                    .then(res => res.json())
-                    .then(data => success(data.country_code))
-                    .catch(() => success("mx"));
+                fetch("https://ipapi.co/json").then(res => res.json()).then(data => success(data.country_code)).catch(() => success("mx"));
             }
         });
 
-        // 🧠 CENTINELA INTELIGENTE V4.1
+        // 🧠 CENTINELA INTELIGENTE (REDESPLIEGUE)
         auth.onAuthStateChanged((user) => { 
             if (!user) {
                 window.location.href = "index.html"; 
             } else {
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
-                    if (doc.exists && doc.data().estado === "Operativo") {
-                        const data = doc.data();
-                        // Enrutamiento por prioridad de tramo
-                        if (data.leccion_actual_DQ) { window.location.href = data.leccion_actual_DQ; }
-                        else if (data.leccion_actual_DM) { window.location.href = data.leccion_actual_DM; }
-                        else { window.location.href = data.leccion_actual_DF || primeraLeccion; }
+                    const data = doc.data();
+                    if (doc.exists && data.estado === "Operativo") {
+                        // Si ya completó sus datos, lo mandamos a su lección según prioridad de acceso
+                        lanzarAUbicacion(data);
                     } else {
-                        // Usuario nuevo o incompleto: Quitar loading
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
                     }
@@ -108,7 +109,23 @@
             }
         });
 
-        // Lógica de Guardado Blindada
+        // 🚀 MOTOR DE LANZAMIENTO JERÁRQUICO
+        function lanzarAUbicacion(data) {
+            // Prioridad 1: Deepquest (Cúspide)
+            if (data.access_DQ) {
+                window.location.href = data.leccion_actual_DQ || leccion1DQ;
+            } 
+            // Prioridad 2: Deepmersion (Inmersión)
+            else if (data.access_DM) {
+                window.location.href = data.leccion_actual_DM || leccion1DM;
+            } 
+            // Prioridad 3: Deepfall (Descenso)
+            else {
+                window.location.href = data.leccion_actual_DF || leccion1DF;
+            }
+        }
+
+        // Lógica de Guardado con Sello Merge
         document.getElementById('btnGuardar').addEventListener('click', () => {
             const user = auth.currentUser;
             const age = document.getElementById('userAge').value;
@@ -130,22 +147,23 @@
             btn.innerText = "Sincronizando...";
             btn.disabled = true;
 
-            // 🛡️ EL CERROJO: .set(..., { merge: true }) 
-            // Crea el documento si no existe, evita el error de sincronización
-            db.collection("usuarios").doc(user.uid).set({
+            const userRef = db.collection("usuarios").doc(user.uid);
+
+            userRef.set({
                 edad: age,
                 ocupacion: job,
                 telefono: fullPhone,
                 estado: "Operativo",
-                access_DF: true, // Acceso inicial concedido
-                leccion_actual_DF: primeraLeccion, 
                 ultimaSincronizacion: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true })
             .then(() => { 
-                window.location.href = primeraLeccion; 
+                // Tras guardar, volvemos a leer para saber a qué tramo mandarlo
+                userRef.get().then((doc) => {
+                    lanzarAUbicacion(doc.data());
+                });
             })
             .catch((error) => { 
-                alert("Error de sincronización: " + error.message); 
+                alert("Error: " + error.message); 
                 btn.innerText = "Continuar →";
                 btn.disabled = false;
             });
