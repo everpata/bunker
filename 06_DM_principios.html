@@ -6,7 +6,7 @@
     <title>Principio / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 COMPONENTES TÁCTICOS DE REPASO */
+        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
         
         .btn-status-alert {
             display: none; 
@@ -16,14 +16,13 @@
             font-weight: 700 !important;
             width: 100%;
             padding: 20px;
-            border-radius: 14px;
+            border-radius: 16px;
             font-size: 16px;
             cursor: pointer;
-            font-family: inherit;
             box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
             animation: btnElastic 4s ease-in-out infinite;
             text-align: center;
-            margin-top: 35px;
+            margin-top: 35px !important;
         }
 
         @keyframes btnElastic {
@@ -32,39 +31,19 @@
             100% { padding-top: 18px; padding-bottom: 18px; }
         }
 
-        .btn-ghost {
-            display: none; 
-            background: transparent;
-            border: none;
-            color: #878787;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 100%;
-            text-align: center;
-            font-family: inherit;
-            transition: color 0.3s;
-        }
-        .btn-ghost:hover { color: #333; }
+        /* Ocultar botones inicialmente */
+        #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
 
         #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
         }
     </style>
 </head>
 <body>
     <div id="loading-screen">
-        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DM.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
@@ -83,15 +62,9 @@
                 <p class="text-base">El peso de la realidad es tu única ventaja injusta.</p>
             </div>
             
-            <div id="nav-container" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-                
-                <button id="btn-continuar" class="btn-mando">Asimilado →</button>
-                
-                <button id="id-alerta-reporte" class="btn-status-alert">REVISAR REPORTE DE DAÑOS →</button>
-                
-                <button id="id-volver-hub" class="btn-ghost">← Volver al Hub</button>
-
-            </div>
+            <button id="btn-continuar" class="btn-mando">Asimilado →</button>
+            <button id="btn-alerta-reporte" class="btn-status-alert">REVISAR REPORTE DE DAÑOS →</button>
+            <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
         </div>
     </div>
 
@@ -100,7 +73,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // PANEL DE ENRUTAMIENTO
         const archivoActual = "06_DM_principios.html"; 
         const archivoSiguiente = "07_DM_exito.html"; 
         const archivoHub = "09_DM_hub.html"; 
@@ -126,8 +98,8 @@
 
         // 2. Asignación de Eventos Navegación
         document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
-        document.getElementById("id-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
-        document.getElementById("id-volver-hub").onclick = () => { window.location.href = archivoHub; };
+        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -138,33 +110,42 @@
                         
                         if (data.access_DM === true) {
                             document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "block";
+                            document.getElementById("bunker-content").style.display = "flex";
 
-                            // 🚨 LÓGICA DE REPASO (MÁSCARA ROTA)
+                            const btnNegro = document.getElementById("btn-continuar");
+                            const btnRojo = document.getElementById("btn-alerta-reporte");
+                            const btnHub = document.getElementById("btn-volver-hub");
+
+                            // 🧠 CEREBRO DE NAVEGACIÓN (3 ESTADOS)
+
                             if (data.estado === "Finalizado_DM" && !data.access_DQ) {
-                                document.getElementById("btn-continuar").style.display = "none";
-                                document.getElementById("id-alerta-reporte").style.display = "block";
-                                document.getElementById("id-volver-hub").style.display = "block";
+                                // ESTADO: MÁSCARA ROTA
+                                btnNegro.style.display = "none";
+                                btnRojo.style.display = "block";
+                                btnHub.style.display = "block";
                             } 
-                            else if (data.access_DQ === true) {
-                                document.getElementById("id-volver-hub").style.display = "block";
+                            else if (data.access_DQ === true || data.estado === "Finalizado_DQ") {
+                                // ESTADO: SOBERANO
+                                btnNegro.style.display = "block";
+                                btnRojo.style.display = "none";
+                                btnHub.style.display = "block";
+                            }
+                            else {
+                                // ESTADO: EXPLORADOR
+                                btnNegro.style.display = "block";
+                                btnRojo.style.display = "none";
+                                btnHub.style.display = "none";
                             }
 
                             // GPS (Solo primera vuelta)
-                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) {
+                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
                                 userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
                             }
 
-                        } else {
-                            window.location.href = archivoExpulsion; 
-                        }
-                    } else {
-                        window.location.href = "index.html";
+                        } else { window.location.href = archivoExpulsion; }
                     }
-                }).catch(() => { window.location.href = "index.html"; });
-            } else {
-                window.location.href = "index.html";
-            }
+                });
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
