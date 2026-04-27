@@ -6,32 +6,30 @@
     <title>Reporte Definitivo / Deepquest</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 IDENTIFICACIÓN DEL EXPEDICIONARIO */
+        /* 🚨 AJUSTES DE PRECISIÓN V4.1 */
         #user-name {
-            font-size: 11px;
-            font-weight: 600;
-            color: #878787;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 18px; 
-            line-height: 1;
-            display: block;
-            opacity: 0;
-            animation: fadeInName 1s ease forwards 0.5s;
+            font-size: 11px; font-weight: 600; color: #878787;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            margin-bottom: 18px; line-height: 1; display: block;
+            opacity: 0; animation: fadeInName 1s ease forwards 0.5s;
         }
 
-        /* Etiqueta Verde de Victoria */
         .status-badge-success {
-            background-color: #e6f4ea;
-            color: #137333;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 800;
-            display: inline-block;
-            margin-bottom: 25px;
-            border: 1px solid #137333;
+            background-color: #e6f4ea; color: #137333;
+            padding: 6px 12px; border-radius: 6px;
+            font-size: 10px; font-weight: 800; display: inline-block;
+            margin-bottom: 25px; border: 1px solid #137333;
             text-transform: uppercase;
+        }
+
+        /* 🎯 FIX DE ESPACIADO: 35px exactos tras la tarjeta */
+        #btn-hub-principal {
+            margin-top: 35px !important;
+        }
+
+        /* 🎯 FIX DE BOTÓN FANTASMA: 20px tras el botón principal */
+        #btn-logout-soberano {
+            margin-top: 20px !important;
         }
 
         @keyframes fadeInName { from { opacity: 0; } to { opacity: 1; } }
@@ -41,46 +39,37 @@
             height: 100vh; width: 100vw; background: #fff; 
             position: fixed; top: 0; left: 0; z-index: 9999; 
         }
-
-        /* Ajuste de márgenes para el área de acción */
-        .action-area {
-            margin-top: 35px;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
-        <img src="DQ.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DQ.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DQ.png"></div>
         
         <span id="user-name">EXPEDICIONARIO: ---</span>
-        
         <div class="status-badge-success">ESTATUS: HOMBRE PROFUNDO</div>
         
         <h1 class="title">Estatus: Rey.</h1>
-        <p class="description">Reporte de blindaje definitivo tras completar el Tramo 03.</p>
+        <p class="description">Reporte de blindaje definitivo completado.</p>
 
-        <div class="work-area card">
+        <div class="work-area card" style="margin-bottom: 0;">
             <p class="text-base">
                 <b>Diagnóstico:</b> Posees el conocimiento estructural completo del hombre profundo. Tu sistema operativo ha sido blindado contra el ruido y la fragmentación externa.<br><br>
-                <b>Orden:</b> Mantener la soberanía absoluta. Si deseas acompañamiento táctico 1 a 1 de forma recurrente, aplica a la mesa táctica.
+                <b>Orden:</b> Mantener la soberanía absoluta. Si deseas acompañamiento táctico 1 a 1, aplica a la mesa táctica.
             </p>
         </div>
 
-        <div class="action-area">
-            <button onclick="window.location.href='09_DQ_hub.html'" class="btn-mando">
-                Ir al Centro de Mando (DQ) →
-            </button>
-            
-            <button onclick="firebase.auth().signOut().then(() => window.location.href='index.html')" class="btn-ghost" style="margin-top: 20px;">
-                Cerrar sesión segura
-            </button>
-        </div>
+        <button id="btn-hub-principal" onclick="window.location.href='09_DQ_hub.html'" class="btn-mando">
+            Ir al Centro de Mando (DQ) →
+        </button>
+        
+        <button id="btn-logout-soberano" onclick="firebase.auth().signOut().then(() => window.location.href='index.html')" class="btn-ghost">
+            Cerrar sesión segura
+        </button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -105,24 +94,19 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        
-                        // Protección de acceso: Solo VIP de Tramo 03
                         if (data.access_DQ === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // Sincronizar nombre del Rey
                             const nombreExp = data.nombre || "SIN NOMBRE";
                             document.getElementById("user-name").innerText = "EXPEDICIONARIO: " + nombreExp.toUpperCase();
 
-                            // Sellar Estado Final (Graduación Absoluta)
                             if (data.estado !== "Finalizado_DQ") {
                                 userRef.update({ 
                                     leccion_actual_DQ: "08_DQ_reportefinal.html", 
                                     estado: "Finalizado_DQ" 
                                 });
                             }
-
                         } else { window.location.href = "08_DM_reportefinal.html"; }
                     } else { window.location.href = "index.html"; }
                 });
