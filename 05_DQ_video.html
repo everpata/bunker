@@ -6,15 +6,27 @@
     <title>Video / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES ESPECÍFICOS DQ */
+        /* 🚨 AJUSTES ESPECÍFICOS DQ V4.9 */
         #loading-screen {
             display: flex; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; background: #fff;
             position: fixed; top: 0; left: 0; z-index: 9999;
         }
 
-        /* Ocultar botones inicialmente para el cerebro de navegación */
-        #btn-continuar, #btn-hub { display: none; }
+        /* 🔒 BLOQUEO RADICAL DE FUGA: Ocultos por defecto */
+        #btn-continuar { display: none; margin-top: 35px !important; }
+        
+        #btn-hub { 
+            display: none !important; 
+            margin-top: 20px !important; 
+        }
+
+        /* Sincronización de silueta V4.0 para el video */
+        .video-container {
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+        }
     </style>
 </head>
 <body>
@@ -40,7 +52,6 @@
         </div>
 
         <button id="btn-continuar" class="btn-mando">He visto el video →</button>
-        
         <button id="btn-hub" class="btn-ghost">← Volver al Hub de la Cúspide</button>
     </div>
 
@@ -76,7 +87,6 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // 1. FILTRO DE ACCESO DQ (Soberano)
                         if (data.access_DQ === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
@@ -84,18 +94,22 @@
                             const btnNext = document.getElementById("btn-continuar");
                             const btnHub = document.getElementById("btn-hub");
 
-                            // 🧠 CEREBRO DE NAVEGACIÓN DQ
-                            // El Rey siempre tiene el Hub disponible
+                            // 🧠 CEREBRO DE NAVEGACIÓN V4.9
                             btnNext.style.display = "block";
-                            btnHub.style.display = "block";
 
-                            // GPS DQ
+                            // 🔒 EL CANDADO DEL HUB (Solo para Graduados)
+                            if (data.estado === "Finalizado_DQ") {
+                                btnHub.style.setProperty('display', 'block', 'important');
+                            } else {
+                                btnHub.style.setProperty('display', 'none', 'important');
+                            }
+
+                            // GPS DQ (Tracking de progreso)
                             if (data.estado !== "Finalizado_DQ") {
-                                userRef.update({ leccion_actual_DQ: archivoActual }).catch(err => console.log(err));
+                                userRef.update({ leccion_actual_DQ: archivoActual });
                             }
 
                         } else {
-                            // Expulsión al reporte de la DM
                             window.location.href = archivoExpulsion; 
                         }
                     } else { window.location.href = "index.html"; }
