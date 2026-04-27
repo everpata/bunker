@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reporte de Daños / Deepmersion</title>
+    <title>Reporte de Inmersión / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 IDENTIFICACIÓN */
-        #user-name {
+        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
+        #nombre-exp {
             font-size: 11px; font-weight: 600; color: #878787;
             letter-spacing: 1.5px; text-transform: uppercase;
             margin-bottom: 18px; line-height: 1; display: block;
-            opacity: 0; animation: fadeInName 1s ease forwards 0.5s;
         }
 
         .status-badge {
@@ -22,43 +21,15 @@
             text-transform: uppercase;
         }
 
-        /* 🚨 FIX TEMPORIZADOR LATERAL */
-        .stats-container {
-            display: flex !important;
-            flex-direction: row !important; /* Fuerza la fila */
-            gap: 10px;
-            width: 100%;
-            margin-top: 35px; /* Espacio desde el texto superior */
-            margin-bottom: 0 !important;
-        }
-
-        .stat-box {
-            flex: 1; /* Hace que todas las cajas midan lo mismo */
-            background-color: #f5f5f7;
-            padding: 20px 5px;
-            border-radius: 16px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
-        .stat-label { 
-            font-size: 9px; font-weight: 700; color: #878787;
-            letter-spacing: 1px; text-transform: uppercase;
-            margin-top: 8px; display: block;
-        }
-
-        /* Botón Alerta Elástica */
+        /* Botón Upsell T03 (DQ) */
         .btn-status-alert {
+            margin-top: 35px !important;
             background-color: #fce8e6 !important;
             color: #d93025 !important;
             border: 1px solid #d93025 !important;
             font-weight: 700 !important;
-            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
             animation: btnElastic 4s ease-in-out infinite;
-            text-align: center;
+            border-radius: 16px !important;
         }
 
         @keyframes btnElastic {
@@ -66,7 +37,11 @@
             50% { padding-top: 24px; padding-bottom: 24px; }
         }
 
-        @keyframes fadeInName { from { opacity: 0; } to { opacity: 1; } }
+        /* 🔒 BLOQUEO DE FUGA: Oculto para graduados sin DQ */
+        #btn-repasar { 
+            display: none !important; 
+            margin-top: 20px !important; 
+        }
 
         #loading-screen { 
             display: flex; align-items: center; justify-content: center; 
@@ -83,78 +58,75 @@
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DM.png"></div>
+        <span id="nombre-exp">EXPEDICIONARIO: ---</span>
+        <div class="status-badge">ESTATUS: MÁSCARA ROTA (NIVEL II)</div>
         
-        <span id="user-name">EXPEDICIONARIO: ---</span>
-        <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
-        
-        <h1 class="title">Diagnóstico de Inmersión.</h1>
-        <p class="description">Análisis de la fractura operativa tras completar el Tramo 02.</p>
+        <h1 class="title">Fin de la Inmersión.</h1>
+        <p class="description">Análisis final del Tramo 02 completado.</p>
 
         <div class="work-area card">
             <p class="text-base">
-                <b>Dictamen final:</b><br>
-                Has desmantelado la máscara, pero el núcleo sigue expuesto. Sin la brújula del Rey (DQ), el Anarquista terminará consumido por el caos que él mismo provocó.
+                <b>Diagnóstico:</b> Has descendido a las profundidades, pero tu estructura soberana sigue fragmentada. El búnker está incompleto.<br><br>
+                <b>Orden:</b> Ascender a la Cúspide (Tramo 03) para consolidar el mando absoluto.
             </p>
         </div>
 
-        <p class="text-base" style="margin-top: 35px; margin-bottom: -20px;"><b>El pacto de trinchera cierra en:</b></p>
-        
-        <div id="countdown" class="stats-container">
-            <div class="stat-box">
-                <span class="stat-value" id="hrs">00</span>
-                <span class="stat-label">Horas</span>
-            </div>
-            <div class="stat-box">
-                <span class="stat-value" id="min">00</span>
-                <span class="stat-label">Minutos</span>
-            </div>
-            <div class="stat-box">
-                <span class="stat-value" id="seg">00</span>
-                <span class="stat-label">Segundos</span>
-            </div>
-        </div>
-
-        <button id="btn-mentoria" class="btn-status-alert" onclick="window.open('https://wa.me/tu-numero', '_blank')">
-            SOLICITAR MENTORÍA 1 A 1 (DQ) →
+        <button id="btn-comprar" class="btn-mando btn-status-alert">
+            ASCENDER A LA CÚSPIDE (DQ) →
         </button>
         
-        <button onclick="window.location.href='09_DM_hub.html'" class="btn-ghost">
-            ← Volver al Centro de Mando
+        <button id="btn-repasar" class="btn-ghost">
+            ← Volver al Hub de Inmersión
         </button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
     <script>
-        const targetDate = new Date("May 15, 2026 19:00:00 GMT-0500").getTime(); 
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        const linkPagoDQ = "https://TU_LINK_DE_PAGO_DQ_AQUI.com"; 
+
+        document.getElementById("btn-comprar").onclick = () => { window.location.href = linkPagoDQ; };
+        document.getElementById("btn-repasar").onclick = () => { window.location.href = "09_DM_hub.html"; };
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
-        setInterval(function() {
-            const now = new Date().getTime(); const distance = targetDate - now;
-            if (distance < 0) { document.getElementById("countdown").innerHTML = "CERRADO"; return; }
-            const h = Math.floor(distance / (1000 * 60 * 60));
-            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const s = Math.floor((distance % (1000 * 60)) / 1000);
-            document.getElementById("hrs").innerText = h.toString().padStart(2, '0');
-            document.getElementById("min").innerText = m.toString().padStart(2, '0');
-            document.getElementById("seg").innerText = s.toString().padStart(2, '0');
-        }, 1000);
-
         auth.onAuthStateChanged((user) => {
             if (user) {
-                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        if (data.access_DM === true) {
-                            document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "flex";
-                            const nombreExp = data.nombre || "SIN NOMBRE";
-                            document.getElementById("user-name").innerText = "EXPEDICIONARIO: " + nombreExp.toUpperCase();
-                        } else { window.location.href = "index.html"; }
-                    }
+
+                        // 🧠 1. MOTOR DE TRAYECTORIA DINÁMICA (REDIRECCIÓN DQ)
+                        if (data.access_DQ === true) {
+                            // Si detecta acceso, salta directamente a la lección 1 de DQ o a su progreso
+                            window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html";
+                            return; 
+                        }
+                        
+                        // 🛰️ 2. SELLO DE GPS (TRACKING DEL REPORTE)
+                        // Esto asegura que en Firebase se guarde que llegó hasta aquí
+                        userRef.update({ 
+                            leccion_actual_DM: "08_DM_reportefinal.html", 
+                            estado: "Finalizado_DM" 
+                        });
+
+                        document.getElementById("nombre-exp").innerText = "EXPEDICIONARIO: " + (data.nombre || "SIN NOMBRE").toUpperCase();
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+                        
+                    } else { window.location.href = "index.html"; }
                 });
             } else { window.location.href = "index.html"; }
         });
