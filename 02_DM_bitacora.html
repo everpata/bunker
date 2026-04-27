@@ -8,14 +8,38 @@
     <style>
         /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
         
-        /* Visibilidad controlada por JS */
-        #btn-volver-hub { display: none; }
+        /* Botón Rojo Elástico (Márgenes V4.0 vía style.css) */
+        .btn-status-alert {
+            display: none; 
+            background-color: #fce8e6 !important;
+            color: #d93025 !important;
+            border: 1px solid #d93025 !important;
+            font-weight: 700 !important;
+            width: 100%;
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
+            animation: btnElastic 4s ease-in-out infinite;
+            text-align: center;
+            margin-top: 35px !important;
+        }
+
+        @keyframes btnElastic {
+            0% { padding-top: 18px; padding-bottom: 18px; }
+            50% { padding-top: 24px; padding-bottom: 24px; }
+            100% { padding-top: 18px; padding-bottom: 18px; }
+        }
 
         /* Estilo visual para bitácora sellada */
         textarea.locked {
             color: #b0b0b0;
             cursor: not-allowed;
         }
+
+        /* Ocultar inicialmente para evitar parpadeos */
+        #btn-next, #btn-alerta-reporte, #btn-volver-hub { display: none; }
 
         #loading-screen {
             display: flex; align-items: center; justify-content: center;
@@ -46,6 +70,7 @@
         </div>
         
         <button id="btn-next" class="btn-mando">Guardar reporte →</button>
+        <button id="btn-alerta-reporte" class="btn-status-alert">REVISAR REPORTE DE DAÑOS →</button>
         <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
     </div>
 
@@ -57,6 +82,7 @@
         const archivoActual = "02_DM_bitacora.html"; 
         const archivoSiguiente = "03_DM_quiz.html"; 
         const archivoHub = "09_DM_hub.html"; 
+        const archivoReporte = "08_DM_reportefinal.html";
         const archivoExpulsion = "index.html"; 
 
         const firebaseConfig = {
@@ -70,6 +96,8 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
+        // Asignación de eventos
+        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
         auth.onAuthStateChanged((user) => {
@@ -85,19 +113,44 @@
                             document.getElementById("bunker-content").style.display = "flex";
 
                             const areaTexto = document.getElementById("user-reflection");
-                            const btnGuardar = document.getElementById("btn-next");
+                            const btnNegro = document.getElementById("btn-next");
+                            const btnRojo = document.getElementById("btn-alerta-reporte");
+                            const btnHub = document.getElementById("btn-volver-hub");
 
-                            // 🚨 LÓGICA DE SELLADO (REPASO)
-                            if (data.estado === "Finalizado_DM" || data.access_DQ === true) {
-                                document.getElementById("btn-volver-hub").style.display = "block";
+                            // 🧠 CEREBRO DE NAVEGACIÓN (3 ESTADOS)
+
+                            if (data.estado === "Finalizado_DM" && !data.access_DQ) {
+                                // ESTADO: MÁSCARA ROTA (Terminó DM, no tiene DQ)
                                 areaTexto.readOnly = true;
                                 areaTexto.classList.add("locked");
-                                btnGuardar.innerText = "Reporte Sellado";
-                                btnGuardar.disabled = true;
+                                btnNegro.style.display = "none";
+                                btnRojo.style.display = "block";
+                                btnHub.style.display = "block";
+                            } 
+                            else if (data.access_DQ === true || data.estado === "Finalizado_DQ") {
+                                // ESTADO: SOBERANO (Tiene acceso a DQ o ya lo finalizó)
+                                areaTexto.readOnly = true;
+                                areaTexto.classList.add("locked");
+                                btnNegro.innerText = "Continuar →"; // Cambia "Guardar" por "Continuar" para el repaso
+                                btnNegro.style.display = "block";
+                                btnRojo.style.display = "none";
+                                btnHub.style.display = "block";
+
+                                // En modo soberano, el botón negro solo sirve para navegar
+                                btnNegro.onclick = () => { window.location.href = archivoSiguiente; };
+                            }
+                            else {
+                                // ESTADO: EXPLORADOR (Haciendo la DM por primera vez)
+                                btnNegro.style.display = "block";
+                                btnRojo.style.display = "none";
+                                btnHub.style.display = "none";
+
+                                // En modo explorador, el botón negro guarda en Firebase
+                                btnNegro.onclick = () => { ejecutarGuardado(userRef, areaTexto, btnNegro); };
                             }
 
-                            // Autoguardado GPS (Primera vuelta)
-                            if (data.estado !== "Finalizado_DM" && !data.access_DQ) {
+                            // GPS (Solo si no es modo repaso final)
+                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
                                 userRef.update({ leccion_actual_DM: archivoActual });
                             }
                             
@@ -109,28 +162,23 @@
                         } else { window.location.href = archivoExpulsion; }
                     }
                 });
-
-                // Lógica de Guardado (Solo activa si no está bloqueada)
-                document.getElementById("btn-next").addEventListener("click", () => {
-                    const textoUsuario = document.getElementById("user-reflection").value;
-                    const btn = document.getElementById("btn-next");
-                    
-                    if (textoUsuario.trim() === "") {
-                        alert("El búnker exige honestidad. No dejes el reporte vacío.");
-                        return;
-                    }
-
-                    btn.innerText = "Sincronizando...";
-                    btn.disabled = true;
-
-                    const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
-                    userRef.update({ [nombreCampo]: textoUsuario }).then(() => {
-                        window.location.href = archivoSiguiente;
-                    });
-                });
-
             } else { window.location.href = archivoExpulsion; }
         });
+
+        // Función de Guardado separada para limpieza
+        function ejecutarGuardado(userRef, areaTexto, btn) {
+            const textoUsuario = areaTexto.value;
+            if (textoUsuario.trim() === "") {
+                alert("El búnker exige honestidad. No dejes el reporte vacío.");
+                return;
+            }
+            btn.innerText = "Sincronizando...";
+            btn.disabled = true;
+            const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
+            userRef.update({ [nombreCampo]: textoUsuario }).then(() => {
+                window.location.href = archivoSiguiente;
+            });
+        }
     </script>
 </body>
 </html>
