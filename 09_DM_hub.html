@@ -6,8 +6,8 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES ESPECÍFICOS DEL HUB */
-        .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
+        /* 🚨 ESTÉTICA DEL HUB DE INMERSIÓN */
+        .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; }
         
         .lesson-card { 
             background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 16px; 
@@ -18,30 +18,18 @@
         .lesson-info b { display: block; font-size: 15px; margin-bottom: 4px; color: #333; }
         .lesson-info span { font-size: 12px; color: #878787; font-weight: 500; }
 
-        /* Estilo base para el botón de retorno */
-        .btn-secundario-hub { 
-            width: 100%; background: transparent; color: #878787; border: none; 
-            padding: 18px; border-radius: 14px; font-size: 15px; font-weight: 500; 
-            cursor: pointer; transition: all 0.3s; font-family: inherit; margin-top: 10px;
+        .btn-ghost-hub {
+            background: transparent; border: none; color: #878787; font-size: 13px; 
+            font-weight: 500; cursor: pointer; margin-top: 20px; width: 100%;
+            text-align: center; font-family: inherit;
         }
+        .btn-ghost-hub:hover { color: #333; }
 
-        /* 🚨 BOTÓN "MÁSCARA ROTA" (ALERTA DE REVISIÓN) */
-        .btn-status-alert {
-            background-color: #fce8e6 !important;
-            color: #d93025 !important;
-            border: 1px solid #d93025 !important;
-            font-weight: 700 !important;
-            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
-            animation: btnElastic 4s ease-in-out infinite;
+        #loading-screen { 
+            display: flex; align-items: center; justify-content: center; 
+            height: 100vh; width: 100vw; background: #fff; 
+            position: fixed; top: 0; left: 0; z-index: 9999; 
         }
-
-        @keyframes btnElastic {
-            0% { padding-top: 18px; padding-bottom: 18px; }
-            50% { padding-top: 24px; padding-bottom: 24px; }
-            100% { padding-top: 18px; padding-bottom: 18px; }
-        }
-
-        /* El contenedor heredará los 460px del style.css para perfecta simetría */
     </style>
 </head>
 <body>
@@ -54,27 +42,42 @@
         <div class="logo"><img src="DM.png"></div>
         <p class="indicator">Centro de Mando / Tramo 02</p>
         <h1 class="title">Inmersión.</h1>
-        <p class="description">Accede a tus protocolos operativos.</p>
+        <p class="description">Protocolos de reconstrucción operativa.</p>
 
         <div class="hub-grid">
             <a href="01_DM_texto.html" class="lesson-card">
-                <div class="lesson-info"><b>01. El Anarquista</b><span>Protocolo de identidad</span></div>
+                <div class="lesson-info"><b>01. El Anarquista</b><span>Inmersión profunda</span></div>
                 <span style="color: #ccc;">→</span>
             </a>
             <a href="02_DM_bitacora.html" class="lesson-card">
-                <div class="lesson-info"><b>02. Bitácora de Guerra</b><span>Análisis crítico</span></div>
+                <div class="lesson-info"><b>02. Análisis Crítico</b><span>Bitácora de fractura</span></div>
                 <span style="color: #ccc;">→</span>
             </a>
             <a href="03_DM_quiz.html" class="lesson-card">
-                <div class="lesson-info"><b>03. Sincronización</b><span>Evaluación de peso</span></div>
+                <div class="lesson-info"><b>03. Evaluación</b><span>Sincronización operativa</span></div>
+                <span style="color: #ccc;">→</span>
+            </a>
+            <a href="04_DM_imagen.html" class="lesson-card">
+                <div class="lesson-info"><b>04. Resultados</b><span>Evidencia real</span></div>
+                <span style="color: #ccc;">→</span>
+            </a>
+            <a href="05_DM_video.html" class="lesson-card">
+                <div class="lesson-info"><b>05. Análisis Visual</b><span>Mecánicas del yo</span></div>
+                <span style="color: #ccc;">→</span>
+            </a>
+            <a href="06_DM_principios.html" class="lesson-card">
+                <div class="lesson-info"><b>06. Regla I</b><span>Densidad conquistada</span></div>
                 <span style="color: #ccc;">→</span>
             </a>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 35px; width: 100%;">
-            <button id="btn-subir-dq" class="btn-mando" style="display: none; margin-top: 0;">↑ Volver a la Cúspide (DQ)</button>
             
-            <button id="btn-retorno" class="btn-secundario-hub">Volver al Reporte de Estatus</button>
+            <button id="btn-reporte-dm" class="btn-mando" style="display: none;">Revisar el reporte de daños →</button>
+            
+            <button id="btn-ir-dq" class="btn-mando" style="display: none; background-color: #333;">Ir al Hub de la Cúspide (DQ) →</button>
+            
+            <button id="btn-volver-df" class="btn-ghost-hub">← Regresar al Descenso</button>
         </div>
     </div>
 
@@ -83,13 +86,22 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     
     <script>
-        const rutaDQ = "09_DQ_hub.html";
-        const rutaReporte = "08_DM_reportefinal.html";
+        const rutaReporteDM = "08_DM_reportefinal.html";
+        const rutaHubDQ = "09_DQ_hub.html";
+        const rutaHubDF = "09_DF_hub.html"; // Asegúrate que este sea el nombre de tu Hub de Tramo 1
 
-        document.getElementById("btn-subir-dq").onclick = () => { window.location.href = rutaDQ; };
-        document.getElementById("btn-retorno").onclick = () => { window.location.href = rutaReporte; };
+        document.getElementById("btn-reporte-dm").onclick = () => { window.location.href = rutaReporteDM; };
+        document.getElementById("btn-ir-dq").onclick = () => { window.location.href = rutaHubDQ; };
+        document.getElementById("btn-volver-df").onclick = () => { window.location.href = rutaHubDF; };
 
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
@@ -102,16 +114,17 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // 🚨 LÓGICA DE TRANSFORMACIÓN DEL BOTÓN
-                            if (data.estado === "Finalizado_DM" && !data.access_DQ) {
-                                const btnRetorno = document.getElementById("btn-retorno");
-                                btnRetorno.classList.add("btn-status-alert");
-                                btnRetorno.innerText = "REVISAR REPORTE DE DAÑOS →";
+                            // 🚨 LÓGICA DE BOTONES DINÁMICOS
+                            if (data.access_DQ === true) {
+                                // Es un Rey/Hombre Profundo: Ocultar reporte de daños y mostrar acceso a DQ
+                                document.getElementById("btn-reporte-dm").style.display = "none";
+                                document.getElementById("btn-ir-dq").style.display = "block";
+                            } else {
+                                // Sigue en proceso de Inmersión: Mostrar reporte de daños
+                                document.getElementById("btn-reporte-dm").style.display = "block";
+                                document.getElementById("btn-ir-dq").style.display = "none";
                             }
 
-                            if (data.access_DQ === true) {
-                                document.getElementById("btn-subir-dq").style.display = "block";
-                            }
                         } else { window.location.href = "index.html"; }
                     }
                 });
