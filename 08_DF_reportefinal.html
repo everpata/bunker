@@ -6,7 +6,7 @@
     <title>Reporte de Descenso / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 IDENTIFICACIÓN */
+        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
         #nombre-exp {
             font-size: 11px; font-weight: 600; color: #878787;
             letter-spacing: 1.5px; text-transform: uppercase;
@@ -21,7 +21,7 @@
             text-transform: uppercase;
         }
 
-        /* 🚨 TEMPORIZADOR HORIZONTAL V4.0 */
+        /* TEMPORIZADOR HORIZONTAL V4.0 */
         .stats-container {
             display: flex !important;
             flex-direction: row !important;
@@ -66,7 +66,7 @@
             50% { padding-top: 24px; padding-bottom: 24px; }
         }
 
-        /* Ocultar inicialmente para el chequeo de seguridad */
+        /* Oculto por defecto: Solo veteranos lo ven (si el redirect falla) */
         #btn-repasar { display: none; }
 
         #loading-screen { 
@@ -111,7 +111,7 @@
         </button>
         
         <button id="btn-repasar" class="btn-ghost">
-            ← Volver a repasar el Descenso
+            ← Volver al Hub del Descenso
         </button>
     </div>
 
@@ -122,10 +122,11 @@
     <script>
         const linkPago = "https://TU_LINK_DE_PAGO_AQUI.com"; 
         const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime();
-        const rutaRepaso = "09_DF_hub.html"; 
+        const rutaHubDM = "09_DM_hub.html";
+        const rutaHubDF = "09_DF_hub.html";
 
         document.getElementById("btn-comprar").onclick = () => { window.location.href = linkPago; };
-        document.getElementById("btn-repasar").onclick = () => { window.location.href = rutaRepaso; };
+        document.getElementById("btn-repasar").onclick = () => { window.location.href = rutaHubDF; };
 
         // Temporizador
         setInterval(function() {
@@ -149,8 +150,14 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
+
+                        // 🧠 REDIRECCIÓN DE SEGURIDAD (VETERANOS)
+                        if (data.access_DM === true || data.access_DQ === true) {
+                            window.location.href = rutaHubDM; 
+                            return; // Corta la ejecución para que no cargue el reporte
+                        }
                         
-                        // Sellar estado DF
+                        // Sellar estado para los que NO han comprado la DM
                         userRef.update({ 
                             leccion_actual_DF: "08_DF_reportefinal.html", 
                             estado: "Finalizado_DF" 
@@ -159,14 +166,8 @@
                         document.getElementById("nombre-exp").innerText = "EXPEDICIONARIO: " + (data.nombre || "SIN NOMBRE").toUpperCase();
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
-
-                        // 🧠 LÓGICA DE PRIVILEGIO: ¿Puede repasar?
-                        if (data.access_DM === true || data.access_DQ === true) {
-                            document.getElementById("btn-repasar").style.display = "block";
-                        } else {
-                            document.getElementById("btn-repasar").style.display = "none";
-                        }
-                    }
+                        
+                    } else { window.location.href = "index.html"; }
                 });
             } else { window.location.href = "index.html"; }
         });
