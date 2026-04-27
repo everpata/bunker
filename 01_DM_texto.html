@@ -6,23 +6,23 @@
     <title>Texto / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 COMPONENTES TÁCTICOS: BOTÓN ROJO MÁSCARA ROTA */
+        /* 🚨 ESTILOS LOCALES PARA EL BOTÓN ROJO (MÁSCARA ROTA) */
         .btn-status-alert {
-            display: none; /* JS lo activa en modo repaso sin DQ */
+            display: none; /* JS decide si se muestra */
             background-color: #fce8e6 !important;
             color: #d93025 !important;
             border: 1px solid #d93025 !important;
             font-weight: 700 !important;
             width: 100%;
             padding: 20px;
-            border-radius: 16px; /* Sincronizado a tu nuevo estándar */
+            border-radius: 16px; /* Tu estándar */
             font-size: 16px;
             cursor: pointer;
             font-family: inherit;
             box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
             animation: btnElastic 4s ease-in-out infinite;
             text-align: center;
-            margin-top: 35px !important; /* Margen exacto V4.0 */
+            /* El margen de 35px ya viene del style.css */
         }
 
         @keyframes btnElastic {
@@ -31,7 +31,7 @@
             100% { padding-top: 18px; padding-bottom: 18px; }
         }
 
-        /* Control de visibilidad inicial */
+        /* Ocultamos todo inicialmente para evitar parpadeos */
         #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
 
         #loading-screen {
@@ -89,6 +89,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // Acciones de los botones
         document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
         document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
@@ -104,34 +105,34 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // 🧠 CEREBRO DE NAVEGACIÓN (3 ESTADOS)
+                            // 🧠 CEREBRO DE NAVEGACIÓN (Tres Estados)
                             
-                            // 1. MODO REPASO "MÁSCARA ROTA" (Sin DQ)
+                            // Caso A: Terminó la DM pero NO ha comprado el DQ (Máscara Rota)
                             if (data.estado === "Finalizado_DM" && !data.access_DQ) {
                                 document.getElementById("btn-continuar").style.display = "none";
                                 document.getElementById("btn-alerta-reporte").style.display = "block";
                                 document.getElementById("btn-volver-hub").style.display = "block";
                             } 
-                            // 2. MODO REY (Con DQ)
+                            // Caso B: Es un soberano (Tiene DQ) -> Puede ir lineal o al hub
                             else if (data.access_DQ === true) {
                                 document.getElementById("btn-continuar").style.display = "block";
                                 document.getElementById("btn-alerta-reporte").style.display = "none";
                                 document.getElementById("btn-volver-hub").style.display = "block";
                             }
-                            // 3. MODO EXPLORADOR (Primera vez)
+                            // Caso C: Es un explorador (Haciendo la DM por primera vez)
                             else {
                                 document.getElementById("btn-continuar").style.display = "block";
                                 document.getElementById("btn-alerta-reporte").style.display = "none";
                                 document.getElementById("btn-volver-hub").style.display = "none";
                             }
 
-                            // Autoguardado GPS
+                            // GPS: Solo se actualiza si no es modo repaso
                             if (data.estado !== "Finalizado_DM" && !data.access_DQ) {
                                 userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
                             }
 
                         } else { window.location.href = archivoExpulsion; }
-                    } else { window.location.href = "index.html"; }
+                    }
                 });
             } else { window.location.href = "index.html"; }
         });
