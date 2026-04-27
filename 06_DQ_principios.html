@@ -6,15 +6,23 @@
     <title>Principio / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES ESPECÍFICOS DQ */
+        /* 🚨 AJUSTES ESPECÍFICOS DQ V4.9 */
         #loading-screen {
             display: flex; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; background: #fff;
             position: fixed; top: 0; left: 0; z-index: 9999;
         }
 
-        /* Ocultar botones inicialmente para el cerebro de navegación */
-        #btn-continuar, #btn-hub { display: none; }
+        /* 🔒 BLOQUEO RADICAL DE FUGA: Ocultos por defecto con !important */
+        #btn-continuar { display: none; margin-top: 35px !important; }
+        
+        #btn-hub { 
+            display: none !important; 
+            margin-top: 20px !important; 
+        }
+
+        /* Ajuste de revelación para asegurar visibilidad de botones */
+        .revealed #btn-continuar { display: block; }
     </style>
 </head>
 <body>
@@ -39,7 +47,6 @@
             </div>
             
             <button id="btn-continuar" class="btn-mando">Asimilado →</button>
-            
             <button id="btn-hub" class="btn-ghost">← Volver al Hub de la Cúspide</button>
         </div>
     </div>
@@ -66,7 +73,7 @@
         const auth = firebase.auth(); 
         const db = firebase.firestore();
 
-        // 1. Lógica de Interfaz
+        // Lógica de Interfaz: Revelación
         document.getElementById("pantalla-reliquia").onclick = () => {
             document.body.classList.add('revealed');
         };
@@ -81,23 +88,26 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // 1. FILTRO SOBERANO
                         if (data.access_DQ === true) {
                             document.getElementById("loading-screen").style.display = "none";
-                            // Se usa block para que la lógica de revelación CSS funcione correctamente
+                            // Se usa block para que la lógica de revelación CSS funcione
                             document.getElementById("bunker-content").style.display = "block";
 
-                            const btnNext = document.getElementById("btn-continuar");
                             const btnHub = document.getElementById("btn-hub");
 
-                            // 🧠 CEREBRO DE NAVEGACIÓN DQ
-                            // El Hub siempre está disponible para el estatus Soberano
-                            btnNext.style.display = "block";
-                            btnHub.style.display = "block";
+                            // 🧠 CEREBRO DE NAVEGACIÓN V4.9
+                            // 🔒 EL CANDADO DEL HUB (Solo para Graduados)
+                            if (data.estado === "Finalizado_DQ") {
+                                // MODO REPASO: Liberar acceso al Hub
+                                btnHub.style.setProperty('display', 'block', 'important');
+                            } else {
+                                // MODO EXPEDICIÓN: El Hub permanece oculto incluso tras revelar
+                                btnHub.style.setProperty('display', 'none', 'important');
+                            }
 
-                            // GPS DQ (Solo primera vuelta)
+                            // GPS DQ (Tracking de progreso)
                             if (data.estado !== "Finalizado_DQ") {
-                                userRef.update({ leccion_actual_DQ: archivoActual }).catch(err => console.log(err));
+                                userRef.update({ leccion_actual_DQ: archivoActual });
                             }
 
                         } else {
