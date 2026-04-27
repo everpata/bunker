@@ -6,12 +6,18 @@
     <title>Misión Cumplida / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estética de graduación y victoria */
+        /* 🚨 ATMÓSFERA DE VICTORIA FINAL */
         html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
-        .container { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: auto; width: 100%; }
         
-        .victory-img { width: 100%; border-radius: 12px; margin-bottom: 20px; animation: floatIn 1.5s ease forwards; }
-        .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; box-sizing: border-box; }
+        .victory-img { 
+            width: 100%; 
+            border-radius: 16px; /* Sincronizado V4.0 */
+            margin-bottom: 20px; 
+            animation: floatIn 1.5s ease forwards; 
+            display: block;
+        }
+
+        .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; }
 
         @keyframes floatIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -19,30 +25,27 @@
         }
 
         #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
         }
+
+        /* Ocultar inicialmente para el cerebro de navegación */
+        #btn-continuar { display: none; }
     </style>
 </head>
 <body>
     <div id="loading-screen">
-        <img src="DQ.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DQ.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DQ.png"></div>
         <p class="indicator">Tramo 03 Completado</p>
-        <h1 class="title">Ascenso Finalizado.</h1>
         
-        <img src="victoria.jpeg" class="victory-img">
+        <h1 class="title">Ascenso Finalizado.</h1>
+
+        <img src="victoria.jpeg" class="victory-img" alt="Victoria Soberana">
 
         <div class="work-area card victory-card">
             <p class="text-base">Has asimilado el poder del Rey. Eres dueño absoluto de tu realidad. <b>Tu expedición base ha concluido.</b></p>
@@ -56,25 +59,24 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
-        // =======================================================
-        const archivoActual = "07_DQ_exito.html";         // GPS Actual
-        const archivoSiguiente = "08_DQ_reportefinal.html"; // Reporte final (Graduación)
-        const archivoExpulsion = "08_DM_reportefinal.html"; // Destino si no es VIP T3
+        const archivoActual = "07_DQ_exito.html"; 
+        const archivoSiguiente = "08_DQ_reportefinal.html"; 
+        const archivoExpulsion = "08_DM_reportefinal.html"; 
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); 
         const db = firebase.firestore();
 
-        // 1. ASIGNACIÓN DE BOTONES
-        document.getElementById("btn-continuar").addEventListener("click", () => {
-            window.location.href = archivoSiguiente;
-        });
+        document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
 
-        // 2. MOTOR DE SEGURIDAD Y CIERRE DEFINITIVO (EL CERROJO DEL REY)
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -82,23 +84,24 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // VALIDACIÓN ULTRA-VIP
+                        // 1. FILTRO SOBERANO
                         if (data.access_DQ === true) {
-                            // Autorizado: Mostrar victoria
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
+                            document.getElementById("btn-continuar").style.display = "block";
 
-                            // EL CERROJO FINAL: Quema todas las naves
+                            // 🔒 EL CERROJO FINAL: Quema todas las naves
                             if (data.estado !== "Finalizado_DQ") {
                                 userRef.update({
                                     estado: "Finalizado_DQ",
                                     leccion_actual_DQ: archivoActual
                                 }).then(() => {
                                     console.log("Expedición concluida. Rango: REY.");
-                                }).catch(err => console.log(err));
+                                }).catch(err => console.log("Error en el cerrojo:", err));
                             }
                         } else {
-                            window.location.href = archivoExpulsion;
+                            // Expulsión al reporte de la DM si intentan saltar niveles
+                            window.location.href = archivoExpulsion; 
                         }
                     } else { window.location.href = "index.html"; }
                 }).catch(() => { window.location.href = "index.html"; });
