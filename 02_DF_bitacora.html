@@ -3,40 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bitácora / Deepmersion</title>
+    <title>Bitácora / Deepfall (T01)</title>
     <link rel="stylesheet" href="style.css">
     <style>
         /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
         
-        /* Visibilidad controlada por JS para el repaso */
-        #btn-volver-hub { display: none; }
+        /* Botón Rojo Elástico (Upsell) */
+        .btn-status-alert {
+            display: none; 
+            background-color: #fce8e6 !important;
+            color: #d93025 !important;
+            border: 1px solid #d93025 !important;
+            font-weight: 700 !important;
+            width: 100%;
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
+            animation: btnElastic 4s ease-in-out infinite;
+            text-align: center;
+            margin-top: 35px !important;
+        }
+
+        @keyframes btnElastic {
+            0% { padding-top: 18px; padding-bottom: 18px; }
+            50% { padding-top: 24px; padding-bottom: 24px; }
+            100% { padding-top: 18px; padding-bottom: 18px; }
+        }
+
+        /* Estilo visual para bitácora sellada */
+        textarea.locked {
+            color: #b0b0b0;
+            cursor: not-allowed;
+        }
+
+        /* Ocultar botones inicialmente */
+        #btn-next, #btn-alerta-reporte, #btn-volver-hub { display: none; }
 
         #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
         }
     </style>
 </head>
 <body>
     <div id="loading-screen">
-        <img src="DM.png" class="loading-logo" alt="Cargando...">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
-        <div class="logo"><img src="DM.png"></div>
+        <div class="logo"><img src="DF.png"></div>
         
-        <p class="indicator">Lección 02 / Inmersión</p>
+        <p class="indicator">Lección 02 / Descenso</p>
         
         <div class="progress-container">
-            <div class="progress-fill" style="width: 33%;"></div>
+            <div class="progress-fill" style="width: 40%;"></div>
         </div>
         
         <h1 class="title">Análisis.</h1>
@@ -47,7 +70,7 @@
         </div>
         
         <button id="btn-next" class="btn-mando">Guardar reporte →</button>
-        
+        <button id="btn-alerta-reporte" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
         <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
     </div>
 
@@ -56,9 +79,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const archivoActual = "02_DM_bitacora.html"; 
-        const archivoSiguiente = "03_DM_quiz.html"; 
-        const archivoHub = "09_DM_hub.html"; 
+        const archivoActual = "02_DF_bitacora.html"; 
+        const archivoSiguiente = "03_DF_quiz.html"; 
+        const archivoHub = "09_DF_hub.html"; 
+        const archivoReporte = "08_DF_reportefinal.html";
         const archivoExpulsion = "index.html"; 
 
         const firebaseConfig = {
@@ -70,9 +94,9 @@
             appId: "1:207043962011:web:681397c7d540b4b3d4523e"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
+        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
         auth.onAuthStateChanged((user) => {
@@ -83,63 +107,70 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        if (data.access_DM === true) {
-                            document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "flex";
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
 
-                            // Lógica de Repaso / Visibilidad
-                            if (data.estado === "Finalizado_DM" || data.access_DQ === true) {
-                                document.getElementById("btn-volver-hub").style.display = "block";
-                            }
+                        const areaTexto = document.getElementById("user-reflection");
+                        const btnNegro = document.getElementById("btn-next");
+                        const btnRojo = document.getElementById("btn-alerta-reporte");
+                        const btnHub = document.getElementById("btn-volver-hub");
 
-                            // Autoguardado GPS (Solo primera vuelta)
-                            if (data.estado !== "Finalizado_DM" && !data.access_DQ) {
-                                userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
-                            }
-                            
-                            // Recuperación de memoria
-                            const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
-                            if (data[campoBitacora]) {
-                                document.getElementById("user-reflection").value = data[campoBitacora];
-                            }
-                        } else {
-                            window.location.href = archivoExpulsion;
+                        // 🧠 CEREBRO DE NAVEGACIÓN (Lógica DF)
+
+                        if (data.estado === "Finalizado_DF" && !data.access_DM) {
+                            // CASO: TERMINÓ DF PERO NO TIENE DM (Sellado + Botón Rojo)
+                            areaTexto.readOnly = true;
+                            areaTexto.classList.add("locked");
+                            btnNegro.style.display = "none";
+                            btnRojo.style.display = "block";
+                            btnHub.style.display = "none";
+                        } 
+                        else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
+                            // CASO: VETERANO (Tiene acceso a DM o superior) -> Sellado + Continuar + Hub
+                            areaTexto.readOnly = true;
+                            areaTexto.classList.add("locked");
+                            btnNegro.innerText = "Continuar →";
+                            btnNegro.style.display = "block";
+                            btnRojo.style.display = "none";
+                            btnHub.style.display = "block";
+                            btnNegro.onclick = () => { window.location.href = archivoSiguiente; };
                         }
-                    } else {
-                        window.location.href = archivoExpulsion;
-                    }
-                }).catch(() => { window.location.href = archivoExpulsion; });
+                        else {
+                            // CASO: EXPLORADOR (Primera vez)
+                            btnNegro.style.display = "block";
+                            btnRojo.style.display = "none";
+                            btnHub.style.display = "none";
+                            btnNegro.onclick = () => { ejecutarGuardado(userRef, areaTexto, btnNegro); };
+                        }
 
-                // Lógica de Guardado
-                document.getElementById("btn-next").addEventListener("click", () => {
-                    const textoUsuario = document.getElementById("user-reflection").value;
-                    const btn = document.getElementById("btn-next");
-                    
-                    if (textoUsuario.trim() === "") {
-                        alert("El búnker exige honestidad. No dejes el reporte vacío.");
-                        return;
-                    }
-
-                    btn.innerText = "Sincronizando...";
-                    btn.disabled = true;
-
-                    const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
-
-                    userRef.update({
-                        [nombreCampo]: textoUsuario
-                    }).then(() => {
-                        window.location.href = archivoSiguiente;
-                    }).catch((error) => {
-                        alert("Error al sincronizar: " + error.message);
-                        btn.innerText = "Guardar reporte →";
-                        btn.disabled = false;
-                    });
+                        // GPS (Solo primera vuelta)
+                        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                            userRef.update({ leccion_actual_DF: archivoActual });
+                        }
+                        
+                        // Recuperación de memoria
+                        const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
+                        if (data[campoBitacora]) {
+                            areaTexto.value = data[campoBitacora];
+                        }
+                    } else { window.location.href = archivoExpulsion; }
                 });
-
-            } else {
-                window.location.href = archivoExpulsion;
-            }
+            } else { window.location.href = archivoExpulsion; }
         });
+
+        function ejecutarGuardado(userRef, areaTexto, btn) {
+            const textoUsuario = areaTexto.value;
+            if (textoUsuario.trim() === "") {
+                alert("El búnker exige honestidad. No dejes el reporte vacío.");
+                return;
+            }
+            btn.innerText = "Sincronizando...";
+            btn.disabled = true;
+            const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
+            userRef.update({ [nombreCampo]: textoUsuario }).then(() => {
+                window.location.href = archivoSiguiente;
+            });
+        }
     </script>
 </body>
 </html>
