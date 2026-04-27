@@ -6,7 +6,7 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 BANNER ELÁSTICO - ESTILO "MÁSCARA ROTA" CON MOVIMIENTO LENTO */
+        /* 🚨 BANNER ELÁSTICO - ESTILO TÉCNICO (BORDE SÓLIDO) */
         #banner-upsell {
             display: none; 
             position: fixed; 
@@ -14,11 +14,14 @@
             left: 50%; 
             transform: translateX(-50%);
             width: 90%; 
-            max-width: 375px; 
+            max-width: 375px; /* 🚨 AJUSTADO A 375PX */
             
-            /* COLORES DE ALERTA (ROJO SUAVE) */
             background-color: #fce8e6; 
             color: #d93025; 
+            
+            /* BORDE SÓLIDO Y LIMPIO (SIN DIFUMINADO) */
+            border: 1px solid #d93025; 
+            border-top: none; /* Para que parezca salir del techo sin línea divisoria */
             
             text-align: center; 
             padding-top: 14px; 
@@ -30,11 +33,10 @@
             font-weight: 800; 
             z-index: 10001; 
             cursor: pointer; 
-            border-radius: 0 0 12px 12px; 
+            border-radius: 0 0 10px 10px; 
             letter-spacing: 1px; 
-            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.15);
             
-            /* 🚨 ANIMACIÓN RALENTIZADA A 4 SEG */
+            /* ANIMACIÓN RALENTIZADA A 4 SEG (ELÁSTICA) */
             animation: slideDown 0.8s ease-out, elasticLoop 4s ease-in-out infinite;
             
             font-family: sans-serif;
@@ -49,14 +51,14 @@
             to { transform: translate(-50%, 0); } 
         }
 
-        /* BUCLE ELÁSTICO (MOVIMIENTO MÁS PARSIMONIOSO) */
+        /* BUCLE ELÁSTICO (TEXTO ANCLADO) */
         @keyframes elasticLoop {
             0% { padding-top: 14px; }
             50% { padding-top: 26px; } 
             100% { padding-top: 14px; }
         }
 
-        /* Margen dinámico */
+        /* Espacio dinámico */
         body.with-banner .container { margin-top: 75px !important; }
 
         /* Estética Hub */
@@ -81,7 +83,7 @@
 </head>
 <body>
     <div id="banner-upsell" onclick="window.location.href='08_DM_reportefinal.html'">
-        SISTEMA EN RIESGO: HAZ CLIC PARA BLINDAR DQ →
+        ⚠️ SISTEMA EN RIESGO: FALTA BRÚJULA DEL REY. HAZ CLIC PARA BLINDAR DQ →
     </div>
 
     <div id="loading-screen">
