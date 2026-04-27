@@ -6,62 +6,6 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 BANNER ELÁSTICO - ESTILO TÉCNICO (BORDE SÓLIDO) */
-        #banner-upsell {
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 50%; 
-            transform: translateX(-50%);
-            width: 90%; 
-            max-width: 330px; /* 🚨 AJUSTADO A 375PX */
-            
-            background-color: #fce8e6; 
-            color: #d93025; 
-            
-            /* BORDE SÓLIDO Y LIMPIO (SIN DIFUMINADO) */
-            border: 1px solid #d93025; 
-            border-top: none; /* Para que parezca salir del techo sin línea divisoria */
-            
-            text-align: center; 
-            padding-top: 14px; 
-            padding-bottom: 14px;
-            padding-left: 15px;
-            padding-right: 15px;
-
-            font-size: 10px; 
-            font-weight: 800; 
-            z-index: 10001; 
-            cursor: pointer; 
-            border-radius: 0 0 10px 10px; 
-            letter-spacing: 1px; 
-            
-            /* ANIMACIÓN RALENTIZADA A 4 SEG (ELÁSTICA) */
-            animation: slideDown 0.8s ease-out, elasticLoop 4s ease-in-out infinite;
-            
-            font-family: sans-serif;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-        }
-
-        @keyframes slideDown { 
-            from { transform: translate(-50%, -100%); } 
-            to { transform: translate(-50%, 0); } 
-        }
-
-        /* BUCLE ELÁSTICO (TEXTO ANCLADO) */
-        @keyframes elasticLoop {
-            0% { padding-top: 14px; }
-            50% { padding-top: 26px; } 
-            100% { padding-top: 14px; }
-        }
-
-        /* Espacio dinámico */
-        body.with-banner .container { margin-top: 75px !important; }
-
-        /* Estética Hub */
         .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
         .lesson-card { background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #333; transition: all 0.3s; }
         .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
@@ -73,24 +17,47 @@
             padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; 
             cursor: pointer; transition: all 0.3s; font-family: inherit;
         }
-        .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
+
+        /* 🚨 ESTILO "MÁSCARA ROTA" PARA EL BOTÓN DE ALERTA */
+        .btn-status-alert {
+            background-color: #fce8e6 !important;
+            color: #d93025 !important;
+            border: 1px solid #d93025 !important;
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
+            animation: btnElastic 4s ease-in-out infinite;
+        }
+
+        /* 🚨 ANIMACIÓN ELÁSTICA PARA EL BOTÓN */
+        @keyframes btnElastic {
+            0% { padding-top: 18px; padding-bottom: 18px; }
+            50% { padding-top: 22px; padding-bottom: 22px; }
+            100% { padding-top: 18px; padding-bottom: 18px; }
+        }
 
         #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: absolute; top: 0; left: 0; z-index: 9999; }
         
         html, body { height: 100%; margin: 0; background-color: #ffffff; }
         body { display: flex; align-items: center; justify-content: center; }
+
+        /* Contenedor limitado a 375px para consistencia en desktop */
+        .container { 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%; 
+            max-width: 375px; 
+            justify-content: flex-start; 
+            padding-top: 40px; 
+            overflow-y: auto; 
+        }
     </style>
 </head>
 <body>
-    <div id="banner-upsell" onclick="window.location.href='08_DM_reportefinal.html'">
-        SISTEMA EN RIESGO: HAZ CLIC PARA BLINDAR DQ →
-    </div>
 
     <div id="loading-screen">
         <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
-    <div class="container" id="bunker-content" style="display: none; justify-content: flex-start; padding-top: 40px; overflow-y: auto;">
+    <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DM.png"></div>
         <p class="indicator">Centro de Mando / Tramo 02</p>
         <h1 class="title">Inmersión.</h1>
@@ -111,6 +78,7 @@
         <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 30px; width: 100%;">
             <button id="btn-subir-dq" class="btn-mando" style="display: none; background: #333; color: #fff;">↑ Volver a la Cúspide (DQ)</button>
             <button id="btn-bajar-df" class="btn-secundario">↓ Revisar Protocolos de Descenso (DF)</button>
+            
             <button id="btn-retorno" class="btn-secundario" style="border: none; color: #878787;">Volver al Reporte de Estatus</button>
         </div>
     </div>
@@ -141,9 +109,11 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
+                            // 🚨 LÓGICA DE TRANSFORMACIÓN DEL BOTÓN
                             if (data.estado === "Finalizado_DM" && !data.access_DQ) {
-                                document.getElementById("banner-upsell").style.display = "flex";
-                                document.body.classList.add("with-banner");
+                                const btnRetorno = document.getElementById("btn-retorno");
+                                btnRetorno.classList.add("btn-status-alert");
+                                btnRetorno.innerText = "⚠️ REVISAR REPORTE DE DAÑOS →";
                             }
 
                             if (data.access_DQ === true) {
