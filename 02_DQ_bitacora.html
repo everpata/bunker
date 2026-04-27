@@ -6,9 +6,7 @@
     <title>Bitácora / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES ESPECÍFICOS DQ */
-        
-        /* Estilo para bitácora sellada (Ley Dictada) */
+        /* 🚨 AJUSTES ESPECÍFICOS DQ V4.9 */
         textarea.locked {
             color: #b0b0b0;
             cursor: not-allowed;
@@ -21,8 +19,12 @@
             position: fixed; top: 0; left: 0; z-index: 9999;
         }
 
-        /* Ocultar botones inicialmente */
-        #btn-next, #btn-hub { display: none; }
+        /* 🔒 BLOQUEO RADICAL DE FUGA: Oculto por defecto con !important */
+        #btn-next { display: none; }
+        #btn-hub { display: none !important; margin-top: 20px !important; }
+
+        /* Ajuste de margen para consistencia V4.0 */
+        #btn-next { margin-top: 35px !important; }
     </style>
 </head>
 <body>
@@ -87,25 +89,31 @@
                             const btnHub = document.getElementById("btn-hub");
                             const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
 
-                            // 🧠 CEREBRO DE NAVEGACIÓN Y BLOQUEO
+                            // 🧠 CEREBRO DE NAVEGACIÓN V4.9
+                            // Paso A: Manejo del contenido de la bitácora
                             if (data[campoBitacora]) {
-                                // LEY YA DICTADA (MODO REPASO)
                                 textArea.value = data[campoBitacora];
                                 textArea.readOnly = true;
                                 textArea.classList.add("locked");
-                                
                                 btnNext.innerText = "Continuar →";
-                                btnNext.style.display = "block";
-                                btnNext.onclick = () => { window.location.href = archivoSiguiente; };
-                                
-                                // El Rey siempre puede volver a su Hub
-                                btnHub.style.display = "block";
+                            }
+
+                            // Paso B: Mostrar botón de continuar (Siempre visible para VIP)
+                            btnNext.style.display = "block";
+                            btnNext.onclick = () => {
+                                if (data[campoBitacora]) {
+                                    window.location.href = archivoSiguiente;
+                                } else {
+                                    ejecutarGuardado(userRef, textArea, btnNext);
+                                }
+                            };
+
+                            // Paso C: 🔒 EL CANDADO DEL HUB (Solo para Graduados)
+                            if (data.estado === "Finalizado_DQ") {
+                                btnHub.style.setProperty('display', 'block', 'important');
                                 btnHub.onclick = () => { window.location.href = archivoHub; };
                             } else {
-                                // PRIMERA VEZ (MODO CONSTRUCCIÓN)
-                                btnNext.style.display = "block";
-                                btnNext.onclick = () => { ejecutarGuardado(userRef, textArea, btnNext); };
-                                btnHub.style.display = "none";
+                                btnHub.style.setProperty('display', 'none', 'important');
                             }
 
                             // GPS DQ (Solo primera vuelta)
