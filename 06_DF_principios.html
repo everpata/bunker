@@ -3,8 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Principio III / Deepfall</title>
+    <title>Principio III / Deepfall (T01)</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
+        
+        /* Botón Rojo Elástico (AVANZAR AL TRAMO 02) */
+        .btn-status-alert {
+            display: none; 
+            background-color: #fce8e6 !important;
+            color: #d93025 !important;
+            border: 1px solid #d93025 !important;
+            font-weight: 700 !important;
+            width: 100%;
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
+            animation: btnElastic 4s ease-in-out infinite;
+            text-align: center;
+            margin-top: 35px !important;
+        }
+
+        @keyframes btnElastic {
+            0% { padding-top: 18px; padding-bottom: 18px; }
+            50% { padding-top: 24px; padding-bottom: 24px; }
+            100% { padding-top: 18px; padding-bottom: 18px; }
+        }
+
+        /* Ocultar botones inicialmente para el JS */
+        #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
+
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
+        }
+    </style>
 </head>
 <body>
     <div id="loading-screen">
@@ -20,8 +56,7 @@
         
         <div class="revelation-screen">
             <div class="logo"><img src="DF.png"></div>
-            
-            <p class="indicator">Principio III / 10</p>
+            <p class="indicator">Principio III / Descenso</p>
             
             <div class="work-area card">
                 <span class="principle-statement">"Afilamos el hacha aunque no vayamos a cortar ningún árbol."</span>
@@ -29,6 +64,8 @@
             </div>
             
             <button id="btn-continuar" class="btn-mando">Asimilado →</button>
+            <button id="btn-alerta-reporte" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
+            <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
         </div>
     </div>
 
@@ -37,39 +74,34 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
-        // =======================================================
-        const archivoActual = "06_DF_principios.html";    // GPS: Archivo actual
-        const archivoSiguiente = "07_DF_exito.html";      // Destino al dar clic en Asimilado
-        const archivoReporte = "08_DF_reportefinal.html"; // Destino si choca contra el final
-        const archivoExpulsion = "index.html";            // Destino si detecta intrusos
+        const archivoActual = "06_DF_principios.html"; 
+        const archivoSiguiente = "07_DF_exito.html"; 
+        const archivoHub = "09_DF_hub.html"; 
+        const archivoReporte = "08_DF_reportefinal.html";
+        const archivoExpulsion = "index.html"; 
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 1. LÓGICA DE INTERFAZ Y BOTONES
-        // Mecánica de revelación al tocar la reliquia
-        document.getElementById("pantalla-reliquia").addEventListener("click", () => {
+        // 1. Lógica de Revelación
+        document.getElementById("pantalla-reliquia").onclick = () => {
             document.body.classList.add('revealed');
-        });
+        };
 
-        // Enrutamiento del botón final
-        document.getElementById("btn-continuar").addEventListener("click", () => {
-            window.location.href = archivoSiguiente;
-        });
+        // 2. Asignación de Eventos Navegación
+        document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
-        // 2. MOTOR DE SEGURIDAD Y RASTREO
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -77,27 +109,42 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // CENTINELA: Si ya terminó el Tramo 01 y no ha pagado, lo expulsa a ventas
-                        if (data.estado === "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                            window.location.href = archivoReporte; 
-                        } else {
-                            // Autorizado: Quitar escudo de carga
-                            document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "block";
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "block";
 
-                            // AUTOGUARDADO GPS: Solo se activa si es su primera vez cursando
-                            if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                                userRef.update({ leccion_actual_DF: archivoActual })
-                                    .catch((err) => console.log("Error guardando coordenadas...", err));
-                            }
+                        const btnNegro = document.getElementById("btn-continuar");
+                        const btnRojo = document.getElementById("btn-alerta-reporte");
+                        const btnHub = document.getElementById("btn-volver-hub");
+
+                        // 🧠 CEREBRO DE NAVEGACIÓN (Lógica DF)
+
+                        if (data.estado === "Finalizado_DF" && !data.access_DM) {
+                            // CASO: TERMINÓ DF PERO NO TIENE DM (Botón Rojo, Sin Hub por regla de negocio)
+                            btnNegro.style.display = "none";
+                            btnRojo.style.display = "block";
+                            btnHub.style.display = "none";
+                        } 
+                        else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
+                            // CASO: VETERANO (Ya tiene acceso a la DM o superior) -> Acceso al Hub
+                            btnNegro.style.display = "block";
+                            btnRojo.style.display = "none";
+                            btnHub.style.display = "block";
                         }
-                    } else {
-                        window.location.href = archivoExpulsion;
-                    }
-                }).catch(() => { window.location.href = archivoExpulsion; });
-            } else {
-                window.location.href = archivoExpulsion;
-            }
+                        else {
+                            // CASO: EXPLORADOR (Haciendo DF por primera vez)
+                            btnNegro.style.display = "block";
+                            btnRojo.style.display = "none";
+                            btnHub.style.display = "none";
+                        }
+
+                        // GPS DF
+                        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                            userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                        }
+
+                    } else { window.location.href = "index.html"; }
+                });
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
