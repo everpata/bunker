@@ -6,11 +6,11 @@
     <title>Texto / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS DE ESTA PÁGINA */
+        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
 
-        /* Estilo único para el botón de Alerta (Hereda margin-top: 7px de style.css) */
+        /* Estilo para el botón de Alerta (Hereda margin-top: 35px de style.css) */
         .btn-status-alert {
-            display: none; /* Oculto por defecto, JS lo activa */
+            display: none; 
             background-color: #fce8e6 !important;
             color: #d93025 !important;
             border: 1px solid #d93025 !important;
@@ -18,27 +18,19 @@
             text-align: center;
         }
 
-        /* Animación de Respiración */
         @keyframes btnElastic {
             0% { padding-top: 18px; padding-bottom: 18px; }
             50% { padding-top: 24px; padding-bottom: 24px; }
             100% { padding-top: 18px; padding-bottom: 18px; }
         }
 
-        /* Visibilidad controlada por JS */
-        #btn-volver-hub { display: none; }
+        /* Ocultos por defecto para que el JS decida */
+        #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
 
         #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
         }
     </style>
 </head>
@@ -60,9 +52,7 @@
         </div>
 
         <button id="btn-continuar" class="btn-mando">Continuar →</button>
-        
         <button id="btn-alerta-reporte" class="btn-status-alert">REVISAR REPORTE DE DAÑOS →</button>
-        
         <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
 
     </div>
@@ -105,31 +95,32 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // Lógica de Repaso
+                            // 🚨 LÓGICA DE NAVEGACIÓN DE 3 ESTADOS
+                            
+                            // ESTADO: REPASO (Finalizado DM, No tiene DQ) -> MODO ALERTA
                             if (data.estado === "Finalizado_DM" && !data.access_DQ) {
-                                document.getElementById("btn-continuar").style.display = "none";
                                 document.getElementById("btn-alerta-reporte").style.display = "block";
                                 document.getElementById("btn-volver-hub").style.display = "block";
                             } 
+                            // ESTADO: SOBERANO (Tiene acceso al DQ) -> CAMINO LIBRE + HUB
                             else if (data.access_DQ === true) {
+                                document.getElementById("btn-continuar").style.display = "block";
                                 document.getElementById("btn-volver-hub").style.display = "block";
                             }
+                            // ESTADO: EXPLORADOR (Primera vez haciendo DM) -> CAMINO LINEAL
+                            else {
+                                document.getElementById("btn-continuar").style.display = "block";
+                            }
 
-                            // Autoguardado GPS
-                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) {
+                            // Autoguardado GPS (Solo si no ha terminado)
+                            if (data.estado !== "Finalizado_DM" && !data.access_DQ) {
                                 userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
                             }
 
-                        } else {
-                            window.location.href = archivoExpulsion; 
-                        }
-                    } else {
-                        window.location.href = "index.html";
-                    }
-                }).catch(() => { window.location.href = "index.html"; });
-            } else {
-                window.location.href = "index.html";
-            }
+                        } else { window.location.href = archivoExpulsion; }
+                    } else { window.location.href = "index.html"; }
+                });
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
