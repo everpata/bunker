@@ -11,8 +11,14 @@
         .status-chip { background-color: #fce8e6; color: #d93025; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; font-size: 12px; margin-left: 5px; }
         .work-area.card { margin-bottom: 20px !important; } 
         .timer-container { width: 100%; margin-bottom: 25px !important; }
-        .btn-mando { margin-top: 0 !important; } 
-        .btn-secundario { width: 100%; background: transparent; color: #333; border: 1px solid #ccc; padding: 15px; border-radius: 14px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 15px; }
+        
+        /* MEJORA 1: BOTÓN SECUNDARIO SIMÉTRICO */
+        .btn-secundario { 
+            width: 100%; background: transparent; color: #333; border: 1px solid #ccc; 
+            padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; 
+            cursor: pointer; margin-top: 15px; transition: all 0.3s; font-family: inherit;
+        }
+        .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
         #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: absolute; top: 0; left: 0; z-index: 9999; }
     </style>
 </head>
@@ -47,7 +53,7 @@
         </div>
 
         <button id="btn-comprar" class="btn-mando">Avanzar al Deepquest →</button>
-        <button id="btn-hub" class="btn-secundario">← Dar mantenimiento al Anarquista</button>
+        <button id="btn-hub" class="btn-secundario">← Volver al Hub del Anarquista</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -55,35 +61,22 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PANEL DE CONTROL
-        // =======================================================
-        const linkDePago = "https://TU_LINK_DE_PAGO_DQ.com";
-        const archivoHub = "09_DM_hub.html";
-        const archivoExpulsion = "index.html";
+        const linkPago = "https://TU_LINK_DE_PAGO_DQ.com";
         const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime();
 
-        // 1. ASIGNACIÓN DE BOTONES
-        document.getElementById("btn-comprar").addEventListener("click", () => { window.location.href = linkDePago; });
-        document.getElementById("btn-hub").addEventListener("click", () => { window.location.href = archivoHub; });
+        document.getElementById("btn-comprar").onclick = () => { window.location.href = linkPago; };
+        document.getElementById("btn-hub").onclick = () => { window.location.href = "09_DM_hub.html"; };
 
-        // 2. TEMPORIZADOR
-        const timerInterval = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-            if (distance < 0) { 
-                clearInterval(timerInterval); 
-                document.getElementById("countdown").innerHTML = "BÓVEDA CERRADA"; 
-                return; 
-            }
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            document.getElementById("countdown").innerHTML = `${days}d : ${hours}h : ${minutes}m : ${seconds}s`;
+        setInterval(function() {
+            const now = new Date().getTime(); const distance = targetDate - now;
+            if (distance < 0) { document.getElementById("countdown").innerHTML = "CERRADO"; return; }
+            const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((distance % (1000 * 60)) / 1000);
+            document.getElementById("countdown").innerHTML = `${d}d : ${h}h : ${m}m : ${s}s`;
         }, 1000);
 
-        // 3. MOTOR DE SEGURIDAD
         const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
@@ -94,22 +87,20 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
+                        if (data.access_DQ) { window.location.href = "index.html"; return; }
                         
-                        // Si ya pagó el Tramo 03, al router principal.
-                        if (data.access_DQ === true) { window.location.href = archivoExpulsion; return; }
-                        
-                        // Si es VIP de DM, mostramos reporte
-                        if (data.access_DM === true) {
-                            document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "flex";
-                            document.getElementById("nombre-exp").innerText = data.nombre || "Expedicionario";
-                            if (data.estado !== "Finalizado_DM") { userRef.update({ estado: "Finalizado_DM" }); }
-                        } else {
-                            window.location.href = archivoExpulsion;
-                        }
-                    } else { window.location.href = archivoExpulsion; }
-                }).catch(() => { window.location.href = archivoExpulsion; });
-            } else { window.location.href = archivoExpulsion; }
+                        // MEJORA 2: ACTUALIZAR GPS AL ENTRAR AL REPORTE
+                        userRef.update({ 
+                            leccion_actual_DM: "08_DM_reportefinal.html", 
+                            estado: "Finalizado_DM" 
+                        });
+
+                        document.getElementById("nombre-exp").innerText = data.nombre || "Expedicionario";
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+                    }
+                });
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
