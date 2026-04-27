@@ -6,16 +6,15 @@
     <title>Reporte de Daños / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES DE ESPACIADO Y TIPOGRAFÍA */
-        
-        /* Nombre del expedicionario con más aire */
+        /* 🚨 AJUSTE DE ETIQUETA DE EXPEDICIONARIO */
         #user-name {
-            font-size: 12px;
-            font-weight: 700;
-            color: #333;
+            font-size: 11px; /* Tamaño estándar de tus etiquetas .indicator */
+            font-weight: 600;
+            color: #878787; /* Gris solicitado */
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 18px; /* Espacio corregido */
+            margin-bottom: 12px; /* Espaciado equilibrado */
+            line-height: 1;
             opacity: 0;
             animation: fadeInName 1s ease forwards 0.5s;
         }
@@ -29,7 +28,7 @@
             font-size: 10px;
             font-weight: 800;
             display: inline-block;
-            margin-bottom: 25px; /* Más espacio antes del título */
+            margin-bottom: 25px;
             border: 1px solid #d93025;
             text-transform: uppercase;
         }
@@ -64,7 +63,7 @@
             display: block;
         }
 
-        /* Estilo Alerta Elástica para el Botón de Venta */
+        /* Botón Alerta Elástica */
         .btn-status-alert {
             background-color: #fce8e6 !important;
             color: #d93025 !important;
