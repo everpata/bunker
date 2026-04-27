@@ -6,7 +6,50 @@
     <title>Texto / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilo local para asegurar el centrado perfecto del logo de carga */
+        /* 🚨 COMPONENTES TÁCTICOS DE REPASO */
+        
+        /* Botón Alerta "Máscara Rota" */
+        .btn-status-alert {
+            display: none; /* Oculto por defecto */
+            background-color: #fce8e6 !important;
+            color: #d93025 !important;
+            border: 1px solid #d93025 !important;
+            font-weight: 700 !important;
+            width: 100%;
+            padding: 20px;
+            border-radius: 14px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
+            animation: btnElastic 4s ease-in-out infinite;
+            text-align: center;
+        }
+
+        /* Animación de Respiración Lenta (4s) */
+        @keyframes btnElastic {
+            0% { padding-top: 18px; padding-bottom: 18px; }
+            50% { padding-top: 24px; padding-bottom: 24px; }
+            100% { padding-top: 18px; padding-bottom: 18px; }
+        }
+
+        /* Botón Fantasma para el Hub */
+        .btn-ghost {
+            display: none; /* Oculto por defecto */
+            background: transparent;
+            border: none;
+            color: #878787;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            text-align: center;
+            font-family: inherit;
+            transition: color 0.3s;
+        }
+        .btn-ghost:hover { color: #333; }
+
         #loading-screen {
             display: flex;
             align-items: center;
@@ -14,7 +57,7 @@
             height: 100vh;
             width: 100vw;
             background: #fff;
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             z-index: 9999;
@@ -35,12 +78,18 @@
         <p class="description">Bienvenido al Tramo 02. La máscara se ha roto.</p>
         
         <div class="work-area card">
-            <p class="text-base">Aquí comienza la verdadera reconstrucción operativa.</p>
+            <p class="text-base">Aquí comienza la verdadera reconstrucción operativa. Has dejado atrás las proyecciones de la superficie para confrontar la estructura de lo que realmente eres bajo el ruido externo.</p>
         </div>
 
-        <button id="btn-continuar" class="btn-mando">Continuar →</button>
-        
-        <button id="btn-hub" class="btn-mando" style="display: none; background: transparent; color: #878787; border: 1px solid #eaeaea; margin-top: 15px;">Regresar al Hub</button>
+        <div id="nav-container" style="width: 100%; margin-top: 35px; display: flex; flex-direction: column; align-items: center;">
+            
+            <button id="btn-continuar" class="btn-mando">Continuar →</button>
+            
+            <button id="btn-alerta-reporte" class="btn-status-alert">REVISAR REPORTE DE DAÑOS →</button>
+            
+            <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
+
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -51,12 +100,12 @@
         // =======================================================
         // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
         // =======================================================
-        const archivoActual = "01_DM_texto.html";         // GPS: Archivo actual
-        const archivoSiguiente = "02_DM_bitacora.html";   // Destino al dar clic en Continuar
-        const archivoHub = "09_DM_hub.html";              // Destino del Hub
-        const archivoExpulsion = "08_DF_reportefinal.html"; // Destino si rechaza el pase VIP
+        const archivoActual = "01_DM_texto.html"; 
+        const archivoSiguiente = "02_DM_bitacora.html"; 
+        const archivoHub = "09_DM_hub.html"; 
+        const archivoReporte = "08_DM_reportefinal.html";
+        const archivoExpulsion = "index.html"; 
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
             authDomain: "deepfall-b3601.firebaseapp.com", 
@@ -69,15 +118,12 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 1. ASIGNACIÓN DE BOTONES
-        document.getElementById("btn-continuar").addEventListener("click", () => {
-            window.location.href = archivoSiguiente;
-        });
-        document.getElementById("btn-hub").addEventListener("click", () => {
-            window.location.href = archivoHub;
-        });
+        // Asignación de Eventos
+        document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
-        // 2. MOTOR DE SEGURIDAD VIP
+        // MOTOR DE SEGURIDAD Y REPASO
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -85,26 +131,29 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // VALIDACIÓN VIP: ¿Tiene el pase comprado de la DM?
+                        // 1. VALIDACIÓN VIP
                         if (data.access_DM === true) {
-                            
-                            // Autorizado: Quitar escudo de carga (Solo el logo parpadeante desaparece)
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // Revelar Botón Fantasma si ya terminó este tramo o superiores
-                            if (data.estado === "Finalizado_DM" || data.estado === "Finalizado_DQ" || data.access_DQ === true) {
-                                document.getElementById("btn-hub").style.display = "block";
+                            // 2. LÓGICA DE REPASO (MÁSCARA ROTA)
+                            // Si ya terminó DM pero no tiene acceso al DQ...
+                            if (data.estado === "Finalizado_DM" && !data.access_DQ) {
+                                document.getElementById("btn-continuar").style.display = "none";
+                                document.getElementById("btn-alerta-reporte").style.display = "block";
+                                document.getElementById("btn-volver-hub").style.display = "block";
+                            } 
+                            // Si ya tiene DQ, puede navegar normal o volver al hub si desea
+                            else if (data.access_DQ === true) {
+                                document.getElementById("btn-volver-hub").style.display = "block";
                             }
 
-                            // Autoguardado GPS (Solo si es su primera vez)
+                            // 3. AUTOGUARDADO GPS (Solo primera vuelta)
                             if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) {
                                 userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
                             }
 
                         } else {
-                            // Intruso detectado: Expulsión inmediata y silenciosa
-                            // No ponemos textos de "error", simplemente lo sacamos.
                             window.location.href = archivoExpulsion; 
                         }
                     } else {
