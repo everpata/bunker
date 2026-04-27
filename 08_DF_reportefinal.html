@@ -6,8 +6,7 @@
     <title>Reporte de Descenso / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
-        
+        /* 🚨 IDENTIFICACIÓN */
         #nombre-exp {
             font-size: 11px; font-weight: 600; color: #878787;
             letter-spacing: 1.5px; text-transform: uppercase;
@@ -22,13 +21,13 @@
             text-transform: uppercase;
         }
 
-        /* 🚨 FIX: TEMPORIZADOR HORIZONTAL */
+        /* 🚨 TEMPORIZADOR HORIZONTAL V4.0 */
         .stats-container {
             display: flex !important;
             flex-direction: row !important;
             gap: 10px;
             width: 100%;
-            margin-top: 35px; /* Espacio desde el texto superior */
+            margin-top: 35px;
             margin-bottom: 0 !important;
         }
 
@@ -36,7 +35,7 @@
             flex: 1;
             background-color: #f5f5f7;
             padding: 22px 5px;
-            border-radius: 16px; /* Silueta 16px */
+            border-radius: 16px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -66,6 +65,9 @@
             0%, 100% { padding-top: 18px; padding-bottom: 18px; }
             50% { padding-top: 24px; padding-bottom: 24px; }
         }
+
+        /* Ocultar inicialmente para el chequeo de seguridad */
+        #btn-repasar { display: none; }
 
         #loading-screen { 
             display: flex; align-items: center; justify-content: center; 
@@ -120,12 +122,12 @@
     <script>
         const linkPago = "https://TU_LINK_DE_PAGO_AQUI.com"; 
         const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime();
-        const rutaRepaso = "06_DF_principios.html"; 
+        const rutaRepaso = "09_DF_hub.html"; 
 
         document.getElementById("btn-comprar").onclick = () => { window.location.href = linkPago; };
         document.getElementById("btn-repasar").onclick = () => { window.location.href = rutaRepaso; };
 
-        // Temporizador H:M:S
+        // Temporizador
         setInterval(function() {
             const now = new Date().getTime(); const distance = targetDate - now;
             if (distance < 0) { document.getElementById("countdown").innerHTML = "EXPIRADO"; return; }
@@ -147,10 +149,8 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        // Redirigir si ya tiene acceso al siguiente tramo
-                        if (data.access_DM || data.access_DQ) { window.location.href = "01_DM_texto.html"; return; }
                         
-                        // Sellar estado
+                        // Sellar estado DF
                         userRef.update({ 
                             leccion_actual_DF: "08_DF_reportefinal.html", 
                             estado: "Finalizado_DF" 
@@ -159,6 +159,13 @@
                         document.getElementById("nombre-exp").innerText = "EXPEDICIONARIO: " + (data.nombre || "SIN NOMBRE").toUpperCase();
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
+
+                        // 🧠 LÓGICA DE PRIVILEGIO: ¿Puede repasar?
+                        if (data.access_DM === true || data.access_DQ === true) {
+                            document.getElementById("btn-repasar").style.display = "block";
+                        } else {
+                            document.getElementById("btn-repasar").style.display = "none";
+                        }
                     }
                 });
             } else { window.location.href = "index.html"; }
