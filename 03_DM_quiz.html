@@ -6,18 +6,54 @@
     <title>Quiz / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+        /* 🚨 COMPONENTES TÁCTICOS DE REPASO */
+        
+        .btn-status-alert {
+            display: none; 
+            background-color: #fce8e6 !important;
+            color: #d93025 !important;
+            border: 1px solid #d93025 !important;
+            font-weight: 700 !important;
+            width: 100%;
+            padding: 20px;
+            border-radius: 14px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
+            animation: btnElastic 4s ease-in-out infinite;
+            text-align: center;
         }
+
+        @keyframes btnElastic {
+            0% { padding-top: 18px; padding-bottom: 18px; }
+            50% { padding-top: 24px; padding-bottom: 24px; }
+            100% { padding-top: 18px; padding-bottom: 18px; }
+        }
+
+        .btn-ghost {
+            display: none; 
+            background: transparent;
+            border: none;
+            color: #878787;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            text-align: center;
+            font-family: inherit;
+        }
+        .btn-ghost:hover { color: #333; }
+
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
+        }
+
+        /* Estilo para opciones seleccionadas y bloqueadas */
+        .option-btn.selected { border-color: #333333 !important; color: #333333 !important; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -36,10 +72,19 @@
         <div id="quiz-area" class="work-area">
             <button class="option-btn" onclick="this.classList.toggle('selected')">El Salvador.</button>
             <button class="option-btn" onclick="this.classList.toggle('selected')">El Perfeccionista.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">El Buscador de Aprobación.</button>
+            <button class="option-btn" onclick="this.classList.toggle('selected')">El Controlador de Riesgos.</button>
         </div>
-        
-        <button id="btn-next" class="btn-mando">Sincronizar →</button>
-        <button id="btn-hub" class="btn-mando" style="display: none; background: transparent; color: #878787; border: 1px solid #eaeaea; margin-top: 15px;">Regresar al Hub</button>
+
+        <div id="nav-container" style="width: 100%; margin-top: 35px; display: flex; flex-direction: column; align-items: center;">
+            
+            <button id="btn-next" class="btn-mando">Sincronizar →</button>
+            
+            <button id="btn-alerta-reporte" class="btn-status-alert">REVISAR REPORTE DE DAÑOS →</button>
+            
+            <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
+
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -47,76 +92,85 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
-        // =======================================================
-        const archivoActual = "03_DM_quiz.html";
-        const archivoSiguiente = "04_DM_imagen.html";
-        const archivoHub = "09_DM_hub.html";
-        const archivoExpulsion = "08_DF_reportefinal.html";
+        // PANEL DE ENRUTAMIENTO
+        const archivoActual = "03_DM_quiz.html"; 
+        const archivoSiguiente = "04_DM_imagen.html"; 
+        const archivoHub = "09_DM_hub.html"; 
+        const archivoReporte = "08_DM_reportefinal.html";
+        const archivoExpulsion = "index.html"; 
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); 
+        const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 1. MOTORES DE NAVEGACIÓN
-        document.getElementById("btn-hub").addEventListener("click", () => { window.location.href = archivoHub; });
+        // Eventos de botones de alerta/repaso
+        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
-        // 2. MOTOR DE SEGURIDAD VIP
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        
                         if (data.access_DM === true) {
-                            // ES VIP: MOSTRAR
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // GPS Y HABILITACIÓN DE HUB
-                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) { 
-                                userRef.update({ leccion_actual_DM: archivoActual }); 
-                            }
-                            if (data.estado === "Finalizado_DM" || data.estado === "Finalizado_DQ" || data.access_DQ === true) {
-                                document.getElementById("btn-hub").style.display = "block";
-                            }
-                            
-                            // LÓGICA DE QUIZ
                             const campoQuiz = "quiz_" + archivoActual.replace(/\./g, "_");
                             const botones = document.querySelectorAll('.option-btn');
-                            const btnSiguiente = document.getElementById("btn-next");
+                            const btnNext = document.getElementById("btn-next");
 
-                            // Si ya respondió, bloquea edición
+                            // 🚨 LÓGICA DE MEMORIA (Si ya respondió)
                             if (data[campoQuiz] && Array.isArray(data[campoQuiz])) {
                                 botones.forEach(btn => {
-                                    if (data[campoQuiz].includes(btn.innerText.trim())) btn.classList.add('selected');
-                                    btn.style.pointerEvents = "none";
+                                    if (data[campoQuiz].includes(btn.innerText.trim())) {
+                                        btn.classList.add('selected');
+                                    }
+                                    btn.style.pointerEvents = "none"; // Bloquea clics
                                 });
-                                btnSiguiente.innerText = "Continuar →";
-                                btnSiguiente.addEventListener("click", () => { window.location.href = archivoSiguiente; });
+                                btnNext.innerText = "Continuar →";
+                                btnNext.onclick = () => { window.location.href = archivoSiguiente; };
                             } else {
-                                // Modo activo: Guardar
-                                btnSiguiente.addEventListener("click", () => {
+                                // Lógica para guardar por primera vez
+                                btnNext.onclick = () => {
                                     const seleccionados = Array.from(document.querySelectorAll('.option-btn.selected')).map(btn => btn.innerText.trim());
-                                    if (seleccionados.length === 0) { alert("Selecciona una opción."); return; }
+                                    if (seleccionados.length === 0) { alert("La inmersión requiere elección."); return; }
                                     
-                                    btnSiguiente.innerText = "Sincronizando..."; 
-                                    btnSiguiente.disabled = true;
-                                    
-                                    userRef.update({ [campoQuiz]: seleccionados }).then(() => { 
-                                        window.location.href = archivoSiguiente; 
-                                    }).catch(err => { alert("Error: " + err.message); btnSiguiente.disabled = false; });
-                                });
+                                    btnNext.disabled = true;
+                                    btnNext.innerText = "Sincronizando...";
+                                    userRef.update({ [campoQuiz]: seleccionados }).then(() => {
+                                        window.location.href = archivoSiguiente;
+                                    });
+                                };
                             }
-                        } else {
-                            window.location.href = archivoExpulsion;
-                        }
+
+                            // 🚨 LÓGICA DE REPASO (MODO MÁSCARA ROTA)
+                            if (data.estado === "Finalizado_DM" && !data.access_DQ) {
+                                btnNext.style.display = "none";
+                                document.getElementById("btn-alerta-reporte").style.display = "block";
+                                document.getElementById("btn-volver-hub").style.display = "block";
+                            } 
+                            else if (data.access_DQ === true) {
+                                document.getElementById("btn-volver-hub").style.display = "block";
+                            }
+
+                            // GPS (Solo primera vuelta)
+                            if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ" && !data.access_DQ) {
+                                userRef.update({ leccion_actual_DM: archivoActual });
+                            }
+
+                        } else { window.location.href = archivoExpulsion; }
                     } else { window.location.href = "index.html"; }
-                }).catch(() => { window.location.href = "index.html"; });
+                });
             } else { window.location.href = "index.html"; }
         });
     </script>
