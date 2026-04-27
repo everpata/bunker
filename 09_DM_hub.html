@@ -6,80 +6,75 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* 🚨 AJUSTES ESPECÍFICOS DEL HUB */
         .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
-        .lesson-card { background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #333; transition: all 0.3s; }
-        .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
-        .lesson-info b { display: block; font-size: 14px; margin-bottom: 4px; }
-        .lesson-info span { font-size: 12px; color: #878787; }
         
+        .lesson-card { 
+            background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 16px; 
+            padding: 22px; display: flex; align-items: center; justify-content: space-between; 
+            text-decoration: none; color: #333; transition: all 0.3s; 
+        }
+        .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
+        .lesson-info b { display: block; font-size: 15px; margin-bottom: 4px; color: #333; }
+        .lesson-info span { font-size: 12px; color: #878787; font-weight: 500; }
+
         .btn-secundario { 
-            width: 100%; background: transparent; color: #333; border: 1px solid #ccc; 
-            padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; 
-            cursor: pointer; transition: all 0.3s; font-family: inherit;
+            width: 100%; background: transparent; color: #878787; border: 1px solid #ccc; 
+            padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 500; 
+            cursor: pointer; transition: all 0.3s; font-family: inherit; margin-top: 10px;
         }
 
-        /* 🚨 ESTILO "MÁSCARA ROTA" PARA EL BOTÓN DE ALERTA */
+        /* 🚨 BOTÓN "MÁSCARA ROTA" (ALERTA TÉCNICA) */
         .btn-status-alert {
             background-color: #fce8e6 !important;
             color: #d93025 !important;
             border: 1px solid #d93025 !important;
+            font-weight: 700 !important;
             box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
             animation: btnElastic 4s ease-in-out infinite;
         }
 
-        /* 🚨 ANIMACIÓN ELÁSTICA PARA EL BOTÓN */
+        /* Animación de "Respiración" para el botón */
         @keyframes btnElastic {
             0% { padding-top: 18px; padding-bottom: 18px; }
-            50% { padding-top: 22px; padding-bottom: 22px; }
+            50% { padding-top: 24px; padding-bottom: 24px; }
             100% { padding-top: 18px; padding-bottom: 18px; }
-        }
-
-        #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: absolute; top: 0; left: 0; z-index: 9999; }
-        
-        html, body { height: 100%; margin: 0; background-color: #ffffff; }
-        body { display: flex; align-items: center; justify-content: center; }
-
-        /* Contenedor limitado a 375px para consistencia en desktop */
-        .container { 
-            display: flex; 
-            flex-direction: column; 
-            width: 100%; 
-            max-width: 375px; 
-            justify-content: flex-start; 
-            padding-top: 40px; 
-            overflow-y: auto; 
         }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
-        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DM.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DM.png"></div>
         <p class="indicator">Centro de Mando / Tramo 02</p>
         <h1 class="title">Inmersión.</h1>
-        <p class="description" style="margin-bottom: 25px;">Accede a tus protocolos operativos.</p>
+        <p class="description">Accede a tus protocolos operativos.</p>
 
         <div class="hub-grid">
             <a href="01_DM_texto.html" class="lesson-card">
                 <div class="lesson-info"><b>01. El Anarquista</b><span>Protocolo de identidad</span></div>
+                <span style="color: #ccc;">→</span>
             </a>
             <a href="02_DM_bitacora.html" class="lesson-card">
                 <div class="lesson-info"><b>02. Bitácora de Guerra</b><span>Análisis crítico</span></div>
+                <span style="color: #ccc;">→</span>
             </a>
             <a href="03_DM_quiz.html" class="lesson-card">
                 <div class="lesson-info"><b>03. Sincronización</b><span>Evaluación de peso</span></div>
+                <span style="color: #ccc;">→</span>
             </a>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 30px; width: 100%;">
-            <button id="btn-subir-dq" class="btn-mando" style="display: none; background: #333; color: #fff;">↑ Volver a la Cúspide (DQ)</button>
-            <button id="btn-bajar-df" class="btn-secundario">↓ Revisar Protocolos de Descenso (DF)</button>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 35px; width: 100%;">
+            <button id="btn-subir-dq" class="btn-mando" style="display: none; margin-top: 0;">↑ Volver a la Cúspide (DQ)</button>
             
-            <button id="btn-retorno" class="btn-secundario" style="border: none; color: #878787;">Volver al Reporte de Estatus</button>
+            <button id="btn-bajar-df" class="btn-secundario">↓ Revisar Descenso (DF)</button>
+            
+            <button id="btn-retorno" class="btn-secundario" style="border: none;">Volver al Reporte de Estatus</button>
         </div>
     </div>
 
@@ -109,11 +104,11 @@
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // 🚨 LÓGICA DE TRANSFORMACIÓN DEL BOTÓN
+                            // 🚨 LÓGICA DE TRANSFORMACIÓN DEL BOTÓN (MÁSCARA ROTA)
                             if (data.estado === "Finalizado_DM" && !data.access_DQ) {
                                 const btnRetorno = document.getElementById("btn-retorno");
                                 btnRetorno.classList.add("btn-status-alert");
-                                btnRetorno.innerText = "⚠️ REVISAR REPORTE DE DAÑOS →";
+                                btnRetorno.innerText = "REVISAR REPORTE DE DAÑOS →";
                             }
 
                             if (data.access_DQ === true) {
