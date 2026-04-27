@@ -68,6 +68,8 @@
         const leccion1DF = "01_DF_texto.html";
         const leccion1DM = "01_DM_texto.html";
         const leccion1DQ = "01_DQ_texto.html";
+        const reporteDF = "08_DF_reportefinal.html";
+        const reporteDM = "08_DM_reportefinal.html";
 
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
@@ -91,7 +93,7 @@
             }
         });
 
-        // 🧠 CENTINELA INTELIGENTE (REDESPLIEGUE)
+        // 🧠 CENTINELA INTELIGENTE
         auth.onAuthStateChanged((user) => { 
             if (!user) {
                 window.location.href = "index.html"; 
@@ -99,7 +101,6 @@
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
                     const data = doc.data();
                     if (doc.exists && data.estado === "Operativo") {
-                        // Si ya completó sus datos, lo mandamos a su lección según prioridad de acceso
                         lanzarAUbicacion(data);
                     } else {
                         document.getElementById("loading-screen").style.display = "none";
@@ -109,19 +110,29 @@
             }
         });
 
-        // 🚀 MOTOR DE LANZAMIENTO JERÁRQUICO
+        // 🚀 MOTOR DE LANZAMIENTO ESTRATÉGICO V4.3
         function lanzarAUbicacion(data) {
-            // Prioridad 1: Deepquest (Cúspide)
+            // 1. PRIORIDAD: Deepquest (Cúspide)
             if (data.access_DQ) {
                 window.location.href = data.leccion_actual_DQ || leccion1DQ;
             } 
-            // Prioridad 2: Deepmersion (Inmersión)
+            // 2. PRIORIDAD: Deepmersion (Inmersión)
             else if (data.access_DM) {
-                window.location.href = data.leccion_actual_DM || leccion1DM;
+                // ESTRATEGIA: Si ya terminó DM, mandarlo al reporte para vender DQ
+                if (data.estado === "Finalizado_DM") {
+                    window.location.href = reporteDM;
+                } else {
+                    window.location.href = data.leccion_actual_DM || leccion1DM;
+                }
             } 
-            // Prioridad 3: Deepfall (Descenso)
+            // 3. PRIORIDAD: Deepfall (Descenso)
             else {
-                window.location.href = data.leccion_actual_DF || leccion1DF;
+                // ESTRATEGIA: Si ya terminó DF, mandarlo al reporte para vender DM
+                if (data.estado === "Finalizado_DF") {
+                    window.location.href = reporteDF;
+                } else {
+                    window.location.href = data.leccion_actual_DF || leccion1DF;
+                }
             }
         }
 
@@ -157,7 +168,6 @@
                 ultimaSincronizacion: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true })
             .then(() => { 
-                // Tras guardar, volvemos a leer para saber a qué tramo mandarlo
                 userRef.get().then((doc) => {
                     lanzarAUbicacion(doc.data());
                 });
