@@ -10,13 +10,14 @@
         .meta-item { font-size: 14px; margin-bottom: 6px; color: #333; }
         .status-chip { background-color: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; font-size: 12px; margin-left: 5px; letter-spacing: 0.5px; }
         
-        /* MEJORA 1: BOTÓN SECUNDARIO SIMÉTRICO */
         .btn-secundario { 
             width: 100%; background: transparent; color: #333; border: 1px solid #ccc; 
             padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; 
             cursor: pointer; margin-top: 15px; transition: all 0.3s; font-family: inherit;
         }
         .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
+
+        /* 🚨 MINIMALISMO ABSOLUTO EN CARGA */
         #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: absolute; top: 0; left: 0; z-index: 9999; }
     </style>
 </head>
@@ -41,7 +42,7 @@
                 <b>DIAGNÓSTICO TÉCNICO:</b> Posees el conocimiento estructural completo del hombre profundo.
             </p>
             <p class="text-base" style="margin-bottom: 0; font-size: 14px;">
-                <b>SIGUIENTE NIVEL:</b> Si deseas acompañamiento táctico 1 a 1 para aplicar estas leyes, aplica a la mesa táctica.
+                <b>SIGUIENTE NIVEL:</b> Si deseas acompañamiento táctico 1 a 1, aplica a la mesa táctica.
             </p>
         </div>
 
@@ -54,8 +55,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        document.getElementById("btn-mentoria").onclick = () => { window.location.href = "https://LINK_MENTORIA.com"; };
-        document.getElementById("btn-hub").onclick = () => { window.location.href = "09_DQ_hub.html"; };
+        // 🚨 CENTRALIZACIÓN DE RUTAS Y CONFIGURACIÓN
+        const linkMentoria = "https://LINK_MENTORIA.com"; // 🚨 ACTUALIZAR
+        const rutaHub = "09_DQ_hub.html";
+
+        document.getElementById("btn-mentoria").onclick = () => { window.location.href = linkMentoria; };
+        document.getElementById("btn-hub").onclick = () => { window.location.href = rutaHub; };
 
         const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
@@ -69,7 +74,7 @@
                         const data = doc.data();
                         if (!data.access_DQ) { window.location.href = "index.html"; return; }
 
-                        // MEJORA 2: ACTUALIZAR GPS AL ENTRAR AL REPORTE
+                        // 🚨 ACTUALIZACIÓN DEFINITIVA DE VARIABLES (GPS Y ESTADO)
                         userRef.update({ 
                             leccion_actual_DQ: "08_DQ_reportefinal.html", 
                             estado: "Finalizado_DQ" 
