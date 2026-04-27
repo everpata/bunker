@@ -6,28 +6,14 @@
     <title>Texto / Deepquest (T03)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 COMPONENTES TÁCTICOS SOBERANOS */
-        
-        .status-badge-sovereign {
-            background-color: #333;
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 800;
-            display: inline-block;
-            margin-bottom: 25px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
+        /* 🚨 AJUSTES ESPECÍFICOS DQ */
         #loading-screen {
             display: flex; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; background: #fff;
             position: fixed; top: 0; left: 0; z-index: 9999;
         }
 
-        /* Ocultar inicialmente para el cerebro de navegación */
+        /* Ocultar botones inicialmente para el cerebro de navegación */
         #btn-continuar, #btn-hub { display: none; }
     </style>
 </head>
@@ -38,8 +24,6 @@
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DQ.png"></div>
-        
-        <div class="status-badge-sovereign">ESTATUS: SOBERANO</div>
         
         <p class="indicator">Lección 01 / Cúspide</p>
         <div class="progress-container">
@@ -90,7 +74,7 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // 1. FILTRO SOBERANO
+                        // 1. FILTRO DE ACCESO DQ
                         if (data.access_DQ === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
@@ -100,11 +84,9 @@
 
                             // 🧠 CEREBRO DE NAVEGACIÓN DQ
                             if (data.estado === "Finalizado_DQ") {
-                                // Modo Repaso Soberano
                                 btnNext.style.display = "block";
                                 btnHub.style.display = "block";
                             } else {
-                                // Modo Construcción (Primera vez)
                                 btnNext.style.display = "block";
                                 btnHub.style.display = "none";
                             }
@@ -115,7 +97,7 @@
                             }
 
                         } else {
-                            // Expulsión a reporte de daños de la DM para que compre la DQ
+                            // Expulsión al reporte DM (Donde está el Upsell a la DQ)
                             window.location.href = archivoExpulsion; 
                         }
                     } else { window.location.href = "index.html"; }
