@@ -6,7 +6,7 @@
     <title>Reporte de Descenso / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTE DE ETIQUETA DE EXPEDICIONARIO */
+        /* 🚨 IDENTIFICACIÓN DEL EXPEDICIONARIO */
         #nombre-exp {
             font-size: 11px;
             font-weight: 600;
@@ -103,12 +103,12 @@
 
         <div class="work-area card" style="margin-bottom: 35px;">
             <p class="text-base">
-                <b>DIAGNÓSTICO:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br>
-                <b>ORDEN:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.
+                <b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br>
+                <b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.
             </p>
         </div>
 
-        <p class="text-base" style="margin-bottom: 15px; font-size: 14px; color: #333;"><b>La escotilla de acceso cierra en:</b></p>
+        <p class="text-base" style="margin-bottom: 15px;"><b>La escotilla de acceso cierra en:</b></p>
         <div id="countdown" class="stats-container">
             <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
             <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
@@ -116,8 +116,6 @@
         </div>
 
         <div class="work-area">
-            <p class="text-base" style="margin-bottom: 15px;"><b>Acceso al siguiente nivel:</b></p>
-            
             <button id="btn-comprar" class="btn-mando btn-status-alert" style="margin-top: 0;">
                 AVANZAR AL TRAMO 02 →
             </button>
@@ -140,16 +138,11 @@
         document.getElementById("btn-comprar").onclick = () => { window.location.href = linkPago; };
         document.getElementById("btn-repasar").onclick = () => { window.location.href = rutaRepaso; };
 
-        // Temporizador H:M:S (Simplificado)
+        // Temporizador H:M:S
         setInterval(function() {
             const now = new Date().getTime(); const distance = targetDate - now;
+            if (distance < 0) { document.getElementById("countdown").innerHTML = "EXPIRADO"; return; }
             
-            if (distance < 0) { 
-                document.getElementById("countdown").innerHTML = "EXPIRADO"; 
-                return; 
-            }
-            
-            // Calculamos horas totales (incluyendo días)
             const h = Math.floor(distance / (1000 * 60 * 60));
             const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const s = Math.floor((distance % (1000 * 60)) / 1000);
