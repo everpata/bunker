@@ -12,18 +12,16 @@
         .lesson-info b { display: block; font-size: 14px; margin-bottom: 4px; }
         .lesson-info span { font-size: 12px; color: #878787; }
         
-        #loading-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            background: #fff;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+        /* 🚨 SIMETRÍA DE BOTONES */
+        .btn-secundario { 
+            width: 100%; background: transparent; color: #333; border: 1px solid #ccc; 
+            padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; 
+            cursor: pointer; transition: all 0.3s; font-family: inherit;
         }
+        .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
+
+        /* 🚨 MINIMALISMO EN CARGA */
+        #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: absolute; top: 0; left: 0; z-index: 9999; }
     </style>
 </head>
 <body>
@@ -35,7 +33,7 @@
         <div class="logo"><img src="DM.png"></div>
         <p class="indicator">Centro de Mando / Tramo 02</p>
         <h1 class="title">Inmersión.</h1>
-        <p class="description">Accede a tus protocolos operativos.</p>
+        <p class="description" style="margin-bottom: 25px;">Accede a tus protocolos operativos.</p>
 
         <div class="hub-grid">
             <a href="01_DM_texto.html" class="lesson-card">
@@ -47,9 +45,14 @@
             <a href="03_DM_quiz.html" class="lesson-card">
                 <div class="lesson-info"><b>03. Sincronización</b><span>Evaluación de peso</span></div>
             </a>
-            </div>
+        </div>
 
-        <button id="btn-retorno" class="btn-mando" style="margin-top: 30px; background: transparent; color: #333; border: 1px solid #333;">← Volver al Reporte de Estatus</button>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 30px; width: 100%;">
+            <button id="btn-subir-dq" class="btn-mando" style="display: none; background: #333; color: #fff;">↑ Volver a la Cúspide (DQ)</button>
+            
+            <button id="btn-bajar-df" class="btn-secundario">↓ Revisar Protocolos de Descenso (DF)</button>
+            <button id="btn-retorno" class="btn-secundario" style="border: none; color: #878787;">Volver al Reporte de Estatus</button>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -57,56 +60,33 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     
     <script>
-        // =======================================================
-        // 🔴 ACTUALIZAR: PANEL DE ENRUTAMIENTO (COORDENADAS)
-        // =======================================================
-        const archivoRetorno = "08_DM_reportefinal.html"; 
-        const archivoExpulsion = "index.html"; 
+        // 🚨 CENTRALIZACIÓN DE RUTAS
+        const rutaDQ = "09_DQ_hub.html";
+        const rutaDF = "08_DF_reportefinal.html";
+        const rutaReporte = "08_DM_reportefinal.html";
 
-        // 🔴 ACTUALIZAR: Credenciales de Firebase
-        const firebaseConfig = { 
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
-            authDomain: "deepfall-b3601.firebaseapp.com", 
-            projectId: "deepfall-b3601", 
-            storageBucket: "deepfall-b3601.firebasestorage.app", 
-            messagingSenderId: "207043962011", 
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
-        };
+        document.getElementById("btn-subir-dq").onclick = () => { window.location.href = rutaDQ; };
+        document.getElementById("btn-bajar-df").onclick = () => { window.location.href = rutaDF; };
+        document.getElementById("btn-retorno").onclick = () => { window.location.href = rutaReporte; };
+
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); 
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
-        // 1. ASIGNACIÓN DE BOTONES
-        document.getElementById("btn-retorno").addEventListener("click", () => {
-            window.location.href = archivoRetorno;
-        });
-
-        // 2. MOTOR DE SEGURIDAD VIP
         auth.onAuthStateChanged((user) => {
             if (user) {
-                const userRef = db.collection("usuarios").doc(user.uid);
-                userRef.get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        
-                        // VALIDACIÓN VIP: Solo entra si tiene acceso a la DM
-                        if (data.access_DM === true) {
-                            // Autorizado: Retirar escudo de carga
-                            document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "flex";
-                        } else {
-                            // Intruso detectado: Expulsión silenciosa
-                            window.location.href = archivoExpulsion;
+                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                    if (doc.exists && doc.data().access_DM === true) {
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+
+                        // 🚨 VALIDACIÓN PARA MOSTRAR BOTÓN DE ASCENSO
+                        if (doc.data().access_DQ === true) {
+                            document.getElementById("btn-subir-dq").style.display = "block";
                         }
-                    } else {
-                        window.location.href = archivoExpulsion;
-                    }
-                }).catch(() => {
-                    window.location.href = archivoExpulsion;
+                    } else { window.location.href = "index.html"; }
                 });
-            } else {
-                window.location.href = archivoExpulsion;
-            }
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
