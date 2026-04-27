@@ -6,7 +6,7 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 BANNER TÁCTICO FLOTANTE CON MOVIMIENTO (BUCLE) */
+        /* 🚨 BANNER ELÁSTICO (ANCLADO AL TECHO) */
         #banner-upsell {
             display: none; 
             position: fixed; 
@@ -14,37 +14,39 @@
             left: 50%; 
             transform: translateX(-50%);
             width: 92%; 
-            max-width: 440px; /* Alineado con el ancho de tus tarjetas/botones */
+            max-width: 440px; /* Alineado con el ancho de tus tarjetas */
             background-color: #333333; 
             color: #ffffff; 
             text-align: center; 
-            padding: 12px 15px; 
+            padding: 14px 15px; /* Padding inicial */
             font-size: 10px; 
             font-weight: 800; 
             z-index: 10001; 
             cursor: pointer; 
-            border-radius: 0 0 10px 10px;
+            border-radius: 0 0 12px 12px; /* Solo redondeado abajo */
             letter-spacing: 1px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            /* Animación de entrada y bucle de respiración suave */
-            animation: slideDown 0.8s ease-out, floatLoop 3s ease-in-out infinite;
+            /* Animación de entrada y BUCLE DE ESTIRAMIENTO */
+            animation: slideDown 0.8s ease-out, stretchLoop 3s ease-in-out infinite;
             font-family: sans-serif;
+            box-sizing: border-box;
         }
 
+        /* Animación de entrada (aparece desde arriba) */
         @keyframes slideDown { 
             from { transform: translate(-50%, -100%); } 
             to { transform: translate(-50%, 0); } 
         }
 
-        /* 🚨 BUCLE DE MOVIMIENTO (ATRACCIÓN VISUAL) */
-        @keyframes floatLoop {
-            0% { top: 0px; }
-            50% { top: 6px; }
-            100% { top: 0px; }
+        /* 🚨 BUCLE DE ESTIRAMIENTO (SIN DESPEGARSE) */
+        @keyframes stretchLoop {
+            0% { padding-bottom: 14px; }
+            50% { padding-bottom: 24px; } /* Se "alarga" hacia abajo */
+            100% { padding-bottom: 14px; }
         }
 
-        /* Espacio para el banner cuando se activa */
-        body.with-banner .container { margin-top: 70px !important; }
+        /* Margen de seguridad para el contenido */
+        body.with-banner .container { margin-top: 75px !important; }
 
         /* Estilos del Hub */
         .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
@@ -106,7 +108,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     
     <script>
-        // RUTAS
         const rutaDQ = "09_DQ_hub.html";
         const rutaDF = "08_DF_reportefinal.html";
         const rutaReporte = "08_DM_reportefinal.html";
@@ -124,18 +125,15 @@
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        // SEGURIDAD VIP
                         if (data.access_DM === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
-                            // 🚨 LÓGICA DE BANNER PSICOLÓGICO
                             if (data.estado === "Finalizado_DM" && !data.access_DQ) {
                                 document.getElementById("banner-upsell").style.display = "block";
                                 document.body.classList.add("with-banner");
                             }
 
-                            // MOSTRAR BOTÓN DE ASCENSO SI YA ES REY
                             if (data.access_DQ === true) {
                                 document.getElementById("btn-subir-dq").style.display = "block";
                             }
