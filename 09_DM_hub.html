@@ -6,7 +6,7 @@
     <title>Hub DM / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 BANNER ELÁSTICO (ANCLADO AL TECHO) */
+        /* 🚨 BANNER ELÁSTICO CON TEXTO ANCLADO AL BORDE INFERIOR */
         #banner-upsell {
             display: none; 
             position: fixed; 
@@ -14,41 +14,54 @@
             left: 50%; 
             transform: translateX(-50%);
             width: 92%; 
-            max-width: 440px; /* Alineado con el ancho de tus tarjetas */
+            max-width: 440px; 
             background-color: #333333; 
             color: #ffffff; 
             text-align: center; 
-            padding: 14px 15px; /* Padding inicial */
+            
+            /* Padding base */
+            padding-top: 14px; 
+            padding-bottom: 14px;
+            padding-left: 15px;
+            padding-right: 15px;
+
             font-size: 10px; 
             font-weight: 800; 
             z-index: 10001; 
             cursor: pointer; 
-            border-radius: 0 0 12px 12px; /* Solo redondeado abajo */
+            border-radius: 0 0 12px 12px; 
             letter-spacing: 1px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            /* Animación de entrada y BUCLE DE ESTIRAMIENTO */
-            animation: slideDown 0.8s ease-out, stretchLoop 3s ease-in-out infinite;
+            
+            /* Animaciones: Entrada + Bucle Elástico */
+            animation: slideDown 0.8s ease-out, elasticLoop 3s ease-in-out infinite;
+            
             font-family: sans-serif;
             box-sizing: border-box;
+            
+            /* Flexbox para asegurar que el texto sea una unidad */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
         }
 
-        /* Animación de entrada (aparece desde arriba) */
+        /* Entrada desde el techo */
         @keyframes slideDown { 
             from { transform: translate(-50%, -100%); } 
             to { transform: translate(-50%, 0); } 
         }
 
-        /* 🚨 BUCLE DE ESTIRAMIENTO (SIN DESPEGARSE) */
-        @keyframes stretchLoop {
-            0% { padding-bottom: 14px; }
-            50% { padding-bottom: 24px; } /* Se "alarga" hacia abajo */
-            100% { padding-bottom: 14px; }
+        /* 🚨 BUCLE ELÁSTICO: El padding-top empuja el texto hacia abajo sincronizadamente */
+        @keyframes elasticLoop {
+            0% { padding-top: 14px; }
+            50% { padding-top: 28px; } /* Crece hacia arriba, empujando el texto al fondo */
+            100% { padding-top: 14px; }
         }
 
-        /* Margen de seguridad para el contenido */
-        body.with-banner .container { margin-top: 75px !important; }
+        /* Evita que el contenido choque con el banner */
+        body.with-banner .container { margin-top: 80px !important; }
 
-        /* Estilos del Hub */
+        /* Estética del Hub */
         .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
         .lesson-card { background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 12px; padding: 18px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #333; transition: all 0.3s; }
         .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
@@ -97,7 +110,6 @@
 
         <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 30px; width: 100%;">
             <button id="btn-subir-dq" class="btn-mando" style="display: none; background: #333; color: #fff;">↑ Volver a la Cúspide (DQ)</button>
-            
             <button id="btn-bajar-df" class="btn-secundario">↓ Revisar Protocolos de Descenso (DF)</button>
             <button id="btn-retorno" class="btn-secundario" style="border: none; color: #878787;">Volver al Reporte de Estatus</button>
         </div>
@@ -130,7 +142,7 @@
                             document.getElementById("bunker-content").style.display = "flex";
 
                             if (data.estado === "Finalizado_DM" && !data.access_DQ) {
-                                document.getElementById("banner-upsell").style.display = "block";
+                                document.getElementById("banner-upsell").style.display = "flex";
                                 document.body.classList.add("with-banner");
                             }
 
@@ -138,7 +150,7 @@
                                 document.getElementById("btn-subir-dq").style.display = "block";
                             }
                         } else { window.location.href = "index.html"; }
-                    } else { window.location.href = "index.html"; }
+                    }
                 });
             } else { window.location.href = "index.html"; }
         });
