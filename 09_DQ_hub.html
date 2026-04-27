@@ -6,8 +6,10 @@
     <title>Hub DQ / Deepquest</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ESTÉTICA DEL HUB DE LA CÚSPIDE */
-        .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
+        /* 🚨 ESTÉTICA DE PRECISIÓN V4.1 */
+        .hub-grid { 
+            width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 0; 
+        }
         
         .lesson-card { 
             background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 16px; 
@@ -15,24 +17,19 @@
             text-decoration: none; color: #333; transition: all 0.3s; 
         }
         .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
+        
         .lesson-info b { display: block; font-size: 15px; margin-bottom: 4px; color: #333; }
         .lesson-info span { font-size: 12px; color: #878787; font-weight: 500; }
 
-        /* Botón Fantasma para retroceder */
-        .btn-ghost-hub {
-            background: transparent;
-            border: none;
-            color: #878787;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 20px;
-            width: 100%;
-            text-align: center;
-            font-family: inherit;
-            transition: color 0.3s;
+        /* 🎯 FIX DE ESPACIADO: 35px tras el grid de tarjetas */
+        #btn-reporte-dq {
+            margin-top: 35px !important;
         }
-        .btn-ghost-hub:hover { color: #333; }
+
+        /* 🎯 FIX DE ESPACIADO: 20px tras el botón principal */
+        #btn-volver-dm {
+            margin-top: 20px !important;
+        }
 
         #loading-screen { 
             display: flex; align-items: center; justify-content: center; 
@@ -68,11 +65,13 @@
             </a>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 35px; width: 100%;">
-            <button id="btn-reporte-dq" class="btn-mando" style="margin-top: 0;">Revisar el reporte final →</button>
-            
-            <button id="btn-volver-dm" class="btn-ghost-hub">← Revisar herramientas del Anarquista</button>
-        </div>
+        <button id="btn-reporte-dq" class="btn-mando">
+            Revisar el reporte final →
+        </button>
+        
+        <button id="btn-volver-dm" class="btn-ghost">
+            ← Revisar herramientas del Anarquista
+        </button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -102,18 +101,18 @@
                 db.collection("usuarios").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        // Seguridad: Solo acceso si tiene DQ desbloqueado
+                        
+                        // 🔒 PROTECCIÓN VIP: Solo acceso si tiene DQ desbloqueado
                         if (data.access_DQ === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
                         } else { 
-                            window.location.href = "index.html"; 
+                            // Expulsión al reporte DM si es un intruso
+                            window.location.href = "08_DM_reportefinal.html"; 
                         }
-                    }
+                    } else { window.location.href = "index.html"; }
                 });
-            } else { 
-                window.location.href = "index.html"; 
-            }
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
