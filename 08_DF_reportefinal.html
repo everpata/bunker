@@ -21,6 +21,7 @@
             text-transform: uppercase;
         }
 
+        /* TEMPORIZADOR HORIZONTAL */
         .stats-container {
             display: flex !important; flex-direction: row !important;
             gap: 10px; width: 100%; margin-top: 35px;
@@ -34,6 +35,7 @@
         .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
         .stat-label { font-size: 9px; font-weight: 700; color: #878787; margin-top: 8px; display: block; text-transform: uppercase; }
 
+        /* Botón Upsell T02 */
         .btn-status-alert {
             margin-top: 35px !important;
             background-color: #fce8e6 !important;
@@ -49,7 +51,11 @@
             50% { padding-top: 24px; padding-bottom: 24px; }
         }
 
-        #btn-repasar { margin-top: 20px !important; }
+        /* 🔒 BLOQUEO DE FUGA: Oculto con !important */
+        #btn-repasar { 
+            display: none !important; 
+            margin-top: 20px !important; 
+        }
 
         #loading-screen { 
             display: flex; align-items: center; justify-content: center; 
@@ -107,7 +113,6 @@
         document.getElementById("btn-comprar").onclick = () => { window.location.href = linkPago; };
         document.getElementById("btn-repasar").onclick = () => { window.location.href = "09_DF_hub.html"; };
 
-        // Temporizador
         setInterval(function() {
             const now = new Date().getTime(); const distance = targetDate - now;
             if (distance < 0) { document.getElementById("countdown").innerHTML = "EXPIRADO"; return; }
@@ -137,30 +142,30 @@
                     if (doc.exists) {
                         const data = doc.data();
 
-                        // 🧠 MOTOR DE TRAYECTORIA DINÁMICA (Estrategia de Venta)
+                        // 🧠 MOTOR DE TRAYECTORIA DINÁMICA
                         if (data.access_DM === true || data.access_DQ === true) {
-                            
-                            // 1. Prioridad: Si ya tiene la Cúspide, lo mandamos a su progreso
                             if (data.access_DQ) {
                                 window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html";
                             } 
-                            // 2. Prioridad: SI YA GRADUÓ DE DM -> AL REPORTE DM (Venta de DQ)
                             else if (data.estado === "Finalizado_DM") {
                                 window.location.href = "08_DM_reportefinal.html"; 
                             }
-                            // 3. Prioridad: Si está cursando DM, a su lección
                             else if (data.leccion_actual_DM) {
                                 window.location.href = data.leccion_actual_DM;
                             }
-                            // 4. Caso: Acaba de comprar DM, a la 1
                             else {
                                 window.location.href = "01_DM_texto.html";
                             }
                             return; 
                         }
                         
-                        // Sellar estado DF si no ha pasado al siguiente tramo
+                        // SI LLEGÓ AQUÍ, ES UN GRADUADO DE DF SIN COMPRA DE DM
                         userRef.update({ leccion_actual_DF: "08_DF_reportefinal.html", estado: "Finalizado_DF" });
+                        
+                        // EL BOTÓN SE MANTIENE OCULTO (display: none !important en CSS)
+                        // Si quisieras mostrarlo solo en casos muy específicos, usarías:
+                        // document.getElementById("btn-repasar").style.setProperty('display', 'block', 'important');
+
                         document.getElementById("nombre-exp").innerText = "EXPEDICIONARIO: " + (data.nombre || "SIN NOMBRE").toUpperCase();
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
