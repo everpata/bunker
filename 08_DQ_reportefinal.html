@@ -6,48 +6,87 @@
     <title>Reporte Definitivo / Deepquest</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .meta-header { width: 100%; margin-bottom: 20px; }
-        .meta-item { font-size: 14px; margin-bottom: 6px; color: #333; }
-        .status-chip { background-color: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; font-size: 12px; margin-left: 5px; letter-spacing: 0.5px; }
-        
-        .btn-secundario { 
-            width: 100%; background: transparent; color: #333; border: 1px solid #ccc; 
-            padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; 
-            cursor: pointer; margin-top: 15px; transition: all 0.3s; font-family: inherit;
+        /* 🚨 IDENTIFICACIÓN DEL EXPEDICIONARIO (Gris 878787) */
+        #user-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #878787;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 18px; /* Espaciado de 18px corregido */
+            line-height: 1;
+            display: block;
+            opacity: 0;
+            animation: fadeInName 1s ease forwards 0.5s;
         }
-        .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
 
-        /* 🚨 MINIMALISMO ABSOLUTO EN CARGA */
-        #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: absolute; top: 0; left: 0; z-index: 9999; }
+        /* Etiqueta Verde de Victoria (Hombre Profundo) */
+        .status-badge-success {
+            background-color: #e6f4ea;
+            color: #137333;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 25px;
+            border: 1px solid #137333;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeInName { from { opacity: 0; } to { opacity: 1; } }
+
+        #loading-screen { 
+            display: flex; align-items: center; justify-content: center; 
+            height: 100vh; width: 100vw; background: #fff; 
+            position: fixed; top: 0; left: 0; z-index: 9999; 
+        }
+
+        /* Estilo para el botón tipo enlace */
+        .btn-ghost-exit {
+            background: transparent;
+            border: none;
+            color: #878787;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            text-align: center;
+            font-family: inherit;
+            transition: color 0.3s;
+        }
+        .btn-ghost-exit:hover { color: #333; }
     </style>
 </head>
 <body>
+
     <div id="loading-screen">
         <img src="DQ.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DQ.png"></div>
-        <p class="indicator">Reporte Definitivo</p>
-        <h1 class="title">Estatus: Rey.</h1>
-
-        <div class="meta-header">
-            <div class="meta-item"><b>Expedicionario:</b> <span id="nombre-exp">Cargando...</span></div>
-            <div class="meta-item"><b>Tramos completados:</b> 03 de 03</div>
-            <div class="meta-item"><b>Estado operativo:</b><span class="status-chip">SISTEMA BLINDADO (DOMINIO)</span></div>
-        </div>
         
-        <div class="work-area card">
-            <p class="text-base" style="margin-bottom: 15px; font-size: 14px;">
-                <b>DIAGNÓSTICO TÉCNICO:</b> Posees el conocimiento estructural completo del hombre profundo.
-            </p>
-            <p class="text-base" style="margin-bottom: 0; font-size: 14px;">
-                <b>SIGUIENTE NIVEL:</b> Si deseas acompañamiento táctico 1 a 1, aplica a la mesa táctica.
+        <span id="user-name">EXPEDICIONARIO: ---</span>
+        
+        <div class="status-badge-success">ESTATUS: HOMBRE PROFUNDO</div>
+        
+        <h1 class="title">Estatus: Rey.</h1>
+        <p class="description" style="margin-bottom: 30px;">Reporte de blindaje definitivo tras completar el Tramo 03.</p>
+
+        <div class="work-area card" style="margin-bottom: 40px;">
+            <p class="text-base">
+                <b>Diagnóstico:</b> Posees el conocimiento estructural completo del hombre profundo. Tu sistema operativo ha sido blindado contra el ruido y la fragmentación externa.<br><br>
+                <b>Orden:</b> Mantener la soberanía absoluta. Si deseas acompañamiento táctico 1 a 1 de forma recurrente, aplica a la mesa táctica.
             </p>
         </div>
 
-        <button id="btn-mentoria" class="btn-mando">Aplicar a Mentoría 1 a 1 →</button>
-        <button id="btn-hub" class="btn-secundario">← Volver al Hub de la Cúspide</button>
+        <div class="work-area" style="align-items: center;">
+            <button onclick="window.location.href='09_DQ_hub.html'" class="btn-ghost-exit">
+                ← Volver al Centro de Mando (DQ)
+            </button>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -55,14 +94,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 🚨 CENTRALIZACIÓN DE RUTAS Y CONFIGURACIÓN
-        const linkMentoria = "https://LINK_MENTORIA.com"; // 🚨 ACTUALIZAR
-        const rutaHub = "09_DQ_hub.html";
-
-        document.getElementById("btn-mentoria").onclick = () => { window.location.href = linkMentoria; };
-        document.getElementById("btn-hub").onclick = () => { window.location.href = rutaHub; };
-
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
@@ -72,17 +111,23 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        if (!data.access_DQ) { window.location.href = "index.html"; return; }
+                        
+                        // Protección de acceso
+                        if (data.access_DQ === true) {
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
 
-                        // 🚨 ACTUALIZACIÓN DEFINITIVA DE VARIABLES (GPS Y ESTADO)
-                        userRef.update({ 
-                            leccion_actual_DQ: "08_DQ_reportefinal.html", 
-                            estado: "Finalizado_DQ" 
-                        });
+                            // Sincronizar nombre
+                            const nombreExp = data.nombre || "SIN NOMBRE";
+                            document.getElementById("user-name").innerText = "EXPEDICIONARIO: " + nombreExp.toUpperCase();
 
-                        document.getElementById("nombre-exp").innerText = data.nombre || "Rey";
-                        document.getElementById("loading-screen").style.display = "none";
-                        document.getElementById("bunker-content").style.display = "flex";
+                            // Actualizar Estado final
+                            userRef.update({ 
+                                leccion_actual_DQ: "08_DQ_reportefinal.html", 
+                                estado: "Finalizado_DQ" 
+                            });
+
+                        } else { window.location.href = "index.html"; }
                     }
                 });
             } else { window.location.href = "index.html"; }
