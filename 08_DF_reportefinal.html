@@ -6,60 +6,48 @@
     <title>Reporte de Descenso / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 IDENTIFICACIÓN DEL EXPEDICIONARIO */
+        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
+        
         #nombre-exp {
-            font-size: 11px;
-            font-weight: 600;
-            color: #878787;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 18px;
-            line-height: 1;
-            display: block;
+            font-size: 11px; font-weight: 600; color: #878787;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            margin-bottom: 18px; line-height: 1; display: block;
         }
 
-        /* Etiqueta Roja de Alerta */
         .status-badge {
-            background-color: #fce8e6;
-            color: #d93025;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 800;
-            display: inline-block;
-            margin-bottom: 25px;
-            border: 1px solid #d93025;
+            background-color: #fce8e6; color: #d93025;
+            padding: 6px 12px; border-radius: 6px;
+            font-size: 10px; font-weight: 800; display: inline-block;
+            margin-bottom: 25px; border: 1px solid #d93025;
             text-transform: uppercase;
         }
 
-        /* Cajitas de Tiempo (H:M:S) */
+        /* 🚨 FIX: TEMPORIZADOR HORIZONTAL */
         .stats-container {
-            display: flex;
+            display: flex !important;
+            flex-direction: row !important;
             gap: 10px;
             width: 100%;
-            margin-bottom: 35px;
+            margin-top: 35px; /* Espacio desde el texto superior */
+            margin-bottom: 0 !important;
         }
+
         .stat-box {
             flex: 1;
             background-color: #f5f5f7;
-            padding: 22px 10px;
-            border-radius: 16px;
+            padding: 22px 5px;
+            border-radius: 16px; /* Silueta 16px */
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .stat-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: #333;
-            line-height: 1;
-        }
-        .stat-label {
-            font-size: 9px;
-            font-weight: 700;
-            color: #878787;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-top: 8px;
-            display: block;
+
+        .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
+        .stat-label { 
+            font-size: 9px; font-weight: 700; color: #878787;
+            letter-spacing: 1px; text-transform: uppercase;
+            margin-top: 8px; display: block;
         }
 
         /* Botón Alerta Elástica (Upsell T02) */
@@ -70,12 +58,13 @@
             font-weight: 700 !important;
             box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
             animation: btnElastic 4s ease-in-out infinite;
+            text-align: center;
+            border-radius: 16px !important;
         }
 
         @keyframes btnElastic {
-            0% { padding-top: 18px; padding-bottom: 18px; }
+            0%, 100% { padding-top: 18px; padding-bottom: 18px; }
             50% { padding-top: 24px; padding-bottom: 24px; }
-            100% { padding-top: 18px; padding-bottom: 18px; }
         }
 
         #loading-screen { 
@@ -88,42 +77,40 @@
 <body>
 
     <div id="loading-screen">
-        <img src="DF.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DF.png"></div>
         
         <span id="nombre-exp">EXPEDICIONARIO: ---</span>
-        
         <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
         
         <h1 class="title">Fin del Descenso.</h1>
-        <p class="description" style="margin-bottom: 30px;">Análisis final del Tramo 01 completado.</p>
+        <p class="description">Análisis final del Tramo 01 completado.</p>
 
-        <div class="work-area card" style="margin-bottom: 35px;">
+        <div class="work-area card">
             <p class="text-base">
                 <b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br>
                 <b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.
             </p>
         </div>
 
-        <p class="text-base" style="margin-bottom: 15px;"><b>La escotilla de acceso cierra en:</b></p>
+        <p class="text-base" style="margin-top: 35px; margin-bottom: -20px;"><b>La escotilla de acceso cierra en:</b></p>
+        
         <div id="countdown" class="stats-container">
             <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
             <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
             <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
         </div>
 
-        <div class="work-area">
-            <button id="btn-comprar" class="btn-mando btn-status-alert" style="margin-top: 0;">
-                AVANZAR AL TRAMO 02 →
-            </button>
-            
-            <button id="btn-repasar" style="background: transparent; border: none; color: #878787; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 25px; width: 100%;">
-                ← Volver a repasar el Descenso
-            </button>
-        </div>
+        <button id="btn-comprar" class="btn-mando btn-status-alert">
+            AVANZAR AL TRAMO 02 →
+        </button>
+        
+        <button id="btn-repasar" class="btn-ghost">
+            ← Volver a repasar el Descenso
+        </button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -142,11 +129,9 @@
         setInterval(function() {
             const now = new Date().getTime(); const distance = targetDate - now;
             if (distance < 0) { document.getElementById("countdown").innerHTML = "EXPIRADO"; return; }
-            
             const h = Math.floor(distance / (1000 * 60 * 60));
             const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const s = Math.floor((distance % (1000 * 60)) / 1000);
-            
             document.getElementById("hrs").innerText = h.toString().padStart(2, '0');
             document.getElementById("min").innerText = m.toString().padStart(2, '0');
             document.getElementById("seg").innerText = s.toString().padStart(2, '0');
@@ -162,8 +147,10 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        if (data.access_DM || data.access_DQ) { window.location.href = "index.html"; return; }
+                        // Redirigir si ya tiene acceso al siguiente tramo
+                        if (data.access_DM || data.access_DQ) { window.location.href = "01_DM_texto.html"; return; }
                         
+                        // Sellar estado
                         userRef.update({ 
                             leccion_actual_DF: "08_DF_reportefinal.html", 
                             estado: "Finalizado_DF" 
