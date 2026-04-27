@@ -3,104 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reporte Final / DM</title>
+    <title>Reporte de Daños / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .meta-header { width: 100%; margin-bottom: 20px; }
-        .meta-item { font-size: 14px; margin-bottom: 6px; color: #333; }
-        .status-chip { background-color: #fce8e6; color: #d93025; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: bold; font-size: 12px; margin-left: 5px; }
-        .work-area.card { margin-bottom: 20px !important; } 
-        .timer-container { width: 100%; margin-bottom: 25px !important; }
-        
-        .btn-secundario { 
-            width: 100%; background: transparent; color: #333; border: 1px solid #ccc; 
-            padding: 18px; border-radius: 14px; font-size: 16px; font-weight: 600; 
-            cursor: pointer; margin-top: 15px; transition: all 0.3s; font-family: inherit;
+        /* 🚨 ESTILO DE CAJITAS GRISES (TIMER) */
+        .stats-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 30px;
         }
-        .btn-secundario:hover { background: #f5f5f7; border-color: #333; }
+        .stat-box {
+            flex: 1;
+            background-color: #f5f5f7;
+            padding: 20px 10px;
+            border-radius: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #333;
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #878787;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
 
-        /* 🚨 MINIMALISMO ABSOLUTO EN CARGA */
-        #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: absolute; top: 0; left: 0; z-index: 9999; }
+        /* Etiqueta Máscara Rota (Rojo Alerta) */
+        .status-badge {
+            background-color: #fce8e6;
+            color: #d93025;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 15px;
+            border: 1px solid #d93025;
+        }
+
+        #loading-screen { 
+            display: flex; align-items: center; justify-content: center; 
+            height: 100vh; width: 100vw; background: #fff; 
+            position: fixed; top: 0; left: 0; z-index: 9999; 
+        }
     </style>
 </head>
 <body>
+
     <div id="loading-screen">
         <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DM.png"></div>
-        <p class="indicator">Reporte Operativo</p>
-        <h1 class="title">Límite de Inmersión.</h1>
-
-        <div class="meta-header">
-            <div class="meta-item"><b>Expedicionario:</b> <span id="nombre-exp">Cargando...</span></div>
-            <div class="meta-item"><b>Tramos completados:</b> 02 de 03</div>
-            <div class="meta-item"><b>Estado operativo:</b><span class="status-chip">SISTEMA AISLADO</span></div>
-        </div>
         
-        <div class="work-area card">
-            <p class="text-base" style="font-size: 14px; margin-bottom: 15px;">
-                <b>DIAGNÓSTICO:</b> Has dominado la Inmersión. El Anarquista está activo, pero te falta la brújula del Rey.
-            </p>
-            <p class="text-base" style="font-size: 14px; margin-bottom: 0;">
-                <b>ORDEN DE MANDO:</b> Es imperativo iniciar el Deepquest (Tramo 03).
-            </p>
+        <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
+        
+        <h1 class="title">Diagnóstico de Inmersión.</h1>
+        <p class="description">Análisis de la fractura operativa tras el Tramo 02.</p>
+
+        <div class="stats-container">
+            <div class="stat-box">
+                <span class="stat-value" id="timer-hrs">00</span>
+                <span class="stat-label">Horas</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="timer-min">00</span>
+                <span class="stat-label">Minutos</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="timer-seg">00</span>
+                <span class="stat-label">Segundos</span>
+            </div>
         </div>
 
-        <div class="timer-container">
-            <p style="font-size: 13px; color: #878787; margin-bottom: 10px;">La bóveda del Deepquest cierra en:</p>
-            <div id="countdown" style="font-weight: bold; color: #333; font-family: monospace; font-size: 18px;">Calculando...</div>
+        <div class="work-area card" style="margin-bottom: 25px;">
+            <p class="text-base" style="color: #333;"><b>Dictamen Final:</b></p>
+            <p class="text-base">Has desmantelado la máscara, pero el núcleo sigue expuesto. Sin la brújula del Rey (DQ), el Anarquista terminará consumido por el caos que él mismo provocó.</p>
         </div>
 
-        <button id="btn-comprar" class="btn-mando">Avanzar al Deepquest →</button>
-        <button id="btn-hub" class="btn-secundario">← Volver al Hub del Anarquista</button>
+        <div class="work-area">
+            <p class="indicator">Acceso al siguiente nivel:</p>
+            <button id="btn-mentoría" class="btn-mando" onclick="window.open('https://wa.me/tu-numero', '_blank')" style="margin-top: 10px;">
+                SOLICITAR MENTORÍA 1 A 1 (DQ) →
+            </button>
+            
+            <button onclick="window.location.href='09_DM_hub.html'" style="background: transparent; border: none; color: #878787; font-size: 13px; cursor: pointer; margin-top: 20px; width: 100%;">
+                ← Volver al Hub de Inmersión
+            </button>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    
+
     <script>
-        // 🚨 CENTRALIZACIÓN DE RUTAS Y CONFIGURACIÓN
-        const linkPago = "https://TU_LINK_DE_PAGO_DQ.com"; // 🚨 ACTUALIZAR
-        const targetDate = new Date("May 10, 2026 19:00:00 GMT-0500").getTime(); // 🚨 ACTUALIZAR
-        const rutaHub = "09_DM_hub.html";
-
-        document.getElementById("btn-comprar").onclick = () => { window.location.href = linkPago; };
-        document.getElementById("btn-hub").onclick = () => { window.location.href = rutaHub; };
-
-        setInterval(function() {
-            const now = new Date().getTime(); const distance = targetDate - now;
-            if (distance < 0) { document.getElementById("countdown").innerHTML = "CERRADO"; return; }
-            const d = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const s = Math.floor((distance % (1000 * 60)) / 1000);
-            document.getElementById("countdown").innerHTML = `${d}d : ${h}h : ${m}m : ${s}s`;
-        }, 1000);
-
-        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                const userRef = db.collection("usuarios").doc(user.uid);
-                userRef.get().then((doc) => {
+                db.collection("usuarios").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        if (data.access_DQ) { window.location.href = "index.html"; return; }
                         
-                        // 🚨 ACTUALIZACIÓN DEFINITIVA DE VARIABLES (GPS Y ESTADO)
-                        userRef.update({ 
-                            leccion_actual_DM: "08_DM_reportefinal.html", 
-                            estado: "Finalizado_DM" 
-                        });
+                        // Solo permitimos ver el reporte si ha terminado la DM
+                        if (data.access_DM === true) {
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
 
-                        document.getElementById("nombre-exp").innerText = data.nombre || "Expedicionario";
-                        document.getElementById("loading-screen").style.display = "none";
-                        document.getElementById("bunker-content").style.display = "flex";
+                            // 🚨 LÓGICA DEL CRONÓMETRO (Convertir segundos totales a H:M:S)
+                            const totalSegundos = data.total_time_DM || 0;
+                            const hrs = Math.floor(totalSegundos / 3600);
+                            const min = Math.floor((totalSegundos % 3600) / 60);
+                            const seg = totalSegundos % 60;
+
+                            document.getElementById("timer-hrs").innerText = hrs.toString().padStart(2, '0');
+                            document.getElementById("timer-min").innerText = min.toString().padStart(2, '0');
+                            document.getElementById("timer-seg").innerText = seg.toString().padStart(2, '0');
+
+                        } else { window.location.href = "index.html"; }
                     }
                 });
             } else { window.location.href = "index.html"; }
