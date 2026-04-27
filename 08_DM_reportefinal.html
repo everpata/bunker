@@ -6,8 +6,7 @@
     <title>Reporte de Daños / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS DEL REPORTE */
-        
+        /* 🚨 IDENTIFICACIÓN */
         #user-name {
             font-size: 11px; font-weight: 600; color: #878787;
             letter-spacing: 1.5px; text-transform: uppercase;
@@ -23,12 +22,27 @@
             text-transform: uppercase;
         }
 
-        /* Temporizador con Silueta 16px */
-        .stat-box {
-            flex: 1; background-color: #f5f5f7;
-            padding: 22px 10px; border-radius: 16px;
-            text-align: center;
+        /* 🚨 FIX TEMPORIZADOR LATERAL */
+        .stats-container {
+            display: flex !important;
+            flex-direction: row !important; /* Fuerza la fila */
+            gap: 10px;
+            width: 100%;
+            margin-top: 35px; /* Espacio desde el texto superior */
+            margin-bottom: 0 !important;
         }
+
+        .stat-box {
+            flex: 1; /* Hace que todas las cajas midan lo mismo */
+            background-color: #f5f5f7;
+            padding: 20px 5px;
+            border-radius: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
         .stat-label { 
             font-size: 9px; font-weight: 700; color: #878787;
@@ -36,7 +50,7 @@
             margin-top: 8px; display: block;
         }
 
-        /* Botón Alerta Elástica (Upsell DQ) - Radio 16px y Margen 35px */
+        /* Botón Alerta Elástica */
         .btn-status-alert {
             background-color: #fce8e6 !important;
             color: #d93025 !important;
@@ -45,13 +59,11 @@
             box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
             animation: btnElastic 4s ease-in-out infinite;
             text-align: center;
-            /* El margen de 35px lo hereda del style.css via clase */
         }
 
         @keyframes btnElastic {
-            0% { padding-top: 18px; padding-bottom: 18px; }
+            0%, 100% { padding-top: 18px; padding-bottom: 18px; }
             50% { padding-top: 24px; padding-bottom: 24px; }
-            100% { padding-top: 18px; padding-bottom: 18px; }
         }
 
         @keyframes fadeInName { from { opacity: 0; } to { opacity: 1; } }
@@ -85,12 +97,21 @@
             </p>
         </div>
 
-        <p class="text-base" style="margin-top: 35px; margin-bottom: 15px;"><b>El pacto de trinchera cierra en:</b></p>
+        <p class="text-base" style="margin-top: 35px; margin-bottom: -20px;"><b>El pacto de trinchera cierra en:</b></p>
         
         <div id="countdown" class="stats-container">
-            <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
-            <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
-            <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
+            <div class="stat-box">
+                <span class="stat-value" id="hrs">00</span>
+                <span class="stat-label">Horas</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="min">00</span>
+                <span class="stat-label">Minutos</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="seg">00</span>
+                <span class="stat-label">Segundos</span>
+            </div>
         </div>
 
         <button id="btn-mentoria" class="btn-status-alert" onclick="window.open('https://wa.me/tu-numero', '_blank')">
@@ -105,31 +126,18 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-
     <script>
-        // 🚨 CONFIGURACIÓN DE CIERRE
         const targetDate = new Date("May 15, 2026 19:00:00 GMT-0500").getTime(); 
-
-        const firebaseConfig = { 
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
-            authDomain: "deepfall-b3601.firebaseapp.com", 
-            projectId: "deepfall-b3601", 
-            storageBucket: "deepfall-b3601.firebasestorage.app", 
-            messagingSenderId: "207043962011", 
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
-        };
+        const firebaseConfig = { apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", authDomain: "deepfall-b3601.firebaseapp.com", projectId: "deepfall-b3601", storageBucket: "deepfall-b3601.firebasestorage.app", messagingSenderId: "207043962011", appId: "1:207043962011:web:681397c7d540b4b3d4523e" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
-        // Temporizador Countdown
         setInterval(function() {
             const now = new Date().getTime(); const distance = targetDate - now;
             if (distance < 0) { document.getElementById("countdown").innerHTML = "CERRADO"; return; }
-            
             const h = Math.floor(distance / (1000 * 60 * 60));
             const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const s = Math.floor((distance % (1000 * 60)) / 1000);
-            
             document.getElementById("hrs").innerText = h.toString().padStart(2, '0');
             document.getElementById("min").innerText = m.toString().padStart(2, '0');
             document.getElementById("seg").innerText = s.toString().padStart(2, '0');
@@ -143,10 +151,8 @@
                         if (data.access_DM === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
-
                             const nombreExp = data.nombre || "SIN NOMBRE";
                             document.getElementById("user-name").innerText = "EXPEDICIONARIO: " + nombreExp.toUpperCase();
-
                         } else { window.location.href = "index.html"; }
                     }
                 });
