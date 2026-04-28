@@ -3,56 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Misión Cumplida / Deepfall</title>
+    <title>Éxito / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
+        /* 🚨 AJUSTE DE POSICIONAMIENTO MÓVIL */
+        html, body { 
+            height: auto; 
+            min-height: 100%; 
+            margin: 0; 
+            background-color: #ffffff; 
+        }
         
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Padding superior para que el logo nunca se corte */
+            padding: 0px 0 40px 0; 
+        }
+
         .victory-img { 
             width: 100%; 
             border-radius: 16px; 
-            margin-bottom: 20px; 
+            margin-bottom: 25px; 
             animation: floatIn 1.5s ease forwards; 
             display: block;
         }
 
-        .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; }
+        .victory-card { 
+            opacity: 0; 
+            animation: floatIn 1s ease forwards 1s; 
+            width: 100%; 
+        }
 
         @keyframes floatIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 🚨 COMPONENTE DE ALERTA ROJA */
-        .btn-status-alert {
-            display: none; 
-            background-color: #fce8e6 !important;
-            color: #d93025 !important;
-            border: 1px solid #d93025 !important;
-            font-weight: 700 !important;
-            width: 100%;
-            padding: 20px;
-            border-radius: 16px;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
-            animation: btnElastic 4s ease-in-out infinite;
-            text-align: center;
-            margin-top: 35px !important;
-        }
-
-        @keyframes btnElastic {
-            0% { padding-top: 18px; padding-bottom: 18px; }
-            50% { padding-top: 24px; padding-bottom: 24px; }
-            100% { padding-top: 18px; padding-bottom: 18px; }
-        }
-
-        #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
-
         #loading-screen {
             display: flex; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; background: #fff;
             position: fixed; top: 0; left: 0; z-index: 9999;
+        }
+
+        /* Botón con margen superior estándar V4.0 */
+        #btn-continuar { 
+            display: none; 
+            margin-top: 35px !important; 
         }
     </style>
 </head>
@@ -65,19 +63,15 @@
         <div class="logo"><img src="DF.png"></div>
         <p class="indicator">Tramo 01 Completado</p>
         
-        <h1 class="title">Descenso Exitoso.</h1>
+        <h1 class="title">Descenso Finalizado.</h1>
 
-        <img src="victoria.jpeg" class="victory-img">
+        <img src="victoria.jpeg" class="victory-img" alt="Éxito Operativo">
 
         <div class="work-area card victory-card">
-            <p class="text-base">Has asimilado los protocolos fundamentales de la superficie. Tu mente ha comenzado a filtrar el ruido. <b>Estás listo para la verdadera Inmersión.</b></p>
+            <p class="text-base">Has fracturado la máscara de la superficie. Tu capacidad para mentirte ha sido neutralizada. <b>Prepárate para el diagnóstico final.</b></p>
         </div>
 
-        <button id="btn-continuar" class="btn-mando">Abrir Reporte Final →</button>
-        
-        <button id="btn-alerta-reporte" class="btn-status-alert">ABRIR REPORTE FINAL →</button>
-        
-        <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
+        <button id="btn-continuar" class="btn-mando">Abrir Reporte de Descenso →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -85,26 +79,20 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const archivoActual = "07_DF_exito.html"; 
         const archivoSiguiente = "08_DF_reportefinal.html"; 
-        const archivoHub = "09_DF_hub.html";
-        const archivoExpulsion = "index.html"; 
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
-            authDomain: "deepfall-b3601.firebaseapp.com",
-            projectId: "deepfall-b3601",
-            storageBucket: "deepfall-b3601.firebasestorage.app",
-            messagingSenderId: "207043962011",
-            appId: "1:207043962011:web:681397c7d540b4b3d4523e"
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
         document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
-        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoSiguiente; }; // Ambos llevan al reporte
-        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -112,37 +100,22 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
+                        
+                        // Sellar estado DF
+                        if (data.estado !== "Finalizado_DF") {
+                            userRef.update({ 
+                                estado: "Finalizado_DF", 
+                                leccion_actual_DF: "07_DF_exito.html" 
+                            });
+                        }
 
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
-
-                        const btnNegro = document.getElementById("btn-continuar");
-                        const btnRojo = document.getElementById("btn-alerta-reporte");
-                        const btnHub = document.getElementById("btn-volver-hub");
-
-                        // 🧠 CEREBRO DE NAVEGACIÓN V4.0
-                        if (data.access_DM === true || data.access_DQ === true) {
-                            // Si ya es un veterano de niveles superiores
-                            btnNegro.style.display = "block";
-                            btnRojo.style.display = "none";
-                            btnHub.style.display = "block"; // Habilitamos hub
-                        } else {
-                            // Si es su primera graduación o no ha comprado
-                            btnNegro.style.display = "none";
-                            btnRojo.style.display = "block";
-                            btnHub.style.display = "none"; // No hay hub para "Solo DF"
-                        }
-
-                        // 🔒 EL CERROJO DF
-                        if (data.estado !== "Finalizado_DF" && data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
-                            userRef.update({
-                                estado: "Finalizado_DF",
-                                leccion_actual_DF: archivoActual
-                            });
-                        }
-                    }
+                        document.getElementById("btn-continuar").style.display = "block";
+                        
+                    } else { window.location.href = "index.html"; }
                 });
-            } else { window.location.href = archivoExpulsion; }
+            } else { window.location.href = "index.html"; }
         });
     </script>
 </body>
