@@ -3,22 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hub DF / Deepfall</title>
+    <title>Hub de Descenso / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES ESTRUCTURALES V4.0 */
-        .hub-grid { 
-            width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 0 !important; 
+        /* 🚨 AJUSTES DE JERARQUÍA V5.4 */
+        #nombre-exp {
+            font-size: 11px; font-weight: 600; color: #878787;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            margin-bottom: 18px; line-height: 1; display: block;
         }
+
+        .status-badge-hub {
+            background-color: #f5f5f7; color: #333;
+            padding: 6px 12px; border-radius: 6px;
+            font-size: 10px; font-weight: 800; display: inline-block;
+            margin-bottom: 25px; border: 1px solid #eee;
+            text-transform: uppercase;
+        }
+
+        /* Bloqueo de parpadeo */
+        #btn-primario, #btn-secundario { display: none; }
         
-        .lesson-card { 
-            background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 16px; 
-            padding: 22px; display: flex; align-items: center; justify-content: space-between; 
-            text-decoration: none; color: #333; transition: all 0.3s; 
-        }
-        .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
-        .lesson-info b { display: block; font-size: 15px; margin-bottom: 4px; color: #333; }
-        .lesson-info span { font-size: 12px; color: #878787; font-weight: 500; }
+        #btn-secundario { margin-top: 20px !important; }
 
         #loading-screen { 
             display: flex; align-items: center; justify-content: center; 
@@ -35,58 +41,23 @@
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DF.png"></div>
-        <p class="indicator">Centro de Mando / Tramo 01</p>
-        <h1 class="title">Descenso.</h1>
-        <p class="description">Protocolos fundamentales de la superficie.</p>
-
-        <div class="hub-grid">
-            <a href="01_DF_texto.html" class="lesson-card">
-                <div class="lesson-info"><b>01. La Paradoja</b><span>Descenso base</span></div>
-                <span style="color: #ccc;">→</span>
-            </a>
-            <a href="02_DF_bitacora.html" class="lesson-card">
-                <div class="lesson-info"><b>02. Análisis</b><span>Bitácora operativa</span></div>
-                <span style="color: #ccc;">→</span>
-            </a>
-            <a href="03_DF_quiz.html" class="lesson-card">
-                <div class="lesson-info"><b>03. Sincronización</b><span>Evaluación inicial</span></div>
-                <span style="color: #ccc;">→</span>
-            </a>
-            <a href="04_DF_imagen.html" class="lesson-card">
-                <div class="lesson-info"><b>04. Resultados</b><span>Evidencia teórica</span></div>
-                <span style="color: #ccc;">→</span>
-            </a>
-            <a href="05_DF_video.html" class="lesson-card">
-                <div class="lesson-info"><b>05. Análisis Visual</b><span>Patrones de ruido</span></div>
-                <span style="color: #ccc;">→</span>
-            </a>
-            <a href="06_DF_principios.html" class="lesson-card">
-                <div class="lesson-info"><b>06. Principio III</b><span>Afilando el hacha</span></div>
-                <span style="color: #ccc;">→</span>
-            </a>
-        </div>
-
-        <button id="btn-ir-dm" class="btn-mando">Ir al Hub de la Inmersión (DM) →</button>
         
-        <button id="btn-ir-dq" class="btn-mando" style="display: none; background-color: #333 !important;">Ir al Hub de la Cúspide (DQ) →</button>
+        <span id="nombre-exp">EXPEDICIONARIO: ---</span>
+        <div id="status-text" class="status-badge-hub">ANALIZANDO RANGO...</div>
         
-        <button id="btn-logout" class="btn-ghost">Cerrar Centro de Mando</button>
+        <h1 class="title">Centro de Mando.</h1>
+        <p class="description">Gestión de accesos para unidades operativas.</p>
+
+        <button id="btn-primario" class="btn-mando">---</button>
+        
+        <button id="btn-secundario" class="btn-ghost">---</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    
+
     <script>
-        const rutaHubDM = "09_DM_hub.html";
-        const rutaHubDQ = "09_DQ_hub.html";
-
-        document.getElementById("btn-ir-dm").onclick = () => { window.location.href = rutaHubDM; };
-        document.getElementById("btn-ir-dq").onclick = () => { window.location.href = rutaHubDQ; };
-        document.getElementById("btn-logout").onclick = () => { 
-            firebase.auth().signOut().then(() => { window.location.href = "index.html"; });
-        };
-
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
             authDomain: "deepfall-b3601.firebaseapp.com", 
@@ -100,24 +71,64 @@
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                db.collection("usuarios").doc(user.uid).get().then((doc) => {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        
-                        // 🔒 REGLA DE ORO: Solo DM o DQ pueden entrar aquí
-                        if (data.access_DM === true || data.access_DQ === true) {
-                            document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "flex";
+                        const btnP = document.getElementById("btn-primario");
+                        const btnS = document.getElementById("btn-secundario");
+                        const statusBadge = document.getElementById("status-text");
 
-                            // Mostrar botón de la Cúspide solo si tiene rango
-                            if (data.access_DQ === true) {
-                                document.getElementById("btn-ir-dq").style.display = "block";
-                            }
-                        } else {
-                            // Si no tiene acceso a DM, no puede estar en este Hub
-                            window.location.href = "08_DF_reportefinal.html"; 
+                        // 🧠 MOTOR DE INTERFAZ DINÁMICA V5.4
+                        
+                        // 👑 ESCENARIO A: EL REY (DQ)
+                        if (data.access_DQ === true) {
+                            statusBadge.innerText = "ESTATUS: SOBERANO (DQ)";
+                            
+                            // Prioridad 1: Cúspide (Sólido)
+                            btnP.innerText = "IR AL HUB DE LA CÚSPIDE (DQ) →";
+                            btnP.onclick = () => { window.location.href = "09_DQ_hub.html"; };
+                            
+                            // Prioridad 2: Inmersión (Fantasma)
+                            btnS.innerText = "IR AL HUB DE LA INMERSIÓN (DM) →";
+                            btnS.onclick = () => { window.location.href = "09_DM_hub.html"; };
+                        } 
+                        
+                        // ⚓ ESCENARIO B: RESIDENTE DE INMERSIÓN (DM)
+                        else if (data.access_DM === true) {
+                            statusBadge.innerText = "ESTATUS: GRADUADO (DM)";
+                            
+                            // Prioridad 1: Su casa actual DM (Sólido)
+                            btnP.innerText = "IR AL HUB DE LA INMERSIÓN (DM) →";
+                            btnP.onclick = () => { window.location.href = "09_DM_hub.html"; };
+                            
+                            // Prioridad 2: Repasar el origen DF (Fantasma)
+                            btnS.innerText = "REPASAR LECCIONES DF →";
+                            btnS.onclick = () => { window.location.href = "01_DF_texto.html"; };
+                        } 
+                        
+                        // 🪖 ESCENARIO C: USUARIO BASE (Solo DF)
+                        else {
+                            statusBadge.innerText = "ESTATUS: TRAMO 01 COMPLETADO";
+                            
+                            // Prioridad 1: Repaso (Sólido)
+                            btnP.innerText = "REPASAR LECCIONES DF →";
+                            btnP.onclick = () => { window.location.href = "01_DF_texto.html"; };
+                            
+                            // Prioridad 2: Diagnóstico/Venta (Fantasma)
+                            btnS.innerText = "VER REPORTE DE DIAGNÓSTICO →";
+                            btnS.onclick = () => { window.location.href = "08_DF_reportefinal.html"; };
                         }
-                    }
+
+                        // Liberar elementos configurados
+                        btnP.style.display = "block";
+                        btnS.style.display = "block";
+
+                        document.getElementById("nombre-exp").innerText = "EXPEDICIONARIO: " + (data.nombre || "SIN NOMBRE").toUpperCase();
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+                        
+                    } else { window.location.href = "index.html"; }
                 });
             } else { window.location.href = "index.html"; }
         });
