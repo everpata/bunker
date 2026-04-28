@@ -6,17 +6,22 @@
     <title>Principio / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTE QUIRÚRGICO DE TEXTO V6.0 */
+        /* 🚨 CORRECCIÓN QUIRÚRGICA DE CENTRADO V6.1 */
         
-        .revelation-screen .work-area.card {
-            text-align: center !important; /* Fuerza el centrado en móvil y desktop */
+        /* Forzamos el centrado total del bloque de texto dentro de la tarjeta */
+        .revelation-screen .work-area.card,
+        .revelation-screen .work-area.card .principle-statement,
+        .revelation-screen .work-area.card .text-base {
+            text-align: center !important;
+            display: block !important;
+            width: 100% !important;
         }
 
         .principle-statement {
-            display: block;
             margin-bottom: 15px;
         }
 
+        /* ESTILOS DE BOTONES Y ANIMACIONES */
         .btn-status-alert {
             display: none; 
             background-color: #fce8e6 !important;
