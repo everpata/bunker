@@ -6,7 +6,7 @@
     <title>Éxito / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTE DE POSICIONAMIENTO Y DISEÑO V6.3 */
+        /* 🚨 AJUSTE DE POSICIONAMIENTO V6.4 */
         html, body { 
             height: auto; 
             min-height: 100%; 
@@ -18,8 +18,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Safe area superior para el logo */
-            padding: 60px 0 0 0 !important; 
+            /* Safe area para el logo en móviles */
+            padding: 0px 0 0 0 !important; 
         }
 
         .victory-img { 
@@ -34,7 +34,8 @@
             opacity: 0; 
             animation: floatIn 1s ease forwards 1s; 
             width: 100%;
-            text-align: center; /* Centrado estético para éxito */
+            /* REGLA DE ORO: Texto a la izquierda */
+            text-align: left !important; 
         }
 
         @keyframes floatIn {
@@ -48,7 +49,7 @@
             position: fixed; top: 0; left: 0; z-index: 9999;
         }
 
-        /* 🔒 NAVEGACIÓN LINEAL CONTROLADA */
+        /* NAVEGACIÓN LINEAL */
         #btn-continuar { display: none; margin-top: 35px !important; }
         
         #btn-hub { 
@@ -108,7 +109,7 @@
                         const data = doc.data();
                         const btnHub = document.getElementById("btn-hub");
                         
-                        // 1. Lógica de Estatus
+                        // 1. Sellar estado
                         if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
                             userRef.update({ 
                                 estado: "Finalizado_DF", 
@@ -116,8 +117,7 @@
                             });
                         }
 
-                        // 2. Visibilidad del Hub (Solo si ya es veterano o terminó)
-                        // Para evitar distracción al primerizo, el Hub solo sale si ya tiene accesos superiores
+                        // 2. Mostrar Hub solo si ya terminó el tramo o es veterano
                         if (data.estado === "Finalizado_DF" || data.access_DM || data.access_DQ) {
                             btnHub.style.setProperty('display', 'block', 'important');
                         }
