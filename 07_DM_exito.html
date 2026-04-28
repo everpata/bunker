@@ -3,70 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Misión Cumplida / Deepmersion</title>
+    <title>Éxito / Deepmersion</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ESTILO "MÁSCARA ROTA" PARA EL BOTÓN DE CIERRE */
-        .btn-status-alert {
-            background-color: #fce8e6 !important;
-            color: #d93025 !important;
-            border: 1px solid #d93025 !important;
-            font-weight: 700 !important;
-            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
-            animation: btnElastic 4s ease-in-out infinite;
+        /* 🚨 AJUSTE DE POSICIONAMIENTO MÓVIL V5.8 */
+        html, body { 
+            height: auto; 
+            min-height: 100%; 
+            margin: 0; 
+            background-color: #ffffff; 
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Safe area superior para que el logo respire en móviles */
+            padding: 60px 0 40px 0; 
+        }
+
+        .victory-img { 
+            width: 100%; 
+            border-radius: 16px; 
+            margin-bottom: 25px; 
+            animation: floatIn 1.5s ease forwards; 
+            display: block;
+        }
+
+        .victory-card { 
+            opacity: 0; 
+            animation: floatIn 1s ease forwards 1s; 
             width: 100%;
-            padding: 20px;
-            border-radius: 14px;
-            font-size: 16px;
-            cursor: pointer;
-            font-family: inherit;
+            text-align: center; /* Forzamos centrado de texto de la tarjeta */
         }
 
-        @keyframes btnElastic {
-            0% { padding-top: 18px; padding-bottom: 18px; }
-            50% { padding-top: 24px; padding-bottom: 24px; }
-            100% { padding-top: 18px; padding-bottom: 18px; }
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Ajustes de diseño para la tarjeta de victoria */
-        html, body { height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background-color: #ffffff; }
-        
-        /* El container heredará los 460px del style.css */
-        .container { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: auto; width: 100%; }
-        
-        .victory-img { width: 100%; border-radius: 16px; margin-bottom: 20px; animation: floatIn 1.5s ease forwards; }
-        .victory-card { opacity: 0; animation: floatIn 1s ease forwards 1s; width: 100%; box-sizing: border-box; }
-        
-        @keyframes floatIn { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
         }
 
-        #loading-screen { 
-            display: flex; align-items: center; justify-content: center; 
-            height: 100vh; width: 100vw; background: #fff; 
-            position: fixed; top: 0; left: 0; z-index: 9999; 
+        /* Botón con margen superior estándar V4.0 */
+        #btn-continuar { 
+            display: none; 
+            margin-top: 35px !important; 
         }
     </style>
 </head>
 <body>
-
     <div id="loading-screen">
-        <img src="DM.png" class="loading-logo" alt="Cargando..." style="height: 60px;">
+        <img src="DM.png" class="loading-logo" alt="Cargando...">
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DM.png"></div>
         <p class="indicator">Tramo 02 Completado</p>
-        <h1 class="title">Inmersión Superada.</h1>
         
-        <img src="victoria.jpeg" class="victory-img">
+        <h1 class="title">Inmersión Finalizada.</h1>
+
+        <img src="victoria_dm.jpeg" class="victory-img" alt="Éxito Operativo">
 
         <div class="work-area card victory-card">
-            <p class="text-base">Has asimilado las herramientas del Anarquista. Tu sistema está blindado contra el ruido externo. <b>Estás listo para el ascenso final.</b></p>
+            <p class="text-base">Has descendido a las profundidades de tu propia estructura. El ruido externo ha sido silenciado. <b>Es hora de enfrentar el diagnóstico de la Inmersión.</b></p>
         </div>
 
-        <button id="btn-reporte" class="btn-mando" style="margin-top: 35px;">Abrir Reporte de Estatus →</button>
+        <button id="btn-continuar" class="btn-mando">Abrir Reporte de Inmersión →</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -74,9 +80,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const rutaReporte = "08_DM_reportefinal.html";
-
-        document.getElementById("btn-reporte").onclick = () => { window.location.href = rutaReporte; };
+        const archivoSiguiente = "08_DM_reportefinal.html"; 
 
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
@@ -89,6 +93,8 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
+        document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
@@ -96,24 +102,19 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        if (data.access_DM === true) {
-                            document.getElementById("loading-screen").style.display = "none";
-                            document.getElementById("bunker-content").style.display = "flex";
-                            
-                            // 🚨 ACTUALIZACIÓN DE ESTADO FINAL DE TRAMO
+                        // Sellar estado DM
+                        if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
                             userRef.update({ 
                                 estado: "Finalizado_DM", 
                                 leccion_actual_DM: "07_DM_exito.html" 
                             });
-                            
-                            // 🚨 LÓGICA DE TRANSFORMACIÓN DEL BOTÓN
-                            if (!data.access_DQ) {
-                                const btn = document.getElementById("btn-reporte");
-                                btn.classList.add("btn-status-alert");
-                                btn.innerText = "REVISAR REPORTE DE DAÑOS →";
-                            }
-                        } else { window.location.href = "index.html"; }
-                    }
+                        }
+
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+                        document.getElementById("btn-continuar").style.display = "block";
+                        
+                    } else { window.location.href = "index.html"; }
                 });
             } else { window.location.href = "index.html"; }
         });
