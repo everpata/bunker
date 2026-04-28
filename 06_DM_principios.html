@@ -6,22 +6,29 @@
     <title>Principio / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 CORRECCIÓN QUIRÚRGICA DE CENTRADO V6.1 */
-        
-        /* Forzamos el centrado total del bloque de texto dentro de la tarjeta */
-        .revelation-screen .work-area.card,
-        .revelation-screen .work-area.card .principle-statement,
-        .revelation-screen .work-area.card .text-base {
+        /* 🚨 AJUSTES QUIRÚRGICOS DE CENTRADO V6.2 */
+
+        /* ESCENARIO 1: Pantalla del hacha (Interrupción) */
+        /* Forzamos que el texto debajo del hacha se centre siempre */
+        .interruption-screen .indicator {
             text-align: center !important;
-            display: block !important;
-            width: 100% !important;
+            width: 100%;
+            display: block;
+        }
+
+        /* ESCENARIO 2: Tarjeta Gris (Revelación) */
+        /* Mantenemos el estándar: Justificado a la izquierda */
+        .work-area.card {
+            text-align: left !important;
         }
 
         .principle-statement {
+            display: block;
             margin-bottom: 15px;
+            font-weight: 700;
         }
 
-        /* ESTILOS DE BOTONES Y ANIMACIONES */
+        /* BOTONES Y ANIMACIONES */
         .btn-status-alert {
             display: none; 
             background-color: #fce8e6 !important;
@@ -40,12 +47,10 @@
         }
 
         @keyframes btnElastic {
-            0% { padding-top: 18px; padding-bottom: 18px; }
+            0%, 100% { padding-top: 18px; padding-bottom: 18px; }
             50% { padding-top: 24px; padding-bottom: 24px; }
-            100% { padding-top: 18px; padding-bottom: 18px; }
         }
 
-        /* Ocultar botones inicialmente */
         #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
 
         #loading-screen {
@@ -91,7 +96,6 @@
         const archivoSiguiente = "07_DM_exito.html"; 
         const archivoHub = "09_DM_hub.html"; 
         const archivoReporte = "08_DM_reportefinal.html";
-        const archivoExpulsion = "index.html"; 
 
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
@@ -119,7 +123,6 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        
                         if (data.access_DM === true) {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
@@ -147,8 +150,7 @@
                             if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
                                 userRef.update({ leccion_actual_DM: archivoActual });
                             }
-
-                        } else { window.location.href = archivoExpulsion; }
+                        } else { window.location.href = "index.html"; }
                     }
                 });
             } else { window.location.href = "index.html"; }
