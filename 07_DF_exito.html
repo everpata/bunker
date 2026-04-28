@@ -6,7 +6,7 @@
     <title>Éxito / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTE DE POSICIONAMIENTO MÓVIL */
+        /* 🚨 AJUSTE DE POSICIONAMIENTO Y DISEÑO V6.3 */
         html, body { 
             height: auto; 
             min-height: 100%; 
@@ -18,8 +18,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Padding superior para que el logo nunca se corte */
-            padding: 0px 0 40px 0; 
+            /* Safe area superior para el logo */
+            padding: 60px 0 0 0 !important; 
         }
 
         .victory-img { 
@@ -33,7 +33,8 @@
         .victory-card { 
             opacity: 0; 
             animation: floatIn 1s ease forwards 1s; 
-            width: 100%; 
+            width: 100%;
+            text-align: center; /* Centrado estético para éxito */
         }
 
         @keyframes floatIn {
@@ -47,10 +48,12 @@
             position: fixed; top: 0; left: 0; z-index: 9999;
         }
 
-        /* Botón con margen superior estándar V4.0 */
-        #btn-continuar { 
-            display: none; 
-            margin-top: 35px !important; 
+        /* 🔒 NAVEGACIÓN LINEAL CONTROLADA */
+        #btn-continuar { display: none; margin-top: 35px !important; }
+        
+        #btn-hub { 
+            display: none !important; 
+            margin-top: 20px !important; 
         }
     </style>
 </head>
@@ -72,6 +75,7 @@
         </div>
 
         <button id="btn-continuar" class="btn-mando">Abrir Reporte de Descenso →</button>
+        <button id="btn-hub" class="btn-ghost">← Volver al Hub del Descenso</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -80,6 +84,7 @@
 
     <script>
         const archivoSiguiente = "08_DF_reportefinal.html"; 
+        const archivoHub = "09_DF_hub.html";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
@@ -93,6 +98,7 @@
         const auth = firebase.auth(); const db = firebase.firestore();
 
         document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+        document.getElementById("btn-hub").onclick = () => { window.location.href = archivoHub; };
 
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -100,13 +106,20 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
+                        const btnHub = document.getElementById("btn-hub");
                         
-                        // Sellar estado DF
-                        if (data.estado !== "Finalizado_DF") {
+                        // 1. Lógica de Estatus
+                        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
                             userRef.update({ 
                                 estado: "Finalizado_DF", 
                                 leccion_actual_DF: "07_DF_exito.html" 
                             });
+                        }
+
+                        // 2. Visibilidad del Hub (Solo si ya es veterano o terminó)
+                        // Para evitar distracción al primerizo, el Hub solo sale si ya tiene accesos superiores
+                        if (data.estado === "Finalizado_DF" || data.access_DM || data.access_DQ) {
+                            btnHub.style.setProperty('display', 'block', 'important');
                         }
 
                         document.getElementById("loading-screen").style.display = "none";
