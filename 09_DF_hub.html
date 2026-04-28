@@ -3,80 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hub de Descenso / Deepfall</title>
+    <title>Hub DF / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES DE HUB DINÁMICO V5.5 */
-        #nombre-exp {
-            font-size: 11px; font-weight: 600; color: #878787;
-            letter-spacing: 1.5px; text-transform: uppercase;
-            margin-bottom: 18px; line-height: 1; display: block;
+        /* 🚨 AJUSTES ESTRUCTURALES V4.0 */
+        .hub-grid { 
+            width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 0 !important; 
         }
-
-        .status-badge-hub {
-            background-color: #f5f5f7; color: #333;
-            padding: 6px 12px; border-radius: 6px;
-            font-size: 10px; font-weight: 800; display: inline-block;
-            margin-bottom: 25px; border: 1px solid #eee;
-            text-transform: uppercase;
+        
+        .lesson-card { 
+            background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 16px; 
+            padding: 22px; display: flex; align-items: center; justify-content: space-between; 
+            text-decoration: none; color: #333; transition: all 0.3s; 
         }
-
-        /* CUADRÍCULA DE LECCIONES */
-        .lesson-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            width: 100%;
-            margin-top: 20px;
-            margin-bottom: 30px;
-        }
-
-        .lesson-item {
-            background-color: #f9f9fb;
-            border: 1px solid #eaeaea;
-            padding: 15px 10px;
-            border-radius: 12px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .lesson-item span {
-            font-size: 9px;
-            color: #878787;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .lesson-item:active {
-            transform: scale(0.96);
-            background-color: #f0f0f2;
-        }
-
-        /* Botones de Navegación Global */
-        .nav-area {
-            width: 100%;
-            border-top: 1px solid #eee;
-            padding-top: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        #btn-primario, #btn-secundario { display: none; }
+        .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
+        .lesson-info b { display: block; font-size: 15px; margin-bottom: 4px; color: #333; }
+        .lesson-info span { font-size: 12px; color: #878787; font-weight: 500; }
 
         #loading-screen { 
             display: flex; align-items: center; justify-content: center; 
             height: 100vh; width: 100vw; background: #fff; 
             position: fixed; top: 0; left: 0; z-index: 9999; 
         }
+
+        /* Espaciado para el botón fantasma cuando aparezca abajo */
+        .margin-top-ghost { margin-top: 20px !important; }
     </style>
 </head>
 <body>
@@ -87,34 +38,53 @@
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo"><img src="DF.png"></div>
-        
-        <span id="nombre-exp">EXPEDICIONARIO: ---</span>
-        <div id="status-text" class="status-badge-hub">ESTATUS: ANALIZANDO RANGO...</div>
-        
-        <h1 class="title">Centro de Mando.</h1>
-        <p class="description">Selecciona una coordenada de repaso o navega entre tramos.</p>
+        <p class="indicator">Centro de Mando / Tramo 01</p>
+        <h1 class="title">Descenso.</h1>
+        <p class="description">Protocolos fundamentales de la superficie.</p>
 
-        <div class="lesson-grid">
-            <a href="01_DF_texto.html" class="lesson-item"><span>Lección 01</span>Descenso</a>
-            <a href="02_DF_bitacora.html" class="lesson-item"><span>Lección 02</span>Bitácora</a>
-            <a href="03_DF_quiz.html" class="lesson-item"><span>Lección 03</span>Evaluación</a>
-            <a href="04_DF_imagen.html" class="lesson-item"><span>Lección 04</span>Evidencia</a>
-            <a href="05_DF_video.html" class="lesson-item"><span>Lección 05</span>Análisis</a>
-            <a href="06_DF_principios.html" class="lesson-item"><span>Lección 06</span>Decreto</a>
-            <a href="07_DF_exito.html" class="lesson-item" style="grid-column: span 2;"><span>Lección 07</span>Tarjeta de Éxito</a>
+        <div class="hub-grid">
+            <a href="01_DF_texto.html" class="lesson-card">
+                <div class="lesson-info"><b>01. La Paradoja</b><span>Descenso base</span></div>
+                <span style="color: #ccc;">→</span>
+            </a>
+            <a href="02_DF_bitacora.html" class="lesson-card">
+                <div class="lesson-info"><b>02. Análisis</b><span>Bitácora operativa</span></div>
+                <span style="color: #ccc;">→</span>
+            </a>
+            <a href="03_DF_quiz.html" class="lesson-card">
+                <div class="lesson-info"><b>03. Sincronización</b><span>Evaluación inicial</span></div>
+                <span style="color: #ccc;">→</span>
+            </a>
+            <a href="04_DF_imagen.html" class="lesson-card">
+                <div class="lesson-info"><b>04. Resultados</b><span>Evidencia teórica</span></div>
+                <span style="color: #ccc;">→</span>
+            </a>
+            <a href="05_DF_video.html" class="lesson-card">
+                <div class="lesson-info"><b>05. Análisis Visual</b><span>Patrones de ruido</span></div>
+                <span style="color: #ccc;">→</span>
+            </a>
+            <a href="06_DF_principios.html" class="lesson-card">
+                <div class="lesson-info"><b>06. Principio III</b><span>Afilando el hacha</span></div>
+                <span style="color: #ccc;">→</span>
+            </a>
         </div>
 
-        <div class="nav-area">
-            <button id="btn-primario" class="btn-mando">---</button>
-            <button id="btn-secundario" class="btn-ghost">---</button>
-        </div>
+        <button id="btn-ir-dq" class="btn-mando" style="display: none; margin-top: 35px;">Ir al Hub de la Cúspide (DQ) →</button>
+        <button id="btn-ir-dm" class="btn-mando" style="display: none; margin-top: 35px;">Ir al Hub de la Inmersión (DM) →</button>
+        
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-
+    
     <script>
+        const rutaHubDM = "09_DM_hub.html";
+        const rutaHubDQ = "09_DQ_hub.html";
+
+        document.getElementById("btn-ir-dm").onclick = () => { window.location.href = rutaHubDM; };
+        document.getElementById("btn-ir-dq").onclick = () => { window.location.href = rutaHubDQ; };
+
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
             authDomain: "deepfall-b3601.firebaseapp.com", 
@@ -128,61 +98,33 @@
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                const userRef = db.collection("usuarios").doc(user.uid);
-                userRef.get().then((doc) => {
+                db.collection("usuarios").doc(user.uid).get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
-                        const btnP = document.getElementById("btn-primario");
-                        const btnS = document.getElementById("btn-secundario");
-                        const statusBadge = document.getElementById("status-text");
-
-                        // 🧠 LÓGICA DE BOTONES SEGÚN TU SOLICITUD (V5.5)
-
-                        // 👑 CASO: REY (Tiene DQ)
-                        if (data.access_DQ === true) {
-                            statusBadge.innerText = "ESTATUS: SOBERANO (DQ)";
-                            
-                            btnP.innerText = "IR AL HUB DE LA CÚSPIDE (DQ) →";
-                            btnP.onclick = () => { window.location.href = "09_DQ_hub.html"; };
-                            
-                            btnS.innerText = "IR AL HUB DE LA INMERSIÓN (DM) →";
-                            btnS.onclick = () => { window.location.href = "09_DM_hub.html"; };
-                        } 
                         
-                        // ⚓ CASO: RESIDENTE DM (Tiene DM pero no DQ)
-                        else if (data.access_DM === true) {
-                            statusBadge.innerText = "ESTATUS: GRADUADO (DM)";
-                            
-                            // Prioridad: Su casa actual (Sólido)
-                            btnP.innerText = "IR AL HUB DE LA INMERSIÓN (DM) →";
-                            btnP.onclick = () => { window.location.href = "09_DM_hub.html"; };
-                            
-                            // Secundario: El reporte o diagnóstico (Fantasma)
-                            btnS.innerText = "VER REPORTE DE DIAGNÓSTICO →";
-                            btnS.onclick = () => { window.location.href = "08_DF_reportefinal.html"; };
-                        } 
-                        
-                        // 🪖 CASO: USUARIO BASE (Solo DF)
-                        else {
-                            statusBadge.innerText = "ESTATUS: TRAMO 01 COMPLETADO";
-                            
-                            // Prioridad: Avanzar/Venta (Sólido)
-                            btnP.innerText = "VER REPORTE DE DIAGNÓSTICO →";
-                            btnP.onclick = () => { window.location.href = "08_DF_reportefinal.html"; };
-                            
-                            // Secundario: Repasar lección 1 (Fantasma)
-                            btnS.innerText = "REPASAR DESDE EL INICIO →";
-                            btnS.onclick = () => { window.location.href = "01_DF_texto.html"; };
+                        if (data.access_DM === true || data.access_DQ === true) {
+                            document.getElementById("loading-screen").style.display = "none";
+                            document.getElementById("bunker-content").style.display = "flex";
+
+                            const dmBtn = document.getElementById("btn-ir-dm");
+                            const dqBtn = document.getElementById("btn-ir-dq");
+
+                            if (data.access_DQ === true) {
+                                // CASO REY: DQ Sólido arriba, DM Fantasma abajo
+                                dqBtn.style.display = "block";
+                                
+                                dmBtn.className = "btn-ghost margin-top-ghost"; // Cambia a estilo fantasma
+                                dmBtn.style.display = "block";
+                            } 
+                            else if (data.access_DM === true) {
+                                // CASO SOLO DM: DM Sólido como estaba
+                                dmBtn.style.display = "block";
+                            }
+
+                        } else {
+                            window.location.href = "08_DF_reportefinal.html"; 
                         }
-
-                        btnP.style.display = "block";
-                        btnS.style.display = "block";
-
-                        document.getElementById("nombre-exp").innerText = "EXPEDICIONARIO: " + (data.nombre || "SIN NOMBRE").toUpperCase();
-                        document.getElementById("loading-screen").style.display = "none";
-                        document.getElementById("bunker-content").style.display = "flex";
-                        
-                    } else { window.location.href = "index.html"; }
+                    }
                 });
             } else { window.location.href = "index.html"; }
         });
