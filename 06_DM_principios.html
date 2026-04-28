@@ -6,8 +6,17 @@
     <title>Principio / Deepmersion (T02)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
+        /* 🚨 AJUSTE QUIRÚRGICO DE TEXTO V6.0 */
         
+        .revelation-screen .work-area.card {
+            text-align: center !important; /* Fuerza el centrado en móvil y desktop */
+        }
+
+        .principle-statement {
+            display: block;
+            margin-bottom: 15px;
+        }
+
         .btn-status-alert {
             display: none; 
             background-color: #fce8e6 !important;
@@ -64,7 +73,7 @@
             
             <button id="btn-continuar" class="btn-mando">Asimilado →</button>
             <button id="btn-alerta-reporte" class="btn-status-alert">REVISAR REPORTE DE DAÑOS →</button>
-            <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
+            <button id="btn-volver-hub" class="btn-ghost" style="margin-top: 20px;">← Volver al Hub</button>
         </div>
     </div>
 
@@ -91,12 +100,10 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 1. Lógica de Revelación
         document.getElementById("pantalla-reliquia").onclick = () => {
             document.body.classList.add('revealed');
         };
 
-        // 2. Asignación de Eventos Navegación
         document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
         document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
@@ -116,30 +123,24 @@
                             const btnRojo = document.getElementById("btn-alerta-reporte");
                             const btnHub = document.getElementById("btn-volver-hub");
 
-                            // 🧠 CEREBRO DE NAVEGACIÓN (3 ESTADOS)
-
                             if (data.estado === "Finalizado_DM" && !data.access_DQ) {
-                                // ESTADO: MÁSCARA ROTA
                                 btnNegro.style.display = "none";
                                 btnRojo.style.display = "block";
                                 btnHub.style.display = "block";
                             } 
                             else if (data.access_DQ === true || data.estado === "Finalizado_DQ") {
-                                // ESTADO: SOBERANO
                                 btnNegro.style.display = "block";
                                 btnRojo.style.display = "none";
                                 btnHub.style.display = "block";
                             }
                             else {
-                                // ESTADO: EXPLORADOR
                                 btnNegro.style.display = "block";
                                 btnRojo.style.display = "none";
                                 btnHub.style.display = "none";
                             }
 
-                            // GPS (Solo primera vuelta)
                             if (data.estado !== "Finalizado_DM" && data.estado !== "Finalizado_DQ") {
-                                userRef.update({ leccion_actual_DM: archivoActual }).catch(err => console.log(err));
+                                userRef.update({ leccion_actual_DM: archivoActual });
                             }
 
                         } else { window.location.href = archivoExpulsion; }
