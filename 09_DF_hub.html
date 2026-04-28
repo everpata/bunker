@@ -6,7 +6,7 @@
     <title>Hub de Descenso / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES DE JERARQUÍA V5.4 */
+        /* 🚨 AJUSTES DE HUB DINÁMICO V5.5 */
         #nombre-exp {
             font-size: 11px; font-weight: 600; color: #878787;
             letter-spacing: 1.5px; text-transform: uppercase;
@@ -21,10 +21,56 @@
             text-transform: uppercase;
         }
 
-        /* Bloqueo de parpadeo */
+        /* CUADRÍCULA DE LECCIONES */
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .lesson-item {
+            background-color: #f9f9fb;
+            border: 1px solid #eaeaea;
+            padding: 15px 10px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .lesson-item span {
+            font-size: 9px;
+            color: #878787;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .lesson-item:active {
+            transform: scale(0.96);
+            background-color: #f0f0f2;
+        }
+
+        /* Botones de Navegación Global */
+        .nav-area {
+            width: 100%;
+            border-top: 1px solid #eee;
+            padding-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
         #btn-primario, #btn-secundario { display: none; }
-        
-        #btn-secundario { margin-top: 20px !important; }
 
         #loading-screen { 
             display: flex; align-items: center; justify-content: center; 
@@ -43,14 +89,25 @@
         <div class="logo"><img src="DF.png"></div>
         
         <span id="nombre-exp">EXPEDICIONARIO: ---</span>
-        <div id="status-text" class="status-badge-hub">ANALIZANDO RANGO...</div>
+        <div id="status-text" class="status-badge-hub">ESTATUS: ANALIZANDO RANGO...</div>
         
         <h1 class="title">Centro de Mando.</h1>
-        <p class="description">Gestión de accesos para unidades operativas.</p>
+        <p class="description">Selecciona una coordenada de repaso o navega entre tramos.</p>
 
-        <button id="btn-primario" class="btn-mando">---</button>
-        
-        <button id="btn-secundario" class="btn-ghost">---</button>
+        <div class="lesson-grid">
+            <a href="01_DF_texto.html" class="lesson-item"><span>Lección 01</span>Descenso</a>
+            <a href="02_DF_bitacora.html" class="lesson-item"><span>Lección 02</span>Bitácora</a>
+            <a href="03_DF_quiz.html" class="lesson-item"><span>Lección 03</span>Evaluación</a>
+            <a href="04_DF_imagen.html" class="lesson-item"><span>Lección 04</span>Evidencia</a>
+            <a href="05_DF_video.html" class="lesson-item"><span>Lección 05</span>Análisis</a>
+            <a href="06_DF_principios.html" class="lesson-item"><span>Lección 06</span>Decreto</a>
+            <a href="07_DF_exito.html" class="lesson-item" style="grid-column: span 2;"><span>Lección 07</span>Tarjeta de Éxito</a>
+        </div>
+
+        <div class="nav-area">
+            <button id="btn-primario" class="btn-mando">---</button>
+            <button id="btn-secundario" class="btn-ghost">---</button>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -79,48 +136,45 @@
                         const btnS = document.getElementById("btn-secundario");
                         const statusBadge = document.getElementById("status-text");
 
-                        // 🧠 MOTOR DE INTERFAZ DINÁMICA V5.4
-                        
-                        // 👑 ESCENARIO A: EL REY (DQ)
+                        // 🧠 LÓGICA DE BOTONES SEGÚN TU SOLICITUD (V5.5)
+
+                        // 👑 CASO: REY (Tiene DQ)
                         if (data.access_DQ === true) {
                             statusBadge.innerText = "ESTATUS: SOBERANO (DQ)";
                             
-                            // Prioridad 1: Cúspide (Sólido)
                             btnP.innerText = "IR AL HUB DE LA CÚSPIDE (DQ) →";
                             btnP.onclick = () => { window.location.href = "09_DQ_hub.html"; };
                             
-                            // Prioridad 2: Inmersión (Fantasma)
                             btnS.innerText = "IR AL HUB DE LA INMERSIÓN (DM) →";
                             btnS.onclick = () => { window.location.href = "09_DM_hub.html"; };
                         } 
                         
-                        // ⚓ ESCENARIO B: RESIDENTE DE INMERSIÓN (DM)
+                        // ⚓ CASO: RESIDENTE DM (Tiene DM pero no DQ)
                         else if (data.access_DM === true) {
                             statusBadge.innerText = "ESTATUS: GRADUADO (DM)";
                             
-                            // Prioridad 1: Su casa actual DM (Sólido)
+                            // Prioridad: Su casa actual (Sólido)
                             btnP.innerText = "IR AL HUB DE LA INMERSIÓN (DM) →";
                             btnP.onclick = () => { window.location.href = "09_DM_hub.html"; };
                             
-                            // Prioridad 2: Repasar el origen DF (Fantasma)
-                            btnS.innerText = "REPASAR LECCIONES DF →";
-                            btnS.onclick = () => { window.location.href = "01_DF_texto.html"; };
+                            // Secundario: El reporte o diagnóstico (Fantasma)
+                            btnS.innerText = "VER REPORTE DE DIAGNÓSTICO →";
+                            btnS.onclick = () => { window.location.href = "08_DF_reportefinal.html"; };
                         } 
                         
-                        // 🪖 ESCENARIO C: USUARIO BASE (Solo DF)
+                        // 🪖 CASO: USUARIO BASE (Solo DF)
                         else {
                             statusBadge.innerText = "ESTATUS: TRAMO 01 COMPLETADO";
                             
-                            // Prioridad 1: Repaso (Sólido)
-                            btnP.innerText = "REPASAR LECCIONES DF →";
-                            btnP.onclick = () => { window.location.href = "01_DF_texto.html"; };
+                            // Prioridad: Avanzar/Venta (Sólido)
+                            btnP.innerText = "VER REPORTE DE DIAGNÓSTICO →";
+                            btnP.onclick = () => { window.location.href = "08_DF_reportefinal.html"; };
                             
-                            // Prioridad 2: Diagnóstico/Venta (Fantasma)
-                            btnS.innerText = "VER REPORTE DE DIAGNÓSTICO →";
-                            btnS.onclick = () => { window.location.href = "08_DF_reportefinal.html"; };
+                            // Secundario: Repasar lección 1 (Fantasma)
+                            btnS.innerText = "REPASAR DESDE EL INICIO →";
+                            btnS.onclick = () => { window.location.href = "01_DF_texto.html"; };
                         }
 
-                        // Liberar elementos configurados
                         btnP.style.display = "block";
                         btnS.style.display = "block";
 
