@@ -12,7 +12,7 @@
         .carousel-wrapper {
             position: relative;
             width: 100%;
-            margin-top: 0px;
+            margin-top: 20px;
         }
 
         .carousel-container {
@@ -43,34 +43,30 @@
             flex-direction: column;
             align-items: center;
             box-sizing: border-box;
-            /* Se eliminó el fondo gris y el borde para liberar la imagen */
         }
 
         .carousel-img {
             width: 100%;
-            height: auto; /* Respeta la proporción 16:9 o 9:16 */
+            height: auto; 
             border-radius: 12px;
             margin-bottom: 15px;
-            pointer-events: none; /* Evita que la imagen interfiera al arrastrar en PC */
+            pointer-events: none; 
         }
 
-        /* Nueva caja gris exclusiva para el texto (Estilo Búnker) */
-        .carousel-text-box {
-            background-color: #f5f5f7;
-            border: 1px solid #e0e0e0;
-            border-radius: 16px;
-            padding: 20px;
-            width: 100%;
+        /* Texto liberado de la caja, con color de descripción */
+        .carousel-text {
+            font-size: 16px;
+            color: #878787; /* Color de las descripciones */
             text-align: left;
-            box-sizing: border-box;
-        }
-
-        /* Texto con el mismo estilo de description (.text-base) */
-        .carousel-text-box p {
-            font-size: 16px; /* Ajustado al estándar de texto base */
-            color: #333;
+            width: 100%;
             line-height: 1.6;
             margin: 0;
+            padding: 0 5px; /* Pequeño margen para alinear visualmente con la imagen */
+        }
+
+        /* Si quieres que los títulos en negrita resalten más, los dejamos en #333 */
+        .carousel-text b {
+            color: #333;
         }
 
         .swipe-indicator {
@@ -141,30 +137,22 @@
                 
                 <div class="carousel-slide">
                     <img src="conferencia.webp" class="carousel-img" alt="Evidencia">
-                    <div class="carousel-text-box">
-                        <p><b>1. Impacto:</b> El perfeccionista dejó de ser el protagonista, ahora mi <b>anarquista</b> era el responsable de llevar a territorio las revelaciones que mi monje producía.</p>
-                    </div>
+                    <p class="carousel-text"><b>1. Impacto:</b> El perfeccionista dejó de ser el protagonista, ahora mi <b>anarquista</b> era el responsable de llevar a territorio las revelaciones que mi monje producía.</p>
                 </div>
 
                 <div class="carousel-slide">
                     <img src="familia.webp" class="carousel-img" alt="Evidencia">
-                    <div class="carousel-text-box">
-                        <p><b>2. Familia:</b> Si no vas a compartir tu crecimiento con los tuyos y a contagiar expansión ¿qué estás haciendo con tu vida?.</p>
-                    </div>
+                    <p class="carousel-text"><b>2. Familia:</b> Si no vas a compartir tu crecimiento con los tuyos y a contagiar expansión ¿qué estás haciendo con tu vida?.</p>
                 </div>
 
                 <div class="carousel-slide">
                     <img src="salud.webp" class="carousel-img" alt="Evidencia">
-                    <div class="carousel-text-box">
-                        <p><b>3. Salud:</b> Honrar al templo (cuerpo) en familia y crear referencias de alto calibre para tu hijo, no tiene precio.</p>
-                    </div>
+                    <p class="carousel-text"><b>3. Salud:</b> Honrar al templo (cuerpo) en familia y crear referencias de alto calibre para tu hijo, no tiene precio.</p>
                 </div>
               
                 <div class="carousel-slide">
                     <img src="perro.webp" class="carousel-img" alt="Evidencia">
-                    <div class="carousel-text-box">
-                        <p><b>4. Contexto:</b> Que todo aquel que esté a tu lado, no le quede más remedio que ponerse al nivel.</p>
-                    </div>
+                    <p class="carousel-text"><b>4. Contexto:</b> Que todo aquel que esté a tu lado, no le quede más remedio que ponerse al nivel.</p>
                 </div>
 
             </div>
