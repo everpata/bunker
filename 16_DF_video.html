@@ -8,21 +8,28 @@
     <style>
         /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
         
-        /* Texto post-video liberado (Sin caja gris) */
-        .post-video-text {
-            font-size: 16px;
-            color: #878787; /* Mismo color de la descripción superior */
-            line-height: 1.6;
-            text-align: left;
+        /* Caja gris para el texto post-video */
+        .post-video-box {
+            background-color: #f5f5f7;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px; /* Radio estricto de 16px */
+            padding: 20px;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 25px;
             margin-bottom: 10px;
-            padding: 0 5px; /* Pequeño margen para alinear visualmente con los bordes del video */
             box-sizing: border-box;
+            text-align: left;
         }
 
-        .post-video-text b {
-            color: #333; /* Resalta las negritas con un gris más oscuro */
+        .post-video-box p {
+            font-size: 16px;
+            color: #666; /* Color estándar de lectura cómoda */
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .post-video-box b {
+            color: #333; /* Negritas con mayor contraste */
         }
 
         /* Botón Rojo Elástico (Upsell al Tramo 02) */
@@ -85,9 +92,11 @@
             </div>
         </div>
 
-        <p class="post-video-text">
-            Luego entró al <b>Levante U.D</b> en la misma posición. Ahora, fruto de haber hecho su expedición intrínseca, <b>lidera todo un equipo de scouts (reclutadores)</b>. Este es el poder de quitarte las máscaras y operar desde tu verdadero centro de gravedad. 
-        </p>
+        <div class="post-video-box">
+            <p>
+                Luego entró al <b>Levante U.D</b> en la misma posición. Ahora, fruto de haber hecho su expedición intrínseca, <b>lidera todo un equipo de scouts (reclutadores)</b>. Este es el poder de quitarte las máscaras y operar desde tu verdadero centro de gravedad. 
+            </p>
+        </div>
 
         <button id="btn-continuar" class="btn-mando" style="margin-top: 25px;">He visto el video →</button>
         <button id="btn-alerta-reporte" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
