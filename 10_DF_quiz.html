@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quiz / Deepfall (T01)</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
+        
+        .btn-status-alert {
+            display: none; 
+            background-color: #fce8e6 !important;
+            color: #d93025 !important;
+            border: 1px solid #d93025 !important;
+            font-weight: 700 !important;
+            animation: btnElastic 4s ease-in-out infinite;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
+        }
+
+        @keyframes btnElastic {
+            0% { padding-top: 18px; padding-bottom: 18px; }
+            50% { padding-top: 24px; padding-bottom: 24px; }
+            100% { padding-top: 18px; padding-bottom: 18px; }
+        }
+
+        /* Bloqueo visual del Quiz */
+        .quiz-locked .option-btn {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .quiz-locked .option-btn.selected {
+            opacity: 1;
+            border-color: #333333 !important;
+            color: #333333 !important;
+            font-weight: 700;
+        }
+
+        /* Ocultar botones inicialmente */
+        #btn-next, #btn-alerta-reporte, #btn-volver-hub { display: none; }
+
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
+        <div class="logo"><img src="DF.png"></div>
+        <p class="indicator">Tramo 01 / Máscaras</p>
+        <div class="progress-container"><div class="progress-fill" style="width: 60%;"></div></div>
+        
+        <h1 class="title">El perfeccionista</h1>
+        <p id="quiz-desc" class="description">Si cumples dos de los tres criterios, significa que tienes esta máscara.</p>
+        
+        <div id="quiz-area" class="work-area">
+            <button class="option-btn" onclick="toggleOption(this)">Me crié con padres controladores.</button>
+            <button class="option-btn" onclick="toggleOption(this)">Me quedo en bucles de "preparación" y no paso a la acción.</button>
+            <button class="option-btn" onclick="toggleOption(this)">Me exijo mucho y siento que los demás no están a la altura.</button>
+        </div>
+
+        <button id="btn-next" class="btn-mando">Continuar →</button>
+        <button id="btn-alerta-reporte" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
+        <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const archivoActual = "10_DF_quiz.html"; 
+        const archivoSiguiente = "11_DF_imagen.html"; 
+        const archivoHub = "09_DF_hub.html"; 
+        const archivoReporte = "08_DF_reportefinal.html";
+        const archivoExpulsion = "index.html"; 
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        function toggleOption(btn) {
+            btn.classList.toggle('selected');
+        }
+
+        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+
+                        const btnNegro = document.getElementById("btn-next");
+                        const btnRojo = document.getElementById("btn-alerta-reporte");
+                        const btnHub = document.getElementById("btn-volver-hub");
+                        const areaQuiz = document.getElementById("quiz-area");
+
+                        // 🧠 CEREBRO DE NAVEGACIÓN (Lógica DF)
+
+                        if (data.estado === "Finalizado_DF" && !data.access_DM) {
+                            // MODO REPASO BLOQUEADO (No tiene acceso a DM, no hay hub)
+                            areaQuiz.classList.add("quiz-locked");
+                            btnNegro.style.display = "none";
+                            btnRojo.style.display = "block";
+                            btnHub.style.display = "none";
+                        } 
+                        else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
+                            // MODO VETERANO (Tiene DM o superior) -> Acceso al Hub
+                            areaQuiz.classList.add("quiz-locked");
+                            btnNegro.innerText = "Continuar →";
+                            btnNegro.style.display = "block";
+                            btnRojo.style.display = "none";
+                            btnHub.style.display = "block";
+                            btnNegro.onclick = () => { window.location.href = archivoSiguiente; };
+                        }
+                        else {
+                            // MODO EXPLORADOR (Haciendo DF por primera vez)
+                            btnNegro.style.display = "block";
+                            btnRojo.style.display = "none";
+                            btnHub.style.display = "none";
+                            btnNegro.onclick = () => { ejecutarSincronizacion(userRef, btnNegro); };
+                        }
+
+                        // GPS (Solo primera vuelta)
+                        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                            userRef.update({ leccion_actual_DF: archivoActual });
+                        }
+
+                        // Recuperación de Memoria
+                        const campoQuiz = "quiz_" + archivoActual.replace(/\./g, "_");
+                        if (data[campoQuiz] && Array.isArray(data[campoQuiz])) {
+                            const btns = document.querySelectorAll('.option-btn');
+                            btns.forEach(btn => {
+                                if (data[campoQuiz].includes(btn.innerText.trim())) {
+                                    btn.classList.add('selected');
+                                }
+                            });
+                        }
+
+                    } else { window.location.href = archivoExpulsion; }
+                });
+            } else { window.location.href = "index.html"; }
+        });
+
+        function ejecutarSincronizacion(userRef, btn) {
+            const seleccionados = Array.from(document.querySelectorAll('.option-btn.selected')).map(btn => btn.innerText.trim());
+            if (seleccionados.length === 0) { alert("El descenso requiere una decisión."); return; }
+            
+            btn.innerText = "Sincronizando...";
+            btn.disabled = true;
+            const campoQuiz = "quiz_" + archivoActual.replace(/\./g, "_");
+            
+            userRef.update({ [campoQuiz]: seleccionados }).then(() => {
+                window.location.href = archivoSiguiente;
+            });
+        }
+    </script>
+</body>
+</html>
