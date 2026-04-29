@@ -11,7 +11,7 @@
     <title>Sincronizando / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ESTÉTICA INTEGRAL V7.2 */
+        /* 🚨 ESTÉTICA INTEGRAL V7.3 */
         html, body { 
             height: auto; 
             min-height: 100%; 
@@ -42,13 +42,15 @@
             50% { transform: scale(1.02); opacity: 1; }
         }
 
-        /* Bloque de texto estándar (Izquierda) */
-        .work-area.card {
-            text-align: left !important;
+        /* TEXTO SIN CAJA (Justificado a la izquierda) */
+        #status-text {
             width: 100%;
+            text-align: left !important;
+            margin: 0;
+            padding: 0 5px; /* Pequeño margen para alinear con las cajas */
         }
 
-        /* TIMER ESTILO REPORTE (Fuera de la tarjeta) */
+        /* TIMER ESTILO REPORTE */
         .stats-container {
             display: flex !important; flex-direction: row !important;
             gap: 10px; width: 100%; 
@@ -87,9 +89,7 @@
         
         <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado">
         
-        <div class="work-area card">
-            <p class="text-base" id="status-text">La siguiente ruta será liberada en:</p>
-        </div>
+        <p class="text-base" id="status-text">La superficie opone resistencia operativa. La siguiente ruta será liberada en:</p>
 
         <div id="countdown" class="stats-container">
             <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
@@ -109,7 +109,7 @@
         const archivoActual = "04_DF_imagen.html"; 
         const archivoHub = "09_DF_hub.html";
 
-        // CONFIGURACIÓN DE FECHA (Mañana 10:00 AM)
+        // CONFIGURACIÓN DE FECHA (Cambia según necesites)
         const countDownDate = new Date("Apr 30, 2026 10:00:00").getTime(); 
 
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
