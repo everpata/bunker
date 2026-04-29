@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="style.css">
     <style>
         /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
+        html, body { 
+            height: auto; 
+            min-height: 100%; 
+            margin: 0; 
+        }
+
+        body {
+            /* Safe area superior para evitar que el logo se corte */
+            padding: 60px 0 0 0 !important; 
+        }
+
         #nombre-exp {
             font-size: 11px; font-weight: 600; color: #878787;
             letter-spacing: 1.5px; text-transform: uppercase;
@@ -51,10 +62,11 @@
             50% { padding-top: 24px; padding-bottom: 24px; }
         }
 
-        /* 🔒 BLOQUEO DE FUGA: Oculto con !important */
+        /* 🔓 RUTA DE RETORNO HABILITADA */
         #btn-repasar { 
-            display: none !important; 
+            display: none; /* Se activa por JS */
             margin-top: 20px !important; 
+            width: 100%;
         }
 
         #loading-screen { 
@@ -162,9 +174,8 @@
                         // SI LLEGÓ AQUÍ, ES UN GRADUADO DE DF SIN COMPRA DE DM
                         userRef.update({ leccion_actual_DF: "08_DF_reportefinal.html", estado: "Finalizado_DF" });
                         
-                        // EL BOTÓN SE MANTIENE OCULTO (display: none !important en CSS)
-                        // Si quisieras mostrarlo solo en casos muy específicos, usarías:
-                        // document.getElementById("btn-repasar").style.setProperty('display', 'block', 'important');
+                        // 🔓 MOSTRAR EL BOTÓN DE REPASO
+                        document.getElementById("btn-repasar").style.setProperty('display', 'block', 'important');
 
                         document.getElementById("nombre-exp").innerText = "EXPEDICIONARIO: " + (data.nombre || "SIN NOMBRE").toUpperCase();
                         document.getElementById("loading-screen").style.display = "none";
