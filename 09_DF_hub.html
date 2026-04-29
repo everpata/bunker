@@ -71,6 +71,7 @@
 
         <button id="btn-ir-dq" class="btn-mando" style="display: none; margin-top: 35px;">Ir al Hub de la Cúspide (DQ) →</button>
         <button id="btn-ir-dm" class="btn-mando" style="display: none; margin-top: 35px;">Ir al Hub de la Inmersión (DM) →</button>
+        <button id="btn-ir-reporte" class="btn-mando" style="display: none; margin-top: 35px;">Ver Reporte de Diagnóstico →</button>
         
     </div>
 
@@ -81,9 +82,11 @@
     <script>
         const rutaHubDM = "09_DM_hub.html";
         const rutaHubDQ = "09_DQ_hub.html";
+        const rutaReporte = "08_DF_reportefinal.html";
 
         document.getElementById("btn-ir-dm").onclick = () => { window.location.href = rutaHubDM; };
         document.getElementById("btn-ir-dq").onclick = () => { window.location.href = rutaHubDQ; };
+        document.getElementById("btn-ir-reporte").onclick = () => { window.location.href = rutaReporte; };
 
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
@@ -102,27 +105,33 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        if (data.access_DM === true || data.access_DQ === true) {
+                        // 🔓 NUEVA REGLA: Dejamos entrar a DQ, DM y también a los que ya terminaron el DF
+                        if (data.access_DM === true || data.access_DQ === true || data.estado === "Finalizado_DF") {
                             document.getElementById("loading-screen").style.display = "none";
                             document.getElementById("bunker-content").style.display = "flex";
 
                             const dmBtn = document.getElementById("btn-ir-dm");
                             const dqBtn = document.getElementById("btn-ir-dq");
+                            const repBtn = document.getElementById("btn-ir-reporte");
 
                             if (data.access_DQ === true) {
                                 // CASO REY: DQ Sólido arriba, DM Fantasma abajo
                                 dqBtn.style.display = "block";
-                                
-                                dmBtn.className = "btn-ghost margin-top-ghost"; // Cambia a estilo fantasma
+                                dmBtn.className = "btn-ghost margin-top-ghost";
                                 dmBtn.style.display = "block";
                             } 
                             else if (data.access_DM === true) {
-                                // CASO SOLO DM: DM Sólido como estaba
+                                // CASO SOLO DM: DM Sólido
                                 dmBtn.style.display = "block";
+                            }
+                            else if (data.estado === "Finalizado_DF") {
+                                // CASO GRADUADO DF: Reporte Sólido
+                                repBtn.style.display = "block";
                             }
 
                         } else {
-                            window.location.href = "08_DF_reportefinal.html"; 
+                            // Si no ha terminado el DF, no tiene por qué estar en el Hub aún
+                            window.location.href = "index.html"; 
                         }
                     }
                 });
