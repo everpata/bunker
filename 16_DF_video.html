@@ -8,6 +8,23 @@
     <style>
         /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
         
+        /* Texto post-video liberado (Sin caja gris) */
+        .post-video-text {
+            font-size: 16px;
+            color: #878787; /* Mismo color de la descripción superior */
+            line-height: 1.6;
+            text-align: left;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding: 0 5px; /* Pequeño margen para alinear visualmente con los bordes del video */
+            box-sizing: border-box;
+        }
+
+        .post-video-text b {
+            color: #333; /* Resalta las negritas con un gris más oscuro */
+        }
+
         /* Botón Rojo Elástico (Upsell al Tramo 02) */
         .btn-status-alert {
             display: none; 
@@ -57,18 +74,22 @@
         </div>
         
         <h1 class="title">No me pasó solo a mí.</h1>
-        <p class="description">Para ponerte en contexto, Pedro, era scout en La Roma, el equipo italiano de fútbol, luego entró al Levante en la misma posición y ahora, fruto de haber hecho su expedición intrínseca, lidera todo un equipo de scouts (reclutadores).</p>
+        <p class="description">Para ponerte en contexto, Pedro era scout en La Roma, el equipo italiano de fútbol. </p>
         
         <div class="work-area">
             <div class="video-container">
                 <iframe src="https://player.mediadelivery.net/embed/649829/8d7bba2a-1250-4bc3-a8ba-eadc1328a3a4?autoplay=false&loop=false&muted=false&preload=false&responsive=true" 
             loading="lazy" 
-            style="border:0; position:absolute; top:0; left:0; height:100%; width:100%;" 
+            style="border:0; position:absolute; top:0; left:0; height:100%; width:100%; border-radius: 12px;" 
             allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen></iframe>
             </div>
         </div>
 
-        <button id="btn-continuar" class="btn-mando">He visto el video →</button>
+        <p class="post-video-text">
+            Luego entró al Levante en la misma posición. Ahora, fruto de haber hecho su expedición intrínseca, <b>lidera todo un equipo de scouts (reclutadores)</b>. Este es el poder de quitarte las máscaras y operar desde tu verdadero centro de gravedad. <br><br>Evidentemente, pedro no se quedó solo en el descenso y tampoco se conformó con la inmersión, decidió ascender hacia su propia cumbre.
+        </p>
+
+        <button id="btn-continuar" class="btn-mando" style="margin-top: 25px;">He visto el video →</button>
         <button id="btn-alerta-reporte" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
         <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
     </div>
@@ -116,19 +137,16 @@
                         // 🧠 CEREBRO DE NAVEGACIÓN (Lógica DF)
                         
                         if (data.estado === "Finalizado_DF" && !data.access_DM) {
-                            // MODO REPASO LIMITADO (Terminó DF pero no pagó DM)
                             btnNegro.style.display = "none";
                             btnRojo.style.display = "block";
                             btnHub.style.display = "none"; 
                         } 
                         else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
-                            // MODO VETERANO (Ya tiene acceso a la DM o superior)
                             btnNegro.style.display = "block";
                             btnRojo.style.display = "none";
                             btnHub.style.display = "block";
                         }
                         else {
-                            // MODO EXPLORADOR (Primera vez)
                             btnNegro.style.display = "block";
                             btnRojo.style.display = "none";
                             btnHub.style.display = "none";
