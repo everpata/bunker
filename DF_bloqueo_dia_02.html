@@ -11,7 +11,7 @@
     <title>Sincronizando / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 AJUSTES ESTRUCTURALES Y TEMPORIZADOR */
+        /* 🚨 ESTÉTICA DE RELIQUIA BLOQUEADA V7.0 */
         html, body { 
             height: auto; 
             min-height: 100%; 
@@ -23,23 +23,42 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 60px 0 0 0 !important; 
+            /* Safe area superior (sin logo, pero necesitamos aire) */
+            padding: 80px 0 0 0 !important; 
         }
 
-        .work-area.card {
-            text-align: left !important;
+        /* Imagen del Candado Arqueológico */
+        .relic-lock-img {
+            width: 160px; /* Ajustar según diseño de la imagen */
+            height: auto;
+            margin-bottom: 30px;
+            display: block;
+            opacity: 0.9;
+            /* Pequeña animación de respiración para que se sienta "activa" */
+            animation: relicPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes relicPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.03); opacity: 1; }
+        }
+
+        /* Texto breve antes del timer - JUSTIFICADO A LA IZQUIERDA */
+        .instruction-text {
             width: 100%;
+            text-align: left !important;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 10px; /* Pegado al timer */
+            padding: 0 5px; /* Pequeño ajuste para alinear con las cajas */
         }
 
-        /* Eliminamos el margen sobrante del párrafo dentro de la tarjeta */
-        #status-text { margin-bottom: 0; }
-
-        /* TEMPORIZADOR HORIZONTAL INDEPENDIENTE */
+        /* TEMPORIZADOR HORIZONTAL (Estilo Reporte) */
         .stats-container {
             display: flex !important; flex-direction: row !important;
             gap: 10px; width: 100%; 
-            margin-top: 20px; /* Separación de la tarjeta superior */
-            margin-bottom: 30px; /* Separación del botón inferior */
+            margin-bottom: 35px; /* Separación del botón */
         }
 
         .stat-box {
@@ -51,14 +70,12 @@
         .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
         .stat-label { font-size: 9px; font-weight: 700; color: #878787; margin-top: 8px; display: block; text-transform: uppercase; }
 
-        /* ANIMACIÓN DE BOTÓN AL FINALIZAR */
-        @keyframes pulseAlert {
-            0%, 100% { transform: scale(1); background-color: #333; }
-            50% { transform: scale(1.02); background-color: #000; }
+        /* Animación para el botón negro cuando el tiempo acaba */
+        @keyframes pulseReady {
+            0%, 100% { background-color: #333; }
+            50% { background-color: #000; transform: scale(1.02); }
         }
-        .btn-ready { animation: pulseAlert 2s infinite !important; }
-
-        #btn-volver-hub { margin-top: 20px !important; }
+        .btn-ready { animation: pulseReady 2s infinite !important; }
 
         #loading-screen {
             display: flex; align-items: center; justify-content: center;
@@ -73,13 +90,12 @@
     </div>
 
     <div class="container" id="bunker-content" style="display: none;">
-        <div class="logo"><img src="DF.png"></div>
-        <p class="indicator">Sector Bloqueado</p>
-        <h1 class="title">Sincronizando.</h1>
-
-        <div class="work-area card">
-            <p class="text-base" id="status-text">La superficie aún opone resistencia. Las coordenadas del siguiente sector están siendo procesadas para su liberación.</p>
-        </div>
+        
+        <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado">
+        
+        <p class="indicator">Sincronización de Protocolo</p>
+        
+        <p class="instruction-text">La superficie opone resistencia operativa. La siguiente ruta será liberada en:</p>
 
         <div id="countdown" class="stats-container">
             <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
@@ -88,7 +104,7 @@
         </div>
 
         <button class="btn-mando" id="btn-actualizar" onclick="window.location.reload(true);">Actualizar Protocolo →</button>
-        <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
+        <button id="btn-volver-hub" class="btn-ghost" style="margin-top: 20px;">← Volver al Hub</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -97,7 +113,7 @@
 
     <script>
         // 🚨 CONFIGURACIÓN DE TU ARCHIVO ACTUAL
-        const archivoActual = "04_DF_imagen.html"; // <-- PON EL NOMBRE REAL DEL ARCHIVO AQUÍ
+        const archivoActual = "04_DF_imagen.html"; // <-- NOMBRE REAL DEL ARCHIVO
         const archivoHub = "09_DF_hub.html";
 
         // 🕒 CONFIGURACIÓN DEL TEMPORIZADOR
@@ -125,7 +141,7 @@
                 userRef.update({ leccion_actual_DF: archivoActual });
 
                 document.getElementById("loading-screen").style.display = "none";
-                document.getElementById("bunker-content").style.display = "block";
+                document.getElementById("bunker-content").style.display = "flex";
 
                 // MOTOR DEL TEMPORIZADOR
                 const x = setInterval(function() {
@@ -134,9 +150,9 @@
 
                     if (distance < 0) {
                         clearInterval(x);
-                        // Oculta el reloj y actualiza la tarjeta
+                        // Cuando el tiempo acaba
                         document.getElementById("countdown").style.display = "none";
-                        document.getElementById("status-text").innerHTML = "<b>Las coordenadas han sido liberadas.</b><br><br>Actualiza el protocolo para entrar al sector.";
+                        document.querySelector(".instruction-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
                         document.getElementById("btn-actualizar").classList.add("btn-ready");
                     } else {
                         // Cálculo de tiempo
