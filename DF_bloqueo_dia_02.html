@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Sincronizando / Deepfall</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ESTÉTICA DE BLOQUEO */
+        body { 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; height: 100vh; margin: 0; background-color: #f5f5f7; 
+        }
+        
+        .lock-container {
+            text-align: center;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .lock-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+            opacity: 0.8;
+        }
+
+        .title-lock {
+            font-size: 24px;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .desc-lock {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .timer-box {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 25px;
+        }
+
+        #timer {
+            font-size: 32px;
+            font-weight: 900;
+            color: #333;
+            letter-spacing: 2px;
+            font-family: monospace;
+        }
+
+        .timer-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #878787;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .btn-refresh {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-refresh:active { background-color: #000; transform: scale(0.98); }
+
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
+    </div>
+
+    <div class="lock-container" id="bunker-content" style="display: none;">
+        <div class="logo" style="margin-bottom: 20px;"><img src="DF.png"></div>
+        <span class="lock-icon">🔒</span>
+        <h1 class="title-lock">Sector Bloqueado.</h1>
+        <p class="desc-lock">La superficie aún opone resistencia. El siguiente sector del Descenso se está sincronizando.</p>
+
+        <div class="timer-box">
+            <div id="timer">--:--:--</div>
+            <span class="timer-label">Para liberación de coordenadas</span>
+        </div>
+
+        <button class="btn-refresh" onclick="window.location.reload(true);">Actualizar Protocolo</button>
+        <button id="btn-volver-hub" class="btn-ghost" style="margin-top: 15px; width: 100%; display: block;">← Volver al Hub</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 🚨 CONFIGURACIÓN DE TU ARCHIVO ACTUAL
+        const archivoActual = "04_DF_imagen.html"; // <-- PON EL NOMBRE REAL DEL ARCHIVO AQUÍ
+        const archivoHub = "09_DF_hub.html";
+
+        // 🕒 CONFIGURACIÓN DEL TEMPORIZADOR (Ejemplo: Mañana a las 10:00 AM)
+        // Formato: "Mes Día, Año Hora:Minutos:Segundos"
+        const countDownDate = new Date("May 1, 2024 10:00:00").getTime(); 
+
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(); const db = firebase.firestore();
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                
+                // ACTUALIZA EL GPS: Así si el usuario sale y vuelve, cae de nuevo frente a esta puerta cerrada.
+                userRef.update({ leccion_actual_DF: archivoActual });
+
+                document.getElementById("loading-screen").style.display = "none";
+                document.getElementById("bunker-content").style.display = "block";
+
+                // MOTOR DEL TEMPORIZADOR
+                const x = setInterval(function() {
+                    const now = new Date().getTime();
+                    const distance = countDownDate - now;
+
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    // Añadir ceros a la izquierda si es menor a 10
+                    const h = hours < 10 ? "0" + hours : hours;
+                    const m = minutes < 10 ? "0" + minutes : minutes;
+                    const s = seconds < 10 ? "0" + seconds : seconds;
+
+                    if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementById("timer").innerHTML = "LISTO";
+                        document.getElementById("timer").style.color = "#4CAF50";
+                        document.querySelector(".desc-lock").innerHTML = "Las coordenadas han sido liberadas. Actualiza la página para entrar.";
+                    } else {
+                        document.getElementById("timer").innerHTML = h + ":" + m + ":" + s;
+                    }
+                }, 1000);
+
+            } else { window.location.href = "index.html"; }
+        });
+    </script>
+</body>
+</html>
