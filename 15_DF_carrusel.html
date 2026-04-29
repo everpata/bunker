@@ -18,46 +18,59 @@
         .carousel-container {
             display: flex;
             overflow-x: auto;
-            /* El 'scroll-snap' crea el efecto imán al deslizar */
             scroll-snap-type: x mandatory;
-            scrollbar-width: none; /* Oculta la barra en Firefox */
-            -ms-overflow-style: none; /* Oculta la barra en IE/Edge */
-            gap: 15px; /* Espacio entre tarjetas */
+            scrollbar-width: none; 
+            -ms-overflow-style: none; 
+            gap: 15px; 
             padding-bottom: 10px;
+            align-items: flex-start; /* Permite que las imágenes fluyan desde arriba sin estirarse */
+            cursor: grab; /* Cursor de mano abierta en PC */
         }
 
-        /* Oculta la barra de scroll en Chrome/Safari/iOS */
+        /* Cursor de mano cerrada al arrastrar en PC */
+        .carousel-container:active {
+            cursor: grabbing;
+        }
+
         .carousel-container::-webkit-scrollbar {
             display: none; 
         }
 
         .carousel-slide {
-            flex: 0 0 100%; /* Cada tarjeta ocupa el 100% del ancho visible */
-            scroll-snap-align: center; /* Centra la tarjeta al soltar el dedo */
+            flex: 0 0 100%; 
+            scroll-snap-align: center; 
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: #f5f5f7;
-            border: 1px solid #e0e0e0;
-            border-radius: 16px;
-            padding: 20px;
             box-sizing: border-box;
+            /* Se eliminó el fondo gris y el borde para liberar la imagen */
         }
 
         .carousel-img {
             width: 100%;
+            height: auto; /* Respeta la proporción 16:9 o 9:16 */
             border-radius: 12px;
             margin-bottom: 15px;
-            object-fit: cover;
+            pointer-events: none; /* Evita que la imagen interfiera al arrastrar en PC */
         }
 
-        .carousel-text {
-            font-size: 14px;
-            color: #333;
-            text-align: left;
+        /* Nueva caja gris exclusiva para el texto (Estilo Búnker) */
+        .carousel-text-box {
+            background-color: #f5f5f7;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 20px;
             width: 100%;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        /* Texto con el mismo estilo de description (.text-base) */
+        .carousel-text-box p {
+            font-size: 16px; /* Ajustado al estándar de texto base */
+            color: #333;
+            line-height: 1.6;
             margin: 0;
-            line-height: 1.5;
         }
 
         .swipe-indicator {
@@ -101,7 +114,6 @@
             100% { padding-top: 18px; padding-bottom: 18px; }
         }
 
-        /* Ocultar botones inicialmente */
         #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
 
         #loading-screen {
@@ -128,29 +140,38 @@
             <div class="carousel-container">
                 
                 <div class="carousel-slide">
-                    <img src="conferencia.webp" class="carousel-img" alt="El Perfeccionista">
-                    <p class="carousel-text"><b>1. Impacto:</b> El perfeccionista dejó de ser el protagonista, ahora mi <b>anarquista</b> era el responsable de llevar a territorio las revelaciones que mi monje producía.</p>
+                    <img src="conferencia.webp" class="carousel-img" alt="Evidencia">
+                    <div class="carousel-text-box">
+                        <p><b>1. Impacto:</b> El perfeccionista dejó de ser el protagonista, ahora mi <b>anarquista</b> era el responsable de llevar a territorio las revelaciones que mi monje producía.</p>
+                    </div>
                 </div>
 
                 <div class="carousel-slide">
-                    <img src="familia.webp" class="carousel-img" alt="El Ocupado">
-                    <p class="carousel-text"><b>2. Familia:</b> Si no vas a compartir tu crecimiento con los tuyos y a contagiar expansión ¿qué estás haciendo con tu vida?.</p>
+                    <img src="familia.webp" class="carousel-img" alt="Evidencia">
+                    <div class="carousel-text-box">
+                        <p><b>2. Familia:</b> Si no vas a compartir tu crecimiento con los tuyos y a contagiar expansión ¿qué estás haciendo con tu vida?.</p>
+                    </div>
                 </div>
 
                 <div class="carousel-slide">
-                    <img src="salud.webp" class="carousel-img" alt="El Intelectual">
-                    <p class="carousel-text"><b>3. Salud:</b> Honrar al templo (cuerpo) en familia y crear referencias de alto calibre para tu hijo, no tiene precio.</p>
+                    <img src="salud.webp" class="carousel-img" alt="Evidencia">
+                    <div class="carousel-text-box">
+                        <p><b>3. Salud:</b> Honrar al templo (cuerpo) en familia y crear referencias de alto calibre para tu hijo, no tiene precio.</p>
+                    </div>
                 </div>
               
-              <div class="carousel-slide">
-                    <img src="perro.webp" class="carousel-img" alt="El Intelectual">
-                    <p class="carousel-text"><b>3. Contexto:</b> Que todo aquel que esté a tu lado, no le quede más remedio que ponerse al nivel.</p>
+                <div class="carousel-slide">
+                    <img src="perro.webp" class="carousel-img" alt="Evidencia">
+                    <div class="carousel-text-box">
+                        <p><b>4. Contexto:</b> Que todo aquel que esté a tu lado, no le quede más remedio que ponerse al nivel.</p>
+                    </div>
                 </div>
 
             </div>
             
             <div class="swipe-indicator">← Desliza para escanear →</div>
         </div>
+
         <button id="btn-continuar" class="btn-mando" style="margin-top: 25px;">Continuar →</button>
         <button id="btn-alerta-reporte" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
         <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
