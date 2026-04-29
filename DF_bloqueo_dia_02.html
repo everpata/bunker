@@ -31,10 +31,15 @@
             width: 100%;
         }
 
-        /* TEMPORIZADOR HORIZONTAL (Estilo Reporte) */
+        /* Eliminamos el margen sobrante del párrafo dentro de la tarjeta */
+        #status-text { margin-bottom: 0; }
+
+        /* TEMPORIZADOR HORIZONTAL INDEPENDIENTE */
         .stats-container {
             display: flex !important; flex-direction: row !important;
-            gap: 10px; width: 100%; margin-top: 25px; margin-bottom: 5px;
+            gap: 10px; width: 100%; 
+            margin-top: 20px; /* Separación de la tarjeta superior */
+            margin-bottom: 30px; /* Separación del botón inferior */
         }
 
         .stat-box {
@@ -74,12 +79,12 @@
 
         <div class="work-area card">
             <p class="text-base" id="status-text">La superficie aún opone resistencia. Las coordenadas del siguiente sector están siendo procesadas para su liberación.</p>
+        </div>
 
-            <div id="countdown" class="stats-container">
-                <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
-                <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
-                <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
-            </div>
+        <div id="countdown" class="stats-container">
+            <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
+            <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
+            <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
         </div>
 
         <button class="btn-mando" id="btn-actualizar" onclick="window.location.reload(true);">Actualizar Protocolo →</button>
@@ -129,12 +134,12 @@
 
                     if (distance < 0) {
                         clearInterval(x);
-                        // Cuando el tiempo acaba, oculta el reloj, cambia el texto y anima el botón
+                        // Oculta el reloj y actualiza la tarjeta
                         document.getElementById("countdown").style.display = "none";
                         document.getElementById("status-text").innerHTML = "<b>Las coordenadas han sido liberadas.</b><br><br>Actualiza el protocolo para entrar al sector.";
                         document.getElementById("btn-actualizar").classList.add("btn-ready");
                     } else {
-                        // Cálculo de tiempo (Permite sumar más de 24h en la caja de horas si es necesario)
+                        // Cálculo de tiempo
                         const hours = Math.floor(distance / (1000 * 60 * 60));
                         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
