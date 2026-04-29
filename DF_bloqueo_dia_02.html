@@ -11,54 +11,58 @@
     <title>Sincronizando / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ESTÉTICA DE RELIQUIA BLOQUEADA V7.0 */
+        /* 🚨 ESTÉTICA ARQUEOLÓGICA V7.1 */
         html, body { 
             height: auto; 
             min-height: 100%; 
             margin: 0; 
-            background-color: #ffffff; 
+            background-color: #ffffff;
+            font-family: 'Lexend', sans-serif; /* Asegurando la tipografía del sistema */
         }
         
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Safe area superior (sin logo, pero necesitamos aire) */
             padding: 80px 0 0 0 !important; 
         }
 
-        /* Imagen del Candado Arqueológico */
+        /* 🔒 EL CANDADO: Proporciones idénticas al hacha de principios */
         .relic-lock-img {
-            width: 160px; /* Ajustar según diseño de la imagen */
+            width: 100%; /* Ocupa el ancho total del contenedor como el hacha */
+            max-width: 450px; /* Límite para que en PC no sea gigante */
             height: auto;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             display: block;
-            opacity: 0.9;
-            /* Pequeña animación de respiración para que se sienta "activa" */
+            opacity: 0.95;
             animation: relicPulse 3s ease-in-out infinite;
         }
 
         @keyframes relicPulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.03); opacity: 1; }
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.02); opacity: 1; }
         }
 
-        /* Texto breve antes del timer - JUSTIFICADO A LA IZQUIERDA */
-        .instruction-text {
+        /* Bloque de texto justificado a la izquierda */
+        .instruction-card {
             width: 100%;
             text-align: left !important;
-            font-size: 14px;
-            color: #666;
-            line-height: 1.5;
-            margin-bottom: 10px; /* Pegado al timer */
-            padding: 0 5px; /* Pequeño ajuste para alinear con las cajas */
+            margin-bottom: 5px;
         }
 
-        /* TEMPORIZADOR HORIZONTAL (Estilo Reporte) */
+        .instruction-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* TIMER ESTILO REPORTE (Fuera de la tarjeta) */
         .stats-container {
             display: flex !important; flex-direction: row !important;
             gap: 10px; width: 100%; 
-            margin-bottom: 35px; /* Separación del botón */
+            margin-top: 25px;
+            margin-bottom: 35px;
         }
 
         .stat-box {
@@ -70,7 +74,6 @@
         .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
         .stat-label { font-size: 9px; font-weight: 700; color: #878787; margin-top: 8px; display: block; text-transform: uppercase; }
 
-        /* Animación para el botón negro cuando el tiempo acaba */
         @keyframes pulseReady {
             0%, 100% { background-color: #333; }
             50% { background-color: #000; transform: scale(1.02); }
@@ -93,9 +96,9 @@
         
         <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado">
         
-        <p class="indicator">Sincronización de Protocolo</p>
-        
-        <p class="instruction-text">La superficie opone resistencia operativa. La siguiente ruta será liberada en:</p>
+        <div class="instruction-card">
+            <p class="instruction-text">La superficie opone resistencia operativa. La siguiente ruta será liberada en:</p>
+        </div>
 
         <div id="countdown" class="stats-container">
             <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
@@ -112,12 +115,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 🚨 CONFIGURACIÓN DE TU ARCHIVO ACTUAL
-        const archivoActual = "04_DF_imagen.html"; // <-- NOMBRE REAL DEL ARCHIVO
+        const archivoActual = "04_DF_imagen.html"; 
         const archivoHub = "09_DF_hub.html";
 
-        // 🕒 CONFIGURACIÓN DEL TEMPORIZADOR
-        // Formato: "Mes Día, Año Hora:Minutos:Segundos"
+        // CONFIGURAR FECHA AQUÍ
         const countDownDate = new Date("Apr 30, 2026 10:00:00").getTime(); 
 
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
@@ -136,26 +137,20 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
-                
-                // ACTUALIZA EL GPS
                 userRef.update({ leccion_actual_DF: archivoActual });
-
                 document.getElementById("loading-screen").style.display = "none";
                 document.getElementById("bunker-content").style.display = "flex";
 
-                // MOTOR DEL TEMPORIZADOR
                 const x = setInterval(function() {
                     const now = new Date().getTime();
                     const distance = countDownDate - now;
 
                     if (distance < 0) {
                         clearInterval(x);
-                        // Cuando el tiempo acaba
                         document.getElementById("countdown").style.display = "none";
                         document.querySelector(".instruction-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
                         document.getElementById("btn-actualizar").classList.add("btn-ready");
                     } else {
-                        // Cálculo de tiempo
                         const hours = Math.floor(distance / (1000 * 60 * 60));
                         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
@@ -165,7 +160,6 @@
                         document.getElementById("seg").innerText = seconds.toString().padStart(2, '0');
                     }
                 }, 1000);
-
             } else { window.location.href = "index.html"; }
         });
     </script>
