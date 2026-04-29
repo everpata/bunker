@@ -11,13 +11,12 @@
     <title>Sincronizando / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ESTÉTICA ARQUEOLÓGICA V7.1 */
+        /* 🚨 ESTÉTICA INTEGRAL V7.2 */
         html, body { 
             height: auto; 
             min-height: 100%; 
             margin: 0; 
             background-color: #ffffff;
-            font-family: 'Lexend', sans-serif; /* Asegurando la tipografía del sistema */
         }
         
         body {
@@ -27,10 +26,10 @@
             padding: 80px 0 0 0 !important; 
         }
 
-        /* 🔒 EL CANDADO: Proporciones idénticas al hacha de principios */
+        /* 🔒 EL CANDADO: Proporciones de impacto */
         .relic-lock-img {
-            width: 100%; /* Ocupa el ancho total del contenedor como el hacha */
-            max-width: 450px; /* Límite para que en PC no sea gigante */
+            width: 100%;
+            max-width: 450px;
             height: auto;
             margin-bottom: 35px;
             display: block;
@@ -43,18 +42,10 @@
             50% { transform: scale(1.02); opacity: 1; }
         }
 
-        /* Bloque de texto justificado a la izquierda */
-        .instruction-card {
-            width: 100%;
+        /* Bloque de texto estándar (Izquierda) */
+        .work-area.card {
             text-align: left !important;
-            margin-bottom: 5px;
-        }
-
-        .instruction-text {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-            margin: 0;
+            width: 100%;
         }
 
         /* TIMER ESTILO REPORTE (Fuera de la tarjeta) */
@@ -96,8 +87,8 @@
         
         <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado">
         
-        <div class="instruction-card">
-            <p class="instruction-text">La superficie opone resistencia operativa. La siguiente ruta será liberada en:</p>
+        <div class="work-area card">
+            <p class="text-base" id="status-text">La superficie opone resistencia operativa. La siguiente ruta será liberada en:</p>
         </div>
 
         <div id="countdown" class="stats-container">
@@ -118,7 +109,7 @@
         const archivoActual = "04_DF_imagen.html"; 
         const archivoHub = "09_DF_hub.html";
 
-        // CONFIGURAR FECHA AQUÍ
+        // CONFIGURACIÓN DE FECHA (Mañana 10:00 AM)
         const countDownDate = new Date("Apr 30, 2026 10:00:00").getTime(); 
 
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
@@ -148,7 +139,7 @@
                     if (distance < 0) {
                         clearInterval(x);
                         document.getElementById("countdown").style.display = "none";
-                        document.querySelector(".instruction-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
+                        document.getElementById("status-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
                         document.getElementById("btn-actualizar").classList.add("btn-ready");
                     } else {
                         const hours = Math.floor(distance / (1000 * 60 * 60));
