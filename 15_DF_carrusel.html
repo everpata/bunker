@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Evidencia / Deepfall (T01)</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
+        
+        /* --- ESTRUCTURA DEL CARRUSEL --- */
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .carousel-container {
+            display: flex;
+            overflow-x: auto;
+            /* El 'scroll-snap' crea el efecto imán al deslizar */
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Oculta la barra en Firefox */
+            -ms-overflow-style: none; /* Oculta la barra en IE/Edge */
+            gap: 15px; /* Espacio entre tarjetas */
+            padding-bottom: 10px;
+        }
+
+        /* Oculta la barra de scroll en Chrome/Safari/iOS */
+        .carousel-container::-webkit-scrollbar {
+            display: none; 
+        }
+
+        .carousel-slide {
+            flex: 0 0 100%; /* Cada tarjeta ocupa el 100% del ancho visible */
+            scroll-snap-align: center; /* Centra la tarjeta al soltar el dedo */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f5f5f7;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .carousel-img {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+
+        .carousel-text {
+            font-size: 14px;
+            color: #333;
+            text-align: left;
+            width: 100%;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .swipe-indicator {
+            font-size: 10px;
+            color: #878787;
+            text-align: center;
+            margin-top: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 700;
+            animation: pulseText 2s infinite;
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        /* --------------------------------- */
+
+        /* Botón Rojo Elástico (AVANZAR AL TRAMO 02) */
+        .btn-status-alert {
+            display: none; 
+            background-color: #fce8e6 !important;
+            color: #d93025 !important;
+            border: 1px solid #d93025 !important;
+            font-weight: 700 !important;
+            width: 100%;
+            padding: 20px;
+            border-radius: 16px; 
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
+            animation: btnElastic 4s ease-in-out infinite;
+            text-align: center;
+            margin-top: 35px !important;
+        }
+
+        @keyframes btnElastic {
+            0% { padding-top: 18px; padding-bottom: 18px; }
+            50% { padding-top: 24px; padding-bottom: 24px; }
+            100% { padding-top: 18px; padding-bottom: 18px; }
+        }
+
+        /* Ocultar botones inicialmente */
+        #btn-continuar, #btn-alerta-reporte, #btn-volver-hub { display: none; }
+
+        #loading-screen {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; width: 100vw; background: #fff;
+            position: fixed; top: 0; left: 0; z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <img src="DF.png" class="loading-logo" alt="Cargando...">
+    </div>
+
+    <div class="container" id="bunker-content" style="display: none;">
+        <div class="logo"><img src="DF.png"></div>
+        <p class="indicator">Tramo 01 / Máscaras</p>
+        <div class="progress-container"><div class="progress-fill" style="width: 50%;"></div></div>
+        
+        <h1 class="title">No solo comencé a vivir de mi propósito...</h1>
+        <p class="description">Comencé a vivir <b>en propósito</b></p>
+        
+        <div class="carousel-wrapper">
+            <div class="carousel-container">
+                
+                <div class="carousel-slide">
+                    <img src="conferencia.webp" class="carousel-img" alt="El Perfeccionista">
+                    <p class="carousel-text"><b>1. Impacto:</b> El perfeccionista dejó de ser el protagonista, ahora mi <b>anarquista</b> era el responsable de llevar a territorio las revelaciones que mi monje producía.</p>
+                </div>
+
+                <div class="carousel-slide">
+                    <img src="familia.webp" class="carousel-img" alt="El Ocupado">
+                    <p class="carousel-text"><b>2. Familia:</b> Si no vas a compartir tu crecimiento con los tuyos y a contagiar expansión ¿qué estás haciendo con tu vida?.</p>
+                </div>
+
+                <div class="carousel-slide">
+                    <img src="salud.webp" class="carousel-img" alt="El Intelectual">
+                    <p class="carousel-text"><b>3. Salud:</b> Honrar al templo (cuerpo) en familia y crear referencias de alto calibre para tu hijo, no tiene precio.</p>
+                </div>
+              
+              <div class="carousel-slide">
+                    <img src="perro.webp" class="carousel-img" alt="El Intelectual">
+                    <p class="carousel-text"><b>3. Contexto:</b> Que todo aquel que esté a tu lado, no le quede más remedio que ponerse al nivel.</p>
+                </div>
+
+            </div>
+            
+            <div class="swipe-indicator">← Desliza para escanear →</div>
+        </div>
+        <button id="btn-continuar" class="btn-mando" style="margin-top: 25px;">Continuar →</button>
+        <button id="btn-alerta-reporte" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
+        <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const archivoActual = "15_DF_carrusel.html"; 
+        const archivoSiguiente = "16_DF_video.html"; 
+        const archivoHub = "09_DF_hub.html"; 
+        const archivoReporte = "08_DF_reportefinal.html";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
+            authDomain: "deepfall-b3601.firebaseapp.com", 
+            projectId: "deepfall-b3601", 
+            storageBucket: "deepfall-b3601.firebasestorage.app", 
+            messagingSenderId: "207043962011", 
+            appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.getElementById("btn-continuar").onclick = () => { window.location.href = archivoSiguiente; };
+        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = archivoReporte; };
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userRef = db.collection("usuarios").doc(user.uid);
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+
+                        const btnNegro = document.getElementById("btn-continuar");
+                        const btnRojo = document.getElementById("btn-alerta-reporte");
+                        const btnHub = document.getElementById("btn-volver-hub");
+
+                        if (data.estado === "Finalizado_DF" && !data.access_DM) {
+                            btnNegro.style.display = "none";
+                            btnRojo.style.display = "block";
+                            btnHub.style.display = "none";
+                        } 
+                        else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
+                            btnNegro.style.display = "block";
+                            btnRojo.style.display = "none";
+                            btnHub.style.display = "block";
+                        }
+                        else {
+                            btnNegro.style.display = "block";
+                            btnRojo.style.display = "none";
+                            btnHub.style.display = "none";
+                        }
+
+                        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                            userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                        }
+
+                    } else { window.location.href = "index.html"; }
+                });
+            } else { window.location.href = "index.html"; }
+        });
+    </script>
+</body>
+</html>
