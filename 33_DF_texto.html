@@ -11,7 +11,7 @@
     <title>Sincronizando / Deepfall</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 🚨 ESTÉTICA INTEGRAL V7.3 */
+        /* 🚨 ESTÉTICA INTEGRAL V7.4 - BLINDADA */
         html, body { 
             height: auto; 
             min-height: 100%; 
@@ -26,7 +26,6 @@
             padding: 0px 0 0 0 !important; 
         }
 
-        /* 🔒 EL CANDADO: Proporciones de impacto */
         .relic-lock-img {
             width: 100%;
             max-width: 450px;
@@ -42,15 +41,13 @@
             50% { transform: scale(1.02); opacity: 1; }
         }
 
-        /* TEXTO SIN CAJA (Justificado a la izquierda) */
         #status-text {
             width: 100%;
             text-align: center !important;
             margin: 0;
-            padding: 0 5px; /* Pequeño margen para alinear con las cajas */
+            padding: 0 5px;
         }
 
-        /* TIMER ESTILO REPORTE */
         .stats-container {
             display: flex !important; flex-direction: row !important;
             gap: 10px; width: 100%; 
@@ -66,6 +63,12 @@
 
         .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
         .stat-label { font-size: 9px; font-weight: 700; color: #878787; margin-top: 8px; display: block; text-transform: uppercase; }
+
+        /* OCULTAR EL HUB POR DEFECTO PARA NO GRADUADOS */
+        #btn-volver-hub { 
+            display: none; 
+            margin-top: 20px; 
+        }
 
         @keyframes pulseReady {
             0%, 100% { background-color: #333; }
@@ -98,7 +101,7 @@
         </div>
 
         <button class="btn-mando" id="btn-actualizar" onclick="window.location.reload(true);">Actualizar Protocolo →</button>
-        <button id="btn-volver-hub" class="btn-ghost" style="margin-top: 20px;">← Volver al Hub</button>
+        <button id="btn-volver-hub" class="btn-ghost">← Volver al Hub</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -108,11 +111,7 @@
     <script>
         const archivoActual = "33_DF_texto.html"; 
         const archivoHub = "DF_hub.html";
-
-        // CONFIGURACIÓN DE FECHA (Cambia según necesites)
         const countDownDate = new Date("May 1, 2026 14:00:00").getTime(); 
-
-        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
@@ -125,32 +124,57 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
+        // Orden de navegación
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
+
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
-                userRef.update({ leccion_actual_DF: archivoActual });
-                document.getElementById("loading-screen").style.display = "none";
-                document.getElementById("bunker-content").style.display = "flex";
+                
+                // 🔍 Descargamos datos para verificar el estado del usuario
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const btnHub = document.getElementById("btn-volver-hub");
 
-                const x = setInterval(function() {
-                    const now = new Date().getTime();
-                    const distance = countDownDate - now;
+                        // GPS: Actualizamos posición
+                        userRef.update({ leccion_actual_DF: archivoActual });
 
-                    if (distance < 0) {
-                        clearInterval(x);
-                        document.getElementById("countdown").style.display = "none";
-                        document.getElementById("status-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
-                        document.getElementById("btn-actualizar").classList.add("btn-ready");
-                    } else {
-                        const hours = Math.floor(distance / (1000 * 60 * 60));
-                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        // 🛡️ FILTRO TÁCTICO PARA GRADUADOS
+                        if (data.estado === "Finalizado_DF" || data.access_DM === true || data.access_DQ === true) {
+                            btnHub.style.display = "block"; // Solo graduados pueden salir al Hub
+                        } else {
+                            btnHub.style.display = "none";  // Novatos se quedan en el candado
+                        }
 
-                        document.getElementById("hrs").innerText = hours.toString().padStart(2, '0');
-                        document.getElementById("min").innerText = minutes.toString().padStart(2, '0');
-                        document.getElementById("seg").innerText = seconds.toString().padStart(2, '0');
-                    }
-                }, 1000);
+                        // Quitamos carga
+                        document.getElementById("loading-screen").style.display = "none";
+                        document.getElementById("bunker-content").style.display = "flex";
+
+                        // --- RELOJ DE CUENTA REGRESIVA ---
+                        const x = setInterval(function() {
+                            const now = new Date().getTime();
+                            const distance = countDownDate - now;
+
+                            if (distance < 0) {
+                                clearInterval(x);
+                                document.getElementById("countdown").style.display = "none";
+                                document.getElementById("status-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
+                                document.getElementById("btn-actualizar").classList.add("btn-ready");
+                                btnHub.style.display = "none"; // Opcional: Ocultamos Hub cuando ya está listo el lanzamiento
+                            } else {
+                                const hours = Math.floor(distance / (1000 * 60 * 60));
+                                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                                document.getElementById("hrs").innerText = hours.toString().padStart(2, '0');
+                                document.getElementById("min").innerText = minutes.toString().padStart(2, '0');
+                                document.getElementById("seg").innerText = seconds.toString().padStart(2, '0');
+                            }
+                        }, 1000);
+
+                    } else { window.location.href = "index.html"; }
+                });
             } else { window.location.href = "index.html"; }
         });
     </script>
