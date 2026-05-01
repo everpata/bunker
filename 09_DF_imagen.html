@@ -17,7 +17,7 @@
             font-weight: 700 !important;
             width: 100%;
             padding: 20px;
-            border-radius: 16px; /* Silueta 16px */
+            border-radius: 16px; 
             font-size: 16px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);
@@ -107,29 +107,30 @@
                         const btnHub = document.getElementById("btn-volver-hub");
 
                         // 🧠 CEREBRO DE NAVEGACIÓN (Lógica DF)
-                        
                         if (data.estado === "Finalizado_DF" && !data.access_DM) {
-                            // CASO: TERMINÓ DF PERO NO TIENE DM (Botón Rojo, Sin Hub)
-                            btnNegro.style.display = "none";
+                            btnNegro.style.display = "block"; // Permitimos navegación en repaso
                             btnRojo.style.display = "block";
-                            btnHub.style.display = "none";
+                            btnHub.style.display = "block"; // Habilitamos Hub para graduados
                         } 
                         else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
-                            // CASO: TIENE ACCESO A DM O SUPERIOR (Hub Habilitado)
                             btnNegro.style.display = "block";
                             btnRojo.style.display = "none";
                             btnHub.style.display = "block";
                         }
                         else {
-                            // CASO: EXPLORADOR (Haciendo DF por primera vez)
                             btnNegro.style.display = "block";
                             btnRojo.style.display = "none";
                             btnHub.style.display = "none";
                         }
 
-                        // GPS: Solo se actualiza si no es modo repaso
+                        // 🛰️ GPS MATEMÁTICO: Blindaje de Retroceso
+                        const numActual = parseInt(archivoActual.split('_')[0]); // 9
+                        const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.split('_')[0]) : -1;
+
                         if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                            userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            if (numActual > numGuardado) {
+                                userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            }
                         }
 
                     } else { window.location.href = "index.html"; }
