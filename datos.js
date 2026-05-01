@@ -202,7 +202,7 @@ const DEEPFALL_DATA = {
 
     "52": {
         "tipo": "candado",
-        "fechaLiberacion": "May 1, 2026 18:30:00", // Cambia la fecha para el inicio del Día 3
+        "fechaLiberacion": "May 2, 2026 12:30:00", // Cambia la fecha para el inicio del Día 3
         "siguienteId": "53" // A dónde los enviará cuando el tiempo llegue a 0
     }
 };
