@@ -189,7 +189,7 @@ const DEEPFALL_DATA = {
         "siguienteId": "51"
     },
 
-    "51": {
+  "51": {
         "tipo": "texto",
         "indicador": "Día 02 / Filtro",
         "progreso": "100%",
@@ -197,17 +197,12 @@ const DEEPFALL_DATA = {
         "descripcion": "La estructura de filtro elevado para el hombre profundo.",
         "contenido": `<p class="text-base">Usa esta estructura de coherencia: <i>"me deleito con personas que <b>[cualidad de ella]</b> y tienen apertura a <b>[cualidad robusta de ti]</b>"</i>. Por ejemplo: "me deleito con personas curiosas y veo eso en ti, creo que conecta con mi capacidad de <b>saber escuchar</b>. Imagina lo segura que te sentirías con un hombre capaz de sostener tu silencio". Has ganado el juego porque ahora tú eres el que selecciona.</p>`,
         "btnTexto": "Sellar Tramo 02 →",
-        // AQUÍ ESTÁ LA MAGIA: Al terminar la 51, los manda al candado del día 3
-        "siguienteId": "52_DF_candado.html" 
+        "siguienteId": "52" 
     },
 
     "52": {
         "tipo": "candado",
-        "indicador": "Sistema de Seguridad",
-        "progreso": "100%",
-        "titulo": "Protocolo Bloqueado",
-        "descripcion": "La siguiente ruta está siendo encriptada.",
-        "fechaLiberacion": "May 2, 2026 10:00:00", // La fecha en la que se abre el Día 3
-        "siguienteId": "53" // A dónde irá cuando el tiempo llegue a cero
+        "fechaLiberacion": "May 1, 2026 18:30:00", // Cambia la fecha para el inicio del Día 3
+        "siguienteId": "53" // A dónde los enviará cuando el tiempo llegue a 0
     }
 };
