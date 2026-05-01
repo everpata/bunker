@@ -84,7 +84,7 @@ const DEEPFALL_DATA = {
         "progreso": "35%",
         "titulo": "La evidencia: desde dónde se dice.",
         "descripcion": "Observa el lenguaje, la tensión y la resolución.",
-        "url": "https://player.mediadelivery.net/embed/649829/TU_VIDEO_ID_AQUÍ", 
+        "url": "https://player.mediadelivery.net/embed/649829/1d9c53ab-54e0-4abc-8b7e-5538c44fdc03", 
         "postTexto": "<b>No importa lo que dices, sino desde dónde lo dices.</b> Si te expresas desde el fondo es inevitable que los demás reaccionen a tu favor. Fíjate que incluso estuvieron dispuestas a grabar, nadie que se sienta acosado permite una difusión masiva de su imagen.",
         "btnTexto": "Analizar profundidad →",
         "siguienteId": "42"
