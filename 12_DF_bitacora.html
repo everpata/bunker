@@ -8,7 +8,6 @@
     <style>
         /* 🚨 COMPONENTES TÁCTICOS ESPECÍFICOS */
         
-        /* Botón Rojo Elástico (Upsell) */
         .btn-status-alert {
             display: none; 
             background-color: #fce8e6 !important;
@@ -34,8 +33,20 @@
 
         /* Estilo visual para bitácora sellada */
         textarea.locked {
-            color: #b0b0b0;
+            color: #878787;
+            background-color: #f9f9f9;
             cursor: not-allowed;
+            border-color: #e0e0e0;
+        }
+
+        /* ESTILO REGISTRO SELLADO */
+        .btn-disabled {
+            background-color: #f5f5f7 !important;
+            color: #878787 !important;
+            border: 1px solid #e0e0e0 !important;
+            cursor: default !important;
+            box-shadow: none !important;
+            animation: none !important;
         }
 
         /* Ocultar botones inicialmente */
@@ -106,6 +117,7 @@
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
+                        const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
                         
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
@@ -115,44 +127,54 @@
                         const btnRojo = document.getElementById("btn-alerta-reporte");
                         const btnHub = document.getElementById("btn-volver-hub");
 
-                        // 🧠 CEREBRO DE NAVEGACIÓN (Lógica DF)
+                        // 1. 🛡️ ESCUDO DE INTEGRIDAD: ¿Ya existe el registro?
+                        const yaRespondido = data[nombreCampo] && data[nombreCampo].trim() !== "";
 
-                        if (data.estado === "Finalizado_DF" && !data.access_DM) {
-                            // CASO: TERMINÓ DF PERO NO TIENE DM (Sellado + Botón Rojo)
+                        if (yaRespondido) {
+                            areaTexto.value = data[nombreCampo];
                             areaTexto.readOnly = true;
                             areaTexto.classList.add("locked");
-                            btnNegro.style.display = "none";
+                            btnNegro.innerText = "REGISTRO SELLADO ✓";
+                            btnNegro.classList.add("btn-disabled");
+                        }
+
+                        // 2. 🧠 LÓGICA DE NAVEGACIÓN
+                        if (data.estado === "Finalizado_DF" && !data.access_DM) {
+                            btnNegro.style.display = yaRespondido ? "none" : "block"; 
                             btnRojo.style.display = "block";
                             btnHub.style.display = "none";
                         } 
                         else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
-                            // CASO: VETERANO (Tiene acceso a DM o superior) -> Sellado + Continuar + Hub
-                            areaTexto.readOnly = true;
-                            areaTexto.classList.add("locked");
-                            btnNegro.innerText = "Continuar →";
                             btnNegro.style.display = "block";
                             btnRojo.style.display = "none";
                             btnHub.style.display = "block";
-                            btnNegro.onclick = () => { window.location.href = archivoSiguiente; };
+                            if (yaRespondido) btnNegro.innerText = "Continuar →";
                         }
                         else {
-                            // CASO: EXPLORADOR (Primera vez)
                             btnNegro.style.display = "block";
                             btnRojo.style.display = "none";
                             btnHub.style.display = "none";
-                            btnNegro.onclick = () => { ejecutarGuardado(userRef, areaTexto, btnNegro); };
                         }
 
-                        // GPS (Solo primera vuelta)
+                        // Acción del botón principal
+                        btnNegro.onclick = () => {
+                            if (yaRespondido) {
+                                window.location.href = archivoSiguiente;
+                            } else {
+                                ejecutarGuardado(userRef, areaTexto, btnNegro);
+                            }
+                        };
+
+                        // 3. 🛰️ GPS MATEMÁTICO (Blindaje de retroceso)
+                        const numActual = parseInt(archivoActual.split('_')[0]); 
+                        const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.split('_')[0]) : 0;
+
                         if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                            userRef.update({ leccion_actual_DF: archivoActual });
+                            if (numActual > numGuardado) {
+                                userRef.update({ leccion_actual_DF: archivoActual });
+                            }
                         }
                         
-                        // Recuperación de memoria
-                        const campoBitacora = "bitacora_" + archivoActual.replace(/\./g, "_");
-                        if (data[campoBitacora]) {
-                            areaTexto.value = data[campoBitacora];
-                        }
                     } else { window.location.href = archivoExpulsion; }
                 });
             } else { window.location.href = archivoExpulsion; }
@@ -167,7 +189,11 @@
             btn.innerText = "Sincronizando...";
             btn.disabled = true;
             const nombreCampo = "bitacora_" + archivoActual.replace(/\./g, "_");
-            userRef.update({ [nombreCampo]: textoUsuario }).then(() => {
+            
+            userRef.update({ 
+                [nombreCampo]: textoUsuario,
+                leccion_actual_DF: archivoSiguiente // Avanzamos el GPS al guardar
+            }).then(() => {
                 window.location.href = archivoSiguiente;
             });
         }
