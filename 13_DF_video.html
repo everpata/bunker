@@ -57,7 +57,7 @@
         </div>
         
         <h1 class="title">Lo que me sucedió cuando me libré del lastre.</h1>
-        <p class="description">Me besé con esta chica sin siquiera saber cómo se llamaba, fruto de experimetarme sin restricciones.</p>
+        <p class="description">Me besé con esta chica sin siquiera saber cómo se llamaba, fruto de experimentarme sin restricciones.</p>
         
         <div class="work-area">
             <div class="video-container">
@@ -116,27 +116,29 @@
                         // 🧠 CEREBRO DE NAVEGACIÓN (Lógica DF)
                         
                         if (data.estado === "Finalizado_DF" && !data.access_DM) {
-                            // MODO REPASO LIMITADO (Terminó DF pero no pagó DM)
-                            btnNegro.style.display = "none";
+                            btnNegro.style.display = "block"; // Habilitado para repaso
                             btnRojo.style.display = "block";
-                            btnHub.style.display = "none"; 
+                            btnHub.style.display = "block"; // Habilitado para navegación fluida
                         } 
                         else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
-                            // MODO VETERANO (Ya tiene acceso a la DM o superior)
                             btnNegro.style.display = "block";
                             btnRojo.style.display = "none";
                             btnHub.style.display = "block";
                         }
                         else {
-                            // MODO EXPLORADOR (Primera vez)
                             btnNegro.style.display = "block";
                             btnRojo.style.display = "none";
                             btnHub.style.display = "none";
                         }
 
-                        // GPS DF
+                        // 🛰️ GPS MATEMÁTICO (Blindaje de Retroceso)
+                        const numActual = parseInt(archivoActual.split('_')[0]); // 13
+                        const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.split('_')[0]) : 0;
+
                         if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                            userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            if (numActual > numGuardado) {
+                                userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            }
                         }
 
                     } else { window.location.href = archivoExpulsion; }
