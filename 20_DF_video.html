@@ -11,8 +11,8 @@
         /* Caja gris para el texto post-video (Sin borde) */
         .post-video-box {
             background-color: #f5f5f7;
-            border: none; /* Borde oscuro eliminado */
-            border-radius: 16px; /* Radio estricto de 16px */
+            border: none; 
+            border-radius: 16px; 
             padding: 20px;
             width: 100%;
             margin-top: 25px;
@@ -23,13 +23,13 @@
 
         .post-video-box p {
             font-size: 16px;
-            color: #878787; /* Color de las descripciones del búnker */
+            color: #878787; 
             line-height: 1.6;
             margin: 0;
         }
 
         .post-video-box b {
-            color: #333333; /* Negritas con realce de alto contraste */
+            color: #333333; 
         }
 
         /* Botón Rojo Elástico (Upsell al Tramo 02) */
@@ -144,9 +144,8 @@
                         const btnHub = document.getElementById("btn-volver-hub");
 
                         // 🧠 CEREBRO DE NAVEGACIÓN (Lógica DF)
-                        
                         if (data.estado === "Finalizado_DF" && !data.access_DM) {
-                            btnNegro.style.display = "none";
+                            btnNegro.style.display = "block"; // Permitimos navegación para repaso
                             btnRojo.style.display = "block";
                             btnHub.style.display = "none"; 
                         } 
@@ -161,9 +160,15 @@
                             btnHub.style.display = "none";
                         }
 
-                        // GPS DF
+                        // 🛰️ GPS MATEMÁTICO (Blindaje de Retroceso)
+                        const numActual = parseInt(archivoActual.split('_')[0]); // 20
+                        const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.split('_')[0]) : 0;
+
                         if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                            userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            // Solo actualiza si el usuario está avanzando
+                            if (numActual > numGuardado) {
+                                userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            }
                         }
 
                     } else { window.location.href = archivoExpulsion; }
