@@ -196,7 +196,7 @@ const DEEPFALL_DATA = {
         "titulo": "La combinación letal.",
         "descripcion": "La estructura de filtro elevado para el hombre profundo.",
         "contenido": `<p class="text-base">Usa esta estructura de coherencia: <i>"me deleito con personas que <b>[cualidad de ella]</b> y tienen apertura a <b>[cualidad robusta de ti]</b>"</i>. Por ejemplo: "me deleito con personas curiosas y veo eso en ti, creo que conecta con mi capacidad de <b>saber escuchar</b>. Imagina lo segura que te sentirías con un hombre capaz de sostener tu silencio". Has ganado el juego porque ahora tú eres el que selecciona.</p>`,
-        "btnTexto": "Sellar Tramo 02 →",
+        "btnTexto": "Sellar jornada →",
         "siguienteId": "52" 
     },
 
