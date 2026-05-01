@@ -112,9 +112,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        const archivoActual = "33_DF_texto.html"; 
-        const archivoHub = "09_DF_hub.html"; // Sincronizado con el resto del proyecto
+        const archivoActual = "33_DF_texto.html"; // <-- Ajusta el nombre de tu archivo candado aquí
+        const archivoHub = "09_DF_hub.html";
+
+        // CONFIGURACIÓN DE FECHA (Día 2)
         const countDownDate = new Date("May 1, 2026 18:30:00").getTime(); 
+
+        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
@@ -127,63 +131,38 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
-        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
-
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
-                
-                userRef.get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        const btnHub = document.getElementById("btn-volver-hub");
+                userRef.update({ leccion_actual_DF: archivoActual });
+                document.getElementById("loading-screen").style.display = "none";
+                document.getElementById("bunker-content").style.display = "flex";
 
-                        // 🛰️ GPS MATEMÁTICO (Blindaje de Retroceso)
-                        const numActual = parseInt(archivoActual.split('_')[0]); // 33
-                        const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.split('_')[0]) : 0;
+                const x = setInterval(function() {
+                    const now = new Date().getTime();
+                    const distance = countDownDate - now;
 
-                        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                            if (numActual > numGuardado) {
-                                userRef.update({ leccion_actual_DF: archivoActual });
-                            }
-                        }
+                    if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementById("countdown").style.display = "none";
+                        document.getElementById("status-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>El Tramo 02 está listo para tu inmersión.";
+                        
+                        // MAGIA AQUÍ: El botón ahora redirige a la lección 34 del nuevo motor
+                        let btn = document.getElementById("btn-actualizar");
+                        btn.classList.add("btn-ready");
+                        btn.innerText = "Ingresar al Tramo 02 →";
+                        btn.onclick = function() { window.location.href = "bunker.html?id=34"; };
 
-                        // 🛡️ LÓGICA DE NAVEGACIÓN VETERANA
-                        if (data.estado === "Finalizado_DF" || data.access_DM === true || data.access_DQ === true) {
-                            btnHub.style.display = "block"; 
-                        } else {
-                            btnHub.style.display = "none";
-                        }
+                    } else {
+                        const hours = Math.floor(distance / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                        document.getElementById("loading-screen").style.display = "none";
-                        document.getElementById("bunker-content").style.display = "flex";
-
-                        // --- RELOJ DE CUENTA REGRESIVA ---
-                        const x = setInterval(function() {
-                            const now = new Date().getTime();
-                            const distance = countDownDate - now;
-
-                            if (distance < 0) {
-                                clearInterval(x);
-                                document.getElementById("countdown").style.display = "none";
-                                document.getElementById("status-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
-                                document.getElementById("btn-actualizar").classList.add("btn-ready");
-                                // Si ya se liberó, los veteranos pueden usar el Hub o esperar la actualización
-                            } else {
-                                const hours = Math.floor(distance / (1000 * 60 * 60));
-                                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                                document.getElementById("hrs").innerText = hours.toString().padStart(2, '0');
-                                document.getElementById("min").innerText = minutes.toString().padStart(2, '0');
-                                document.getElementById("seg").innerText = seconds.toString().padStart(2, '0');
-                            }
-                        }, 1000);
-
-                    } else { window.location.href = "index.html"; }
-                });
+                        document.getElementById("hrs").innerText = hours.toString().padStart(2, '0');
+                        document.getElementById("min").innerText = minutes.toString().padStart(2, '0');
+                        document.getElementById("seg").innerText = seconds.toString().padStart(2, '0');
+                    }
+                }, 1000);
             } else { window.location.href = "index.html"; }
         });
     </script>
-</body>
-</html>
