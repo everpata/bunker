@@ -23,11 +23,10 @@
             -ms-overflow-style: none; 
             gap: 15px; 
             padding-bottom: 10px;
-            align-items: flex-start; /* Permite que las imágenes fluyan desde arriba sin estirarse */
-            cursor: grab; /* Cursor de mano abierta en PC */
+            align-items: flex-start;
+            cursor: grab;
         }
 
-        /* Cursor de mano cerrada al arrastrar en PC */
         .carousel-container:active {
             cursor: grabbing;
         }
@@ -53,18 +52,16 @@
             pointer-events: none; 
         }
 
-        /* Texto liberado de la caja, con color de descripción */
         .carousel-text {
             font-size: 16px;
-            color: #878787; /* Color de las descripciones */
+            color: #878787;
             text-align: left;
             width: 100%;
             line-height: 1.6;
             margin: 0;
-            padding: 0 5px; /* Pequeño margen para alinear visualmente con la imagen */
+            padding: 0 5px;
         }
 
-        /* Si quieres que los títulos en negrita resalten más, los dejamos en #333 */
         .carousel-text b {
             color: #333;
         }
@@ -84,7 +81,6 @@
             0%, 100% { opacity: 0.5; }
             50% { opacity: 1; }
         }
-        /* --------------------------------- */
 
         /* Botón Rojo Elástico (AVANZAR AL TRAMO 02) */
         .btn-status-alert {
@@ -175,6 +171,7 @@
         const archivoSiguiente = "16_DF_video.html"; 
         const archivoHub = "09_DF_hub.html"; 
         const archivoReporte = "08_DF_reportefinal.html";
+        const archivoExpulsion = "index.html";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
@@ -206,10 +203,11 @@
                         const btnRojo = document.getElementById("btn-alerta-reporte");
                         const btnHub = document.getElementById("btn-volver-hub");
 
+                        // 🧠 CEREBRO DE NAVEGACIÓN
                         if (data.estado === "Finalizado_DF" && !data.access_DM) {
-                            btnNegro.style.display = "none";
+                            btnNegro.style.display = "block"; // Permitimos navegación en repaso
                             btnRojo.style.display = "block";
-                            btnHub.style.display = "none";
+                            btnHub.style.display = "block"; // Graduado puede volver al hub
                         } 
                         else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
                             btnNegro.style.display = "block";
@@ -222,11 +220,17 @@
                             btnHub.style.display = "none";
                         }
 
+                        // 🛰️ GPS MATEMÁTICO (Blindaje de Retroceso)
+                        const numActual = parseInt(archivoActual.split('_')[0]); // 15
+                        const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.split('_')[0]) : 0;
+
                         if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                            userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            if (numActual > numGuardado) {
+                                userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            }
                         }
 
-                    } else { window.location.href = "index.html"; }
+                    } else { window.location.href = archivoExpulsion; }
                 });
             } else { window.location.href = "index.html"; }
         });
