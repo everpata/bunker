@@ -199,5 +199,15 @@ const DEEPFALL_DATA = {
         "btnTexto": "Sellar Tramo 02 →",
         // AQUÍ ESTÁ LA MAGIA: Al terminar la 51, los manda al candado del día 3
         "siguienteId": "52_DF_candado.html" 
+    },
+
+    "52": {
+        "tipo": "candado",
+        "indicador": "Sistema de Seguridad",
+        "progreso": "100%",
+        "titulo": "Protocolo Bloqueado",
+        "descripcion": "La siguiente ruta está siendo encriptada.",
+        "fechaLiberacion": "May 2, 2026 10:00:00", // La fecha en la que se abre el Día 3
+        "siguienteId": "53" // A dónde irá cuando el tiempo llegue a cero
     }
 };
