@@ -117,9 +117,9 @@
                         
                         if (data.estado === "Finalizado_DF" && !data.access_DM) {
                             // MODO REPASO LIMITADO (Terminó DF pero no pagó DM)
-                            btnNegro.style.display = "none";
+                            btnNegro.style.display = "block"; // Se lo dejo activo para que pueda navegar al siguiente video en modo repaso
                             btnRojo.style.display = "block";
-                            btnHub.style.display = "none"; 
+                            btnHub.style.display = "block";   // Habilitado para que no quede atrapado
                         } 
                         else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
                             // MODO VETERANO (Ya tiene acceso a la DM o superior)
@@ -134,9 +134,15 @@
                             btnHub.style.display = "none";
                         }
 
-                        // GPS DF
+                        // 🛰️ GPS MATEMÁTICO
                         if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
-                            userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            const numActual = parseInt(archivoActual.split('_')[0]); // Saca el 1
+                            const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.split('_')[0]) : 0;
+                            
+                            // Solo actualiza si está avanzando hacia territorio desconocido
+                            if (numActual > numGuardado) {
+                                userRef.update({ leccion_actual_DF: archivoActual }).catch(err => console.log(err));
+                            }
                         }
 
                     } else { window.location.href = archivoExpulsion; }
