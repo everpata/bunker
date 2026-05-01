@@ -45,7 +45,8 @@
             width: 100%;
             text-align: center !important;
             margin: 0;
-            padding: 0 5px;
+            padding: 0 15px;
+            line-height: 1.6;
         }
 
         .stats-container {
@@ -53,6 +54,8 @@
             gap: 10px; width: 100%; 
             margin-top: 25px;
             margin-bottom: 35px;
+            padding: 0 20px;
+            box-sizing: border-box;
         }
 
         .stat-box {
@@ -64,7 +67,7 @@
         .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
         .stat-label { font-size: 9px; font-weight: 700; color: #878787; margin-top: 8px; display: block; text-transform: uppercase; }
 
-        /* OCULTAR EL HUB POR DEFECTO PARA NO GRADUADOS */
+        /* OCULTAR EL HUB POR DEFECTO */
         #btn-volver-hub { 
             display: none; 
             margin-top: 20px; 
@@ -110,7 +113,7 @@
 
     <script>
         const archivoActual = "33_DF_texto.html"; 
-        const archivoHub = "DF_hub.html";
+        const archivoHub = "09_DF_hub.html"; // Sincronizado con el resto del proyecto
         const countDownDate = new Date("May 1, 2026 18:30:00").getTime(); 
 
         const firebaseConfig = { 
@@ -124,30 +127,34 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
-        // Orden de navegación
         document.getElementById("btn-volver-hub").onclick = () => { window.location.href = archivoHub; };
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 const userRef = db.collection("usuarios").doc(user.uid);
                 
-                // 🔍 Descargamos datos para verificar el estado del usuario
                 userRef.get().then((doc) => {
                     if (doc.exists) {
                         const data = doc.data();
                         const btnHub = document.getElementById("btn-volver-hub");
 
-                        // GPS: Actualizamos posición
-                        userRef.update({ leccion_actual_DF: archivoActual });
+                        // 🛰️ GPS MATEMÁTICO (Blindaje de Retroceso)
+                        const numActual = parseInt(archivoActual.split('_')[0]); // 33
+                        const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.split('_')[0]) : 0;
 
-                        // 🛡️ FILTRO TÁCTICO PARA GRADUADOS
-                        if (data.estado === "Finalizado_DF" || data.access_DM === true || data.access_DQ === true) {
-                            btnHub.style.display = "block"; // Solo graduados pueden salir al Hub
-                        } else {
-                            btnHub.style.display = "none";  // Novatos se quedan en el candado
+                        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+                            if (numActual > numGuardado) {
+                                userRef.update({ leccion_actual_DF: archivoActual });
+                            }
                         }
 
-                        // Quitamos carga
+                        // 🛡️ LÓGICA DE NAVEGACIÓN VETERANA
+                        if (data.estado === "Finalizado_DF" || data.access_DM === true || data.access_DQ === true) {
+                            btnHub.style.display = "block"; 
+                        } else {
+                            btnHub.style.display = "none";
+                        }
+
                         document.getElementById("loading-screen").style.display = "none";
                         document.getElementById("bunker-content").style.display = "flex";
 
@@ -161,7 +168,7 @@
                                 document.getElementById("countdown").style.display = "none";
                                 document.getElementById("status-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
                                 document.getElementById("btn-actualizar").classList.add("btn-ready");
-                                btnHub.style.display = "none"; // Opcional: Ocultamos Hub cuando ya está listo el lanzamiento
+                                // Si ya se liberó, los veteranos pueden usar el Hub o esperar la actualización
                             } else {
                                 const hours = Math.floor(distance / (1000 * 60 * 60));
                                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
