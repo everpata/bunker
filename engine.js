@@ -12,10 +12,10 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 const urlParams = new URLSearchParams(window.location.search);
-let leccionId = urlParams.get('id');
+let leccionId = urlParams.get("id");
 let countdownInterval;
 
-function toggleOption(btn) { btn.classList.toggle('selected'); }
+function toggleOption(btn) { btn.classList.toggle("selected"); }
 
 auth.onAuthStateChanged((user) => {
     if (!user) { window.location.href = "index.html"; return; }
@@ -36,6 +36,7 @@ auth.onAuthStateChanged((user) => {
 
         const workArea = document.getElementById("dynamic-work-area");
         const btnMando = document.getElementById("btn-mando");
+        const uiLogo = document.getElementById("ui-logo");
         btnMando.className = "btn-mando"; 
         
         if(countdownInterval) clearInterval(countdownInterval);
@@ -44,13 +45,13 @@ auth.onAuthStateChanged((user) => {
 
         // --- RENDERIZADO VISUAL CONDICIONAL ---
         if (leccionData.tipo === "candado") {
-            // Ocultar cabeceras normales para el candado
+            // Ocultar TODO lo innecesario para el candado
+            uiLogo.style.display = "none";
             document.getElementById("ui-indicator").style.display = "none";
             document.getElementById("ui-progress").parentElement.style.display = "none";
             document.getElementById("ui-title").style.display = "none";
             document.getElementById("ui-desc").style.display = "none";
 
-            // Inyectar estructura HTML exacta proporcionada
             workArea.className = "work-area";
             workArea.innerHTML = `
                 <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado">
@@ -85,13 +86,14 @@ auth.onAuthStateChanged((user) => {
                     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                    document.getElementById("hrs").innerText = hours.toString().padStart(2, '0');
-                    document.getElementById("min").innerText = minutes.toString().padStart(2, '0');
-                    document.getElementById("seg").innerText = seconds.toString().padStart(2, '0');
+                    document.getElementById("hrs").innerText = hours.toString().padStart(2, "0");
+                    document.getElementById("min").innerText = minutes.toString().padStart(2, "0");
+                    document.getElementById("seg").innerText = seconds.toString().padStart(2, "0");
                 }
             }, 1000);
         } else {
-            // Mostrar cabeceras normales
+            // Mostrar logo y elementos para tarjetas normales
+            uiLogo.style.display = "block";
             document.getElementById("ui-indicator").style.display = "block";
             document.getElementById("ui-progress").parentElement.style.display = "block";
             document.getElementById("ui-title").style.display = "block";
@@ -127,13 +129,13 @@ auth.onAuthStateChanged((user) => {
             }
             else if (leccionData.tipo === "quiz") {
                 workArea.className = "work-area";
-                let opcionesHTML = leccionData.opciones.map(op => `<button class="option-btn" onclick="toggleOption(this)">${op}</button>`).join('');
+                let opcionesHTML = leccionData.opciones.map(op => `<button class="option-btn" onclick="toggleOption(this)">${op}</button>`).join("");
                 workArea.innerHTML = opcionesHTML;
                 const campoDB = `quiz_${leccionId}`;
                 if (data[campoDB] && Array.isArray(data[campoDB])) {
                     workArea.classList.add("quiz-locked");
-                    document.querySelectorAll('.option-btn').forEach(btn => {
-                        if(data[campoDB].includes(btn.innerText.trim())) btn.classList.add('selected');
+                    document.querySelectorAll(".option-btn").forEach(btn => {
+                        if(data[campoDB].includes(btn.innerText.trim())) btn.classList.add("selected");
                     });
                     isLocked = true;
                     btnMando.classList.add("btn-disabled");
@@ -141,7 +143,6 @@ auth.onAuthStateChanged((user) => {
                 }
             }
 
-            // Acción del botón para tarjetas normales
             btnMando.onclick = () => {
                 if (isLocked || leccionData.tipo === "texto" || leccionData.tipo === "video") {
                     window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
@@ -156,7 +157,7 @@ auth.onAuthStateChanged((user) => {
                            .then(() => window.location.href = `bunker.html?id=${leccionData.siguienteId}`);
                 }
                 else if (leccionData.tipo === "quiz") {
-                    const seleccionados = Array.from(document.querySelectorAll('.option-btn.selected')).map(b => b.innerText.trim());
+                    const seleccionados = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
                     if(seleccionados.length === 0) { alert("Toma una decisión."); return; }
                     btnMando.innerText = "Sincronizando..."; btnMando.disabled = true;
                     userRef.update({ [`quiz_${leccionId}`]: seleccionados, leccion_actual_DF: leccionData.siguienteId })
@@ -165,7 +166,6 @@ auth.onAuthStateChanged((user) => {
             };
         }
 
-        // --- B. BLINDAJE DE NAVEGACIÓN Y HUB ---
         const btnRojo = document.getElementById("btn-alerta-reporte");
         const btnHub = document.getElementById("btn-volver-hub");
 
@@ -187,7 +187,6 @@ auth.onAuthStateChanged((user) => {
             btnHub.style.display = "none";
         }
 
-        // --- C. GPS MATEMÁTICO INTELIGENTE ---
         const numActual = parseInt(leccionId);
         const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.match(/\d+/)[0]) : 0;
 
