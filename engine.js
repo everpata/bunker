@@ -17,11 +17,6 @@ let countdownInterval;
 
 function toggleOption(btn) { btn.classList.toggle("selected"); }
 
-// 🛡️ SISTEMA DE ALERTA TEMPRANA
-if (typeof DEEPFALL_DATA === "undefined") {
-    alert("🔥 FALLO DEL BÚNKER: El archivo datos.js tiene un error de sintaxis y no pudo cargar. Revisa que no falten comas o llaves en tu código.");
-}
-
 auth.onAuthStateChanged((user) => {
     if (!user) { window.location.href = "index.html"; return; }
     const userRef = db.collection("usuarios").doc(user.uid);
@@ -30,9 +25,8 @@ auth.onAuthStateChanged((user) => {
         if (!doc.exists) { window.location.href = "index.html"; return; }
         const data = doc.data();
 
-        // 🧠 GPS SEGURO (Evita colapsos si la base de datos tiene textos raros)
         if (!leccionId) {
-            let guardada = "34"; // Default
+            let guardada = "34"; 
             if (data.leccion_actual_DF) {
                 const match = String(data.leccion_actual_DF).match(/\d+/);
                 if (match) guardada = match[0];
@@ -41,12 +35,15 @@ auth.onAuthStateChanged((user) => {
             return;
         }
 
-        const leccionData = DEEPFALL_DATA[leccionId];
-        if(!leccionData) { 
-            alert("Lección no encontrada en la base de datos."); 
+        // Si hay error en datos.js, esto detiene el congelamiento y avisa
+        if (typeof DEEPFALL_DATA === "undefined") {
+            alert("🔥 ERROR CRÍTICO: Tu archivo datos.js tiene un error de sintaxis (falta una coma o llave). Revisa el código.");
             document.getElementById("loading-screen").style.display = "none";
-            return; 
+            return;
         }
+
+        const leccionData = DEEPFALL_DATA[leccionId];
+        if(!leccionData) { alert("Lección no encontrada."); return; }
 
         const workArea = document.getElementById("dynamic-work-area");
         const btnMando = document.getElementById("btn-mando");
@@ -57,7 +54,6 @@ auth.onAuthStateChanged((user) => {
 
         let isLocked = false;
 
-        // --- RENDERIZADO VISUAL CONDICIONAL ---
         if (leccionData.tipo === "candado") {
             uiLogo.style.display = "none";
             document.getElementById("ui-indicator").style.display = "none";
@@ -107,7 +103,7 @@ auth.onAuthStateChanged((user) => {
                 return; 
             }
 
-            userRef.update({ leccion_actual_DF: "63", estado: "Finalizado_DF" });
+            userRef.update({ leccion_actual_DF: "bunker.html?id=63", estado: "Finalizado_DF" });
 
             document.getElementById("ui-indicator").style.display = "none";
             document.getElementById("ui-progress").parentElement.style.display = "none";
@@ -216,8 +212,10 @@ auth.onAuthStateChanged((user) => {
             }
 
             btnMando.onclick = () => {
+                let urlSiguiente = leccionData.siguienteId.includes(".html") ? leccionData.siguienteId : `bunker.html?id=${leccionData.siguienteId}`;
+                
                 if (isLocked || leccionData.tipo === "texto" || leccionData.tipo === "video") {
-                    window.location.href = leccionData.siguienteId.includes(".html") ? leccionData.siguienteId : `bunker.html?id=${leccionData.siguienteId}`;
+                    window.location.href = urlSiguiente;
                     return;
                 }
 
@@ -225,15 +223,15 @@ auth.onAuthStateChanged((user) => {
                     const txt = document.getElementById("input-dinamico").value;
                     if(txt.trim() === "") { alert("El búnker exige tu respuesta."); return; }
                     btnMando.innerText = "Sincronizando..."; btnMando.disabled = true;
-                    userRef.update({ [`bitacora_${leccionId}`]: txt, leccion_actual_DF: leccionData.siguienteId })
-                           .then(() => window.location.href = `bunker.html?id=${leccionData.siguienteId}`);
+                    userRef.update({ [`bitacora_${leccionId}`]: txt, leccion_actual_DF: urlSiguiente })
+                           .then(() => window.location.href = urlSiguiente);
                 }
                 else if (leccionData.tipo === "quiz") {
                     const seleccionados = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
                     if(seleccionados.length === 0) { alert("Toma una decisión."); return; }
                     btnMando.innerText = "Sincronizando..."; btnMando.disabled = true;
-                    userRef.update({ [`quiz_${leccionId}`]: seleccionados, leccion_actual_DF: leccionData.siguienteId })
-                           .then(() => window.location.href = `bunker.html?id=${leccionData.siguienteId}`);
+                    userRef.update({ [`quiz_${leccionId}`]: seleccionados, leccion_actual_DF: urlSiguiente })
+                           .then(() => window.location.href = urlSiguiente);
                 }
             };
             
@@ -254,7 +252,7 @@ auth.onAuthStateChanged((user) => {
             }
         }
 
-        // 🧠 GPS SEGURO (Almacenamiento blindado)
+        // 🧠 GPS SEGURO: AHORA GUARDA LA RUTA COMPLETA PARA QUE INDEX.HTML NO FALLE
         const numActual = parseInt(leccionId) || 0;
         let numGuardado = 0;
         if (data.leccion_actual_DF) {
@@ -264,7 +262,7 @@ auth.onAuthStateChanged((user) => {
 
         if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ && numActual > 0) {
             if (numActual > numGuardado) {
-                userRef.update({ leccion_actual_DF: leccionId });
+                userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}` });
             }
         }
 
