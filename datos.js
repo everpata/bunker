@@ -189,7 +189,7 @@ const DEEPFALL_DATA = {
         "siguienteId": "51"
     },
 
-  "51": {
+    "51": {
         "tipo": "texto",
         "indicador": "Día 02 / Filtro",
         "progreso": "100%",
@@ -197,13 +197,13 @@ const DEEPFALL_DATA = {
         "descripcion": "La estructura de filtro elevado para el hombre profundo.",
         "contenido": `<p class="text-base">Usa esta estructura de coherencia: <i>"me deleito con personas que <b>[cualidad de ella]</b> y tienen apertura a <b>[cualidad robusta de ti]</b>"</i>. Por ejemplo: "me deleito con personas curiosas y veo eso en ti, creo que conecta con mi capacidad de <b>saber escuchar</b>. Imagina lo segura que te sentirías con un hombre capaz de sostener tu silencio". Has ganado el juego porque ahora tú eres el que selecciona.</p>`,
         "btnTexto": "Sellar jornada →",
-        "siguienteId": "52" 
+        "siguienteId": "52"
     },
 
     "52": {
         "tipo": "candado",
-        "fechaLiberacion": "May 2, 2026 12:30:00", // Cambia la fecha para el inicio del Día 3
-        "siguienteId": "53" // A dónde los enviará cuando el tiempo llegue a 0
+        "fechaLiberacion": "May 2, 2026 12:30:00",
+        "siguienteId": "53"
     },
 
     "53": {
@@ -234,8 +234,8 @@ const DEEPFALL_DATA = {
         "progreso": "20%",
         "titulo": "Expresión ulterior.",
         "descripcion": "El momento donde la superficie se rinde.",
-        "url": "https://player.mediadelivery.net/embed/e1b35cce-bf0c-4b8a-8c40-745745d2eb13", 
-        "postTexto": "<b>"Que sean como tú"</b>. Al decir eso me estaba desmarcando de cualquier otro hombre. Me situó en una categoría única porque experimentó una conversación que nunca antes había vivido. Eso es la singularidad.",
+        "url": "https://player.mediadelivery.net/embed/649829/e1b35cce-bf0c-4b8a-8c40-745745d2eb13", 
+        "postTexto": `<b>"Que sean como tú"</b>. Al decir eso me estaba desmarcando de cualquier otro hombre. Me situó en una categoría única porque experimentó una conversación que nunca antes había vivido. Eso es la singularidad.`,
         "btnTexto": "Ver impacto en otros →",
         "siguienteId": "56"
     },
@@ -269,7 +269,7 @@ const DEEPFALL_DATA = {
         "progreso": "50%",
         "titulo": "Intención sobre acción.",
         "descripcion": "Por qué hacemos lo que hacemos.",
-        "contenido": `<p class="text-base">¿Por qué me acerqué a hablar con esta mujer con mis clientes delante? Porque escojo la incomodidad para que sea ella la que se incomode ante mi presencia. La intención es más importante que la acción misma. La mayor parte de tus interacciones son basura porque no tienes una intención clara. Vas a ver "qué pasa" y tu cerebro te entrega mediocridad. Deja de ser ambiguo. Un hombre de fondo no se mueve por cosas pequeñas, vamos a por todo porque nuestra intención es abundante.</p>`,
+        "contenido": `<p class="text-base">¿Por qué me acerqué a hablar con esta mujer con mis clientes delante? Porque escojo la incomodidad para que sea ella la que se incomode ante mi presencia. La intención es más importante que la acción misma. La mayor parte de tus interacciones son basura porque no tienes una intención clara. Vas a ver "qué pasa" y tu cerebro te entrega mediocridad porque le diste una orden vaga. Deja de ser ambiguo. Un hombre de fondo no se mueve por cosas pequeñas, vamos a por todo porque nuestra intención es abundante.</p>`,
         "btnTexto": "Continuar →",
         "siguienteId": "59"
     },
@@ -302,7 +302,7 @@ const DEEPFALL_DATA = {
         "progreso": "80%",
         "titulo": "El quién contra el cómo.",
         "descripcion": "El punto de no retorno.",
-        "contenido": `<p class="text-base">Si te enfocas en el "cómo", tu mente buscará recursos externos y se detendrá ante la escasez. Pero si te preguntas "¿quién soy?", la osadía aparece. El juego de la vida lo gana el que mejor se descubre. La superficie quiere que te desconozcas, pero aquí estamos tallando el autoconcepto. Ya no tienes que encajar en el mundo, el mundo tiene que encajar contigo. La conciencia dirige a la mente y al cuerpo, y cuando esa jerarquía es clara, el mundo externo se adapta a tu estándar.</p>`,
+        "contenido": `<p class="text-base">Si te enfocas en el "cómo", tu mente siempre buscará recursos externos y se detendrá ante la escasez. Pero si te preguntas "¿quién soy?", la osadía aparece. El juego de la vida lo gana el que mejor se descubre. La superficie quiere que te desconozcas, pero aquí estamos tallando el autoconcepto. Ya no tienes que encajar en el mundo, el mundo tiene que encajar contigo. La conciencia dirige a la mente y al cuerpo, y cuando esa jerarquía es clara, el mundo externo se adapta a tu estándar.</p>`,
         "btnTexto": "Sellar el Deepfall →",
         "siguienteId": "62"
     },
@@ -315,12 +315,12 @@ const DEEPFALL_DATA = {
         "descripcion": "El tramo uno ha sido completado.",
         "contenido": `<p class="text-base">Acabas de completar el tramo uno, el deepfall. Has renunciado al lastre y has reconocido la trampa de la superficie. Ahora nos vamos para la deepmersion, el tramo número dos. Abajo se requiere equipo de alta presión porque la tensión se eleva. Allí es donde te vas a curtir. Allí es donde vas a descubrir la versión de ti que se había resistido a nacer en la superficie. Nos vemos en el fondo.</p>`,
         "btnTexto": "Generar Reporte Final →",
-        "siguienteId": "63" // Apunta a la nueva tarjeta dinámica
+        "siguienteId": "63"
     },
 
     "63": {
         "tipo": "reporte",
-        "fechaExpiracion": "May 4, 2026 19:00:00 GMT-0500", // La misma fecha de urgencia de tu HTML
-        "linkUpsell": "https://deepmersion.deepnessmen.com" // Coloca tu link de pago aquí
+        "fechaExpiracion": "May 4, 2026 19:00:00 GMT-0500",
+        "linkUpsell": "https://deepmersion.deepnessmen.com"
     }
 };
