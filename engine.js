@@ -46,7 +46,6 @@ auth.onAuthStateChanged((user) => {
             return; 
         }
 
-        // 🛡️ DOM INDESTRUCTIBLE: Busca por ID o por Clase
         const workArea = document.getElementById("dynamic-work-area") || document.querySelector(".work-area");
         const btnMando = document.getElementById("btn-mando") || document.querySelector(".btn-mando") || document.getElementById("btn-next");
         const uiLogo = document.getElementById("ui-logo") || document.querySelector(".logo");
@@ -56,7 +55,7 @@ auth.onAuthStateChanged((user) => {
         const uiDesc = document.getElementById("ui-desc") || document.querySelector(".description");
         
         if(!workArea || !btnMando) {
-            alert("Error: No se encontró el área de trabajo o el botón en tu HTML.");
+            alert("Error: No se encontró el área de trabajo en tu HTML.");
             return;
         }
 
@@ -76,7 +75,7 @@ auth.onAuthStateChanged((user) => {
 
             workArea.className = "work-area";
             workArea.innerHTML = `
-                <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado" style="width:100%; max-width:120px; display:block; margin: 0 auto 20px;">
+                <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado">
                 <p class="text-base" id="status-text" style="text-align:center;">La siguiente ruta será liberada en:</p>
                 <div id="countdown" class="stats-container">
                     <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
@@ -132,12 +131,8 @@ auth.onAuthStateChanged((user) => {
 
             workArea.className = "work-area";
             workArea.innerHTML = `
-                <span id="nombre-exp" style="font-size: 11px; font-weight: 600; color: #878787; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; line-height: 1; display: block;">
-                    EXPEDICIONARIO: ${nombreExp}
-                </span>
-                <div class="status-badge" style="background-color: #fce8e6; color: #d93025; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; margin-bottom: 25px; border: 1px solid #d93025; text-transform: uppercase;">
-                    ESTATUS: MÁSCARA ROTA
-                </div>
+                <span id="nombre-exp">EXPEDICIONARIO: ${nombreExp}</span>
+                <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
                 <h1 class="title" style="margin-bottom:10px;">Fin del Descenso.</h1>
                 <p class="description" style="margin-bottom:25px;">Análisis final del Tramo 01 completado.</p>
                 <div class="card" style="text-align:left; padding:20px; background:#f9f9f9; border-radius:16px;">
@@ -147,12 +142,12 @@ auth.onAuthStateChanged((user) => {
                     </p>
                 </div>
                 <p class="text-base" style="margin-top: 35px; margin-bottom: -20px; width:100%; text-align:center;"><b>La escotilla de acceso cierra en:</b></p>
-                <div id="countdown" class="stats-container" style="display:flex; margin-bottom: 30px;">
+                <div id="countdown" class="stats-container">
                     <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
                     <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
                     <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
                 </div>
-                <button id="btn-upsell-dinamico" style="width: 100%; padding: 20px; border-radius: 16px; background-color: #fce8e6; color: #d93025; border: 1px solid #d93025; font-weight: 700; font-size: 16px; cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);">
+                <button id="btn-upsell-dinamico" class="btn-status-alert">
                     AVANZAR AL TRAMO 02 →
                 </button>
             `;
