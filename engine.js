@@ -1,4 +1,4 @@
-// 1. CONFIGURACIÓN DE FIREBASE
+// CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = { 
     apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
     authDomain: "deepfall-b3601.firebaseapp.com", 
@@ -38,33 +38,30 @@ auth.onAuthStateChanged((user) => {
         const leccionData = DEEPFALL_DATA[leccionId];
         if(!leccionData) { 
             document.getElementById("loading-screen").style.display = "none";
-            alert("Protocolo no encontrado."); 
             return; 
         }
 
         const workArea = document.getElementById("dynamic-work-area") || document.querySelector(".work-area");
         const btnMando = document.getElementById("btn-mando") || document.querySelector(".btn-mando");
-        const uiLogo = document.getElementById("ui-logo") || document.querySelector(".logo");
-        const uiIndicator = document.getElementById("ui-indicator") || document.querySelector(".indicator");
-        const uiProgress = document.getElementById("ui-progress") || document.querySelector(".progress-fill");
-        const uiTitle = document.getElementById("ui-title") || document.querySelector(".title");
-        const uiDesc = document.getElementById("ui-desc") || document.querySelector(".description");
+        const uiLogo = document.getElementById("ui-logo");
+        const uiIndicator = document.getElementById("ui-indicator");
+        const uiProgress = document.getElementById("ui-progress");
+        const uiTitle = document.getElementById("ui-title");
+        const uiDesc = document.getElementById("ui-desc");
 
-        btnMando.className = "btn-mando"; 
-        btnMando.style.cssText = ""; 
-        
+        // RESET
+        if(btnMando) {
+            btnMando.style.display = "none";
+            btnMando.className = "btn-mando";
+        }
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
 
         if (leccionData.tipo === "candado") {
-            if(uiLogo) uiLogo.style.display = "none";
-            if(uiIndicator) uiIndicator.style.display = "none";
-            if(uiProgress && uiProgress.parentElement) uiProgress.parentElement.style.display = "none";
-            if(uiTitle) uiTitle.style.display = "none";
-            if(uiDesc) uiDesc.style.display = "none";
-
+            [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
+            
             workArea.innerHTML = `
-                <img src="candado.webp" class="relic-lock-img" alt="Bloqueado" style="width:120px; margin: 0 auto 20px; display:block;">
+                <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado">
                 <p class="text-base" style="text-align:center;">La siguiente ruta será liberada en:</p>
                 <div id="countdown" class="stats-container">
                     <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
@@ -72,13 +69,13 @@ auth.onAuthStateChanged((user) => {
                     <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
                 </div>
             `;
+            btnMando.style.display = "block";
             btnMando.innerText = "Actualizar Protocolo →";
             btnMando.onclick = () => window.location.reload(true);
-            btnMando.style.display = "block";
 
-            const cdDate = new Date(leccionData.fechaLiberacion).getTime();
+            const releaseDate = new Date(leccionData.fechaLiberacion).getTime();
             countdownInterval = setInterval(() => {
-                const now = new Date().getTime(); const dist = cdDate - now;
+                const now = new Date().getTime(); const dist = releaseDate - now;
                 if (dist < 0) {
                     clearInterval(countdownInterval);
                     btnMando.innerText = "Ingresar al siguiente tramo →";
@@ -94,43 +91,30 @@ auth.onAuthStateChanged((user) => {
             }, 1000);
 
         } else if (leccionData.tipo === "reporte") {
-            // Seguridad: Si ya tiene acceso al Tramo 02, redirigir
-            if (data.access_DM === true || data.access_DQ === true) {
-                window.location.href = data.leccion_actual_DM || "bunker.html?id=64";
-                return;
-            }
-
-            userRef.update({ leccion_actual_DF: "bunker.html?id=63", estado: "Finalizado_DF" });
-
-            if(uiIndicator) uiIndicator.style.display = "none";
-            if(uiProgress && uiProgress.parentElement) uiProgress.parentElement.style.display = "none";
-            if(uiTitle) uiTitle.style.display = "none";
-            if(uiDesc) uiDesc.style.display = "none";
+            [uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             
-            const nombreExp = data.nombre ? data.nombre.toUpperCase() : "SIN NOMBRE";
+            const nombreExp = (data.nombre || "SIN NOMBRE").toUpperCase();
 
-            workArea.style.textAlign = "center";
             workArea.innerHTML = `
                 <span id="nombre-exp">EXPEDICIONARIO: ${nombreExp}</span>
                 <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
                 <h1 class="title">Fin del Descenso.</h1>
                 <p class="description">Análisis final del Tramo 01 completado.</p>
-                <div class="card" style="text-align:left; padding:20px; background:#f5f5f7; border-radius:16px; margin-bottom: 35px;">
+                <div class="card" style="text-align:left; padding:20px; background:#f5f5f7; border-radius:16px;">
                     <p class="text-base" style="margin:0;">
                         <b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br>
                         <b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.
                     </p>
                 </div>
-                <p class="text-base" style="margin-top: 35px; margin-bottom: -20px;"><b>La escotilla de acceso cierra en:</b></p>
+                <p class="text-base" style="margin-top: 35px; margin-bottom: -20px; text-align:center; width:100%;"><b>La escotilla de acceso cierra en:</b></p>
                 <div id="countdown" class="stats-container">
                     <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
                     <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
                     <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
                 </div>
-                <button id="btn-upsell-dinamico" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
+                <button id="btn-upsell-dinamico" class="btn-status-alert" style="display:block !important;">AVANZAR AL TRAMO 02 →</button>
             `;
-
-            btnMando.style.display = "none"; 
+            
             document.getElementById("btn-upsell-dinamico").onclick = () => window.location.href = leccionData.linkUpsell;
 
             const tDate = new Date(leccionData.fechaExpiracion).getTime();
@@ -146,80 +130,52 @@ auth.onAuthStateChanged((user) => {
             }, 1000);
 
         } else {
-            // LECCIONES ESTÁNDAR
-            if(uiLogo) uiLogo.style.display = "block";
-            if(uiIndicator) { uiIndicator.style.display = "block"; uiIndicator.innerText = leccionData.indicador; }
-            if(uiProgress && uiProgress.parentElement) { uiProgress.parentElement.style.display = "block"; uiProgress.style.width = leccionData.progreso; }
-            if(uiTitle) { uiTitle.style.display = "block"; uiTitle.innerHTML = leccionData.titulo; }
-            if(uiDesc) { uiDesc.style.display = "block"; uiDesc.innerHTML = leccionData.descripcion || ""; }
-            
-            btnMando.innerText = leccionData.btnTexto || "Continuar →";
+            [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
+            uiIndicator.innerText = leccionData.indicador;
+            uiProgress.style.width = leccionData.progreso;
+            uiTitle.innerHTML = leccionData.titulo;
+            uiDesc.innerHTML = leccionData.descripcion || "";
             btnMando.style.display = "block";
+            btnMando.innerText = leccionData.btnTexto || "Continuar →";
 
             if (leccionData.tipo === "texto") {
-                workArea.className = "work-area card";
-                workArea.innerHTML = leccionData.contenido;
-            } 
-            else if (leccionData.tipo === "video") {
-                workArea.className = "work-area";
-                workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" style="border:0; position:absolute; top:0; left:0; height:100%; width:100%; border-radius:16px;" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="post-video-box"><p>${leccionData.postTexto}</p></div>` : ""}`;
-            }
-            else if (leccionData.tipo === "bitacora") {
-                workArea.className = "work-area card";
-                workArea.innerHTML = `<textarea id="input-dinamico" placeholder="${leccionData.placeholder}"></textarea>`;
-                if (data[`bitacora_${leccionId}`]) {
-                    document.getElementById("input-dinamico").value = data[`bitacora_${leccionId}`];
-                    document.getElementById("input-dinamico").readOnly = true;
-                    document.getElementById("input-dinamico").classList.add("locked");
-                    isLocked = true;
+                workArea.innerHTML = `<div class="card">${leccionData.contenido}</div>`;
+            } else if (leccionData.tipo === "video") {
+                workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" style="border:0; position:absolute; top:0; left:0; width:100%; height:100%; border-radius:16px;" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="post-video-box"><p>${leccionData.postTexto}</p></div>` : ""}`;
+            } else if (leccionData.tipo === "bitacora") {
+                workArea.innerHTML = `<div class="card"><textarea id="input-dinamico" placeholder="${leccionData.placeholder}"></textarea></div>`;
+                if(data[`bitacora_${leccionId}`]) {
+                    const i = document.getElementById("input-dinamico");
+                    i.value = data[`bitacora_${leccionId}`]; i.readOnly = true; i.classList.add("locked"); isLocked = true;
                 }
-            }
-            else if (leccionData.tipo === "quiz") {
-                workArea.className = "work-area";
+            } else if (leccionData.tipo === "quiz") {
                 workArea.innerHTML = leccionData.opciones.map(op => `<button class="option-btn" onclick="toggleOption(this)">${op}</button>`).join("");
-                if (data[`quiz_${leccionId}`]) {
-                    document.querySelectorAll(".option-btn").forEach(btn => {
-                        if(data[`quiz_${leccionId}`].includes(btn.innerText.trim())) btn.classList.add("selected");
-                    });
-                    isLocked = true;
-                    btnMando.classList.add("btn-disabled");
-                    btnMando.innerText = "REGISTRO SELLADO ✓";
+                if(data[`quiz_${leccionId}`]) {
+                    document.querySelectorAll(".option-btn").forEach(b => { if(data[`quiz_${leccionId}`].includes(b.innerText.trim())) b.classList.add("selected"); });
+                    isLocked = true; btnMando.classList.add("btn-disabled"); btnMando.innerText = "REGISTRO SELLADO ✓";
                 }
             }
 
             let urlSig = leccionData.siguienteId.includes(".html") ? leccionData.siguienteId : `bunker.html?id=${leccionData.siguienteId}`;
-
             btnMando.onclick = () => {
-                if (isLocked || leccionData.tipo === "texto" || leccionData.tipo === "video") {
-                    window.location.href = urlSig;
-                    return;
-                }
-                if (leccionData.tipo === "bitacora") {
-                    const txt = document.getElementById("input-dinamico").value;
-                    if(!txt.trim()) return alert("El búnker exige tu respuesta.");
-                    userRef.update({ [`bitacora_${leccionId}`]: txt, leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
-                }
-                else if (leccionData.tipo === "quiz") {
-                    const sel = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
-                    if(sel.length === 0) return alert("Toma una decisión.");
-                    userRef.update({ [`quiz_${leccionId}`]: sel, leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
-                }
+                if (isLocked || leccionData.tipo === "texto" || leccionData.tipo === "video") return window.location.href = urlSig;
+                const txt = document.getElementById("input-dinamico") ? document.getElementById("input-dinamico").value : "";
+                const sel = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
+                if(leccionData.tipo === "bitacora" && !txt.trim()) return alert("El búnker exige tu respuesta.");
+                if(leccionData.tipo === "quiz" && !sel.length) return alert("Toma una decisión.");
+                const update = leccionData.tipo === "bitacora" ? { [`bitacora_${leccionId}`]: txt, leccion_actual_DF: urlSig } : { [`quiz_${leccionId}`]: sel, leccion_actual_DF: urlSig };
+                userRef.update(update).then(() => window.location.href = urlSig);
             };
 
-            // Lógica Egresado: Botón Rojo si ya terminó el DF
             if (data.estado === "Finalizado_DF" && !data.access_DM && isLocked) {
-                btnMando.innerText = "Ir al Reporte Final →";
-                btnMando.classList.add("btn-status-alert");
+                btnMando.innerText = "Ir al Reporte Final →"; btnMando.classList.add("btn-status-alert");
                 btnMando.onclick = () => window.location.href = "bunker.html?id=63";
             }
         }
 
-        // GPS Seguro
-        const nActual = parseInt(leccionId) || 0;
-        const nGuardado = data.leccion_actual_DF ? (parseInt(data.leccion_actual_DF.match(/\d+/)) || 0) : 0;
-        if (data.estado !== "Finalizado_DF" && !data.access_DM && nActual > nGuardado) {
-            userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}` });
-        }
+        const nA = parseInt(leccionId) || 0;
+        const nG = data.leccion_actual_DF ? (parseInt(data.leccion_actual_DF.match(/\d+/)) || 0) : 0;
+        if (data.estado !== "Finalizado_DF" && !data.access_DM && nA > nG) userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}` });
 
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
