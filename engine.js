@@ -17,6 +17,10 @@ let countdownInterval;
 
 function toggleOption(btn) { btn.classList.toggle("selected"); }
 
+if (typeof DEEPFALL_DATA === "undefined") {
+    alert("🔥 ERROR CRÍTICO: Tu archivo datos.js tiene un error de sintaxis.");
+}
+
 auth.onAuthStateChanged((user) => {
     if (!user) { window.location.href = "index.html"; return; }
     const userRef = db.collection("usuarios").doc(user.uid);
@@ -35,25 +39,26 @@ auth.onAuthStateChanged((user) => {
             return;
         }
 
-        // Si hay error en datos.js, esto detiene el congelamiento y avisa
-        if (typeof DEEPFALL_DATA === "undefined") {
-            alert("🔥 ERROR CRÍTICO: Tu archivo datos.js tiene un error de sintaxis (falta una coma o llave). Revisa el código.");
-            document.getElementById("loading-screen").style.display = "none";
-            return;
-        }
-
         const leccionData = DEEPFALL_DATA[leccionId];
-        if(!leccionData) { alert("Lección no encontrada."); return; }
+        if(!leccionData) { 
+            alert("Lección no encontrada."); 
+            document.getElementById("loading-screen").style.display = "none";
+            return; 
+        }
 
         const workArea = document.getElementById("dynamic-work-area");
         const btnMando = document.getElementById("btn-mando");
         const uiLogo = document.getElementById("ui-logo");
+        
+        // Reset de estilos del botón maestro
         btnMando.className = "btn-mando"; 
+        btnMando.style.cssText = ""; 
         
         if(countdownInterval) clearInterval(countdownInterval);
 
         let isLocked = false;
 
+        // --- RENDERIZADO VISUAL CONDICIONAL ---
         if (leccionData.tipo === "candado") {
             uiLogo.style.display = "none";
             document.getElementById("ui-indicator").style.display = "none";
@@ -63,8 +68,8 @@ auth.onAuthStateChanged((user) => {
 
             workArea.className = "work-area";
             workArea.innerHTML = `
-                <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado">
-                <p class="text-base" id="status-text">La siguiente ruta será liberada en:</p>
+                <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado" style="width:100%; max-width:120px; display:block; margin: 0 auto 20px;">
+                <p class="text-base" id="status-text" style="text-align:center;">La siguiente ruta será liberada en:</p>
                 <div id="countdown" class="stats-container">
                     <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
                     <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
@@ -113,6 +118,7 @@ auth.onAuthStateChanged((user) => {
             const nombreExp = data.nombre ? data.nombre.toUpperCase() : "SIN NOMBRE";
 
             workArea.className = "work-area";
+            // Inyectamos el botón de Upsell directamente aquí
             workArea.innerHTML = `
                 <span id="nombre-exp" style="font-size: 11px; font-weight: 600; color: #878787; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; line-height: 1; display: block;">
                     EXPEDICIONARIO: ${nombreExp}
@@ -129,20 +135,18 @@ auth.onAuthStateChanged((user) => {
                     </p>
                 </div>
                 <p class="text-base" style="margin-top: 35px; margin-bottom: -20px; width:100%; text-align:center;"><b>La escotilla de acceso cierra en:</b></p>
-                <div id="countdown" class="stats-container" style="display:flex;">
+                <div id="countdown" class="stats-container" style="display:flex; margin-bottom: 30px;">
                     <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
                     <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
                     <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
                 </div>
+                <button id="btn-upsell-dinamico" style="width: 100%; padding: 20px; border-radius: 16px; background-color: #fce8e6; color: #d93025; border: 1px solid #d93025; font-weight: 700; font-size: 16px; cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1);">
+                    AVANZAR AL TRAMO 02 →
+                </button>
             `;
 
             btnMando.style.display = "none"; 
-            const btnUpsell = document.getElementById("btn-alerta-reporte");
-            document.getElementById("btn-volver-hub").style.display = "none";
-
-            btnUpsell.innerText = "AVANZAR AL TRAMO 02 →";
-            btnUpsell.onclick = () => window.location.href = leccionData.linkUpsell;
-            btnUpsell.style.display = "block";
+            document.getElementById("btn-upsell-dinamico").onclick = () => window.location.href = leccionData.linkUpsell;
 
             const targetDate = new Date(leccionData.fechaExpiracion).getTime();
             countdownInterval = setInterval(function() {
@@ -172,6 +176,7 @@ auth.onAuthStateChanged((user) => {
             document.getElementById("ui-title").innerHTML = leccionData.titulo;
             document.getElementById("ui-desc").innerHTML = leccionData.descripcion || "";
             btnMando.innerText = leccionData.btnTexto || "Continuar →";
+            btnMando.style.display = "block";
 
             if (leccionData.tipo === "texto") {
                 workArea.className = "work-area card";
@@ -211,9 +216,9 @@ auth.onAuthStateChanged((user) => {
                 }
             }
 
+            let urlSiguiente = leccionData.siguienteId.includes(".html") ? leccionData.siguienteId : `bunker.html?id=${leccionData.siguienteId}`;
+
             btnMando.onclick = () => {
-                let urlSiguiente = leccionData.siguienteId.includes(".html") ? leccionData.siguienteId : `bunker.html?id=${leccionData.siguienteId}`;
-                
                 if (isLocked || leccionData.tipo === "texto" || leccionData.tipo === "video") {
                     window.location.href = urlSiguiente;
                     return;
@@ -234,25 +239,25 @@ auth.onAuthStateChanged((user) => {
                            .then(() => window.location.href = urlSiguiente);
                 }
             };
-            
-            const btnRojo = document.getElementById("btn-alerta-reporte");
-            btnRojo.onclick = () => { window.location.href = "bunker.html?id=63"; }; 
-            document.getElementById("btn-volver-hub").style.display = "none";
 
+            // Lógica para Egresados: El botón maestro muta a rojo
             if (data.estado === "Finalizado_DF" && !data.access_DM) {
-                btnMando.style.display = isLocked ? "none" : "block";
-                btnRojo.style.display = "block";
+                if (isLocked) {
+                    btnMando.innerText = "Ir al Reporte Final →";
+                    btnMando.style.backgroundColor = "#fce8e6";
+                    btnMando.style.color = "#d93025";
+                    btnMando.style.border = "1px solid #d93025";
+                    btnMando.onclick = () => { window.location.href = "bunker.html?id=63"; };
+                }
             } else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
-                btnMando.style.display = "block";
-                btnRojo.style.display = "none";
-                if(isLocked) { btnMando.innerText = "Continuar →"; btnMando.classList.remove("btn-disabled"); }
-            } else {
-                btnMando.style.display = "block";
-                btnRojo.style.display = "none";
+                if(isLocked) { 
+                    btnMando.innerText = "Continuar →"; 
+                    btnMando.classList.remove("btn-disabled"); 
+                    btnMando.onclick = () => { window.location.href = urlSiguiente; };
+                }
             }
         }
 
-        // 🧠 GPS SEGURO: AHORA GUARDA LA RUTA COMPLETA PARA QUE INDEX.HTML NO FALLE
         const numActual = parseInt(leccionId) || 0;
         let numGuardado = 0;
         if (data.leccion_actual_DF) {
@@ -266,7 +271,12 @@ auth.onAuthStateChanged((user) => {
             }
         }
 
+        // AHORA SÍ: Pantalla liberada sin colapsos
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
+    }).catch((error) => {
+        console.error("Error obteniendo documento:", error);
+        document.getElementById("loading-screen").style.display = "none";
+        alert("Error de conexión con la base de datos.");
     });
 });
