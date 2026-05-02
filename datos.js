@@ -206,8 +206,6 @@ const DEEPFALL_DATA = {
         "siguienteId": "53" // A dónde los enviará cuando el tiempo llegue a 0
     },
 
-    // --- DÍA 03: EL PUNTO DE NO RETORNO (VERSION AUTORIDAD ELEVADA) ---
-
     "53": {
         "tipo": "texto",
         "indicator": "Día 03 / Propósito",
