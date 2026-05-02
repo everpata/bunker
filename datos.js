@@ -206,6 +206,109 @@ const DEEPFALL_DATA = {
         "siguienteId": "53" // A dónde los enviará cuando el tiempo llegue a 0
     },
 
+    // --- DÍA 03: EL PUNTO DE NO RETORNO (VERSION AUTORIDAD ELEVADA) ---
+
+    "53": {
+        "tipo": "texto",
+        "indicator": "Día 03 / Propósito",
+        "progreso": "5%",
+        "titulo": "La osadía del propósito.",
+        "descripcion": "El entorno no dicta la acción.",
+        "contenido": `<p class="text-base">Un hombre de fondo siempre está en las mejores condiciones para responder ante aquello que resuena con su propósito. No importa si el entorno es hostil o si las herramientas parecen fallar, lo que nos mantiene en coherencia es la inclinación hacia lo que es real. La superficie siempre buscará una excusa para detenerte, pero la conciencia es la que manda. El cuerpo y el entorno deben entrenarse para responder ante la instrucción interna. Es lo que define nuestra densidad: responder ante lo que debemos hacer, sin importar las circunstancias externas.</p>`,
+        "btnTexto": "Avanzar →",
+        "siguienteId": "54"
+    },
+
+    "54": {
+        "tipo": "texto",
+        "indicador": "Día 03 / Singularidad",
+        "progreso": "10%",
+        "titulo": "La evidencia de la singularidad.",
+        "descripcion": "Observa el fruto de nuestro descenso.",
+        "contenido": `<p class="text-base">Vamos a ver una evidencia donde apreciarás todo lo que hemos construido. En esta interacción notarás una exposición osada que nace directamente del mundo interno. Lo más importante aquí es prestar atención a lo que esta mujer expresó cuando le pedí un consejo para otros hombres: <b>"que sean como tú"</b>. Ella no pudo compararme porque no se puede poner en contraste a un hombre que habita en el fondo.</p>`,
+        "btnTexto": "Ver evidencia →",
+        "siguienteId": "55"
+    },
+
+    "55": {
+        "tipo": "video",
+        "indicador": "Día 03 / Evidencia 01",
+        "progreso": "20%",
+        "titulo": "Expresión ulterior.",
+        "descripcion": "El momento donde la superficie se rinde.",
+        "url": "https://player.mediadelivery.net/embed/e1b35cce-bf0c-4b8a-8c40-745745d2eb13", 
+        "postTexto": "<b>"Que sean como tú"</b>. Al decir eso me estaba desmarcando de cualquier otro hombre. Me situó en una categoría única porque experimentó una conversación que nunca antes había vivido. Eso es la singularidad.",
+        "btnTexto": "Ver impacto en otros →",
+        "siguienteId": "56"
+    },
+
+    "56": {
+        "tipo": "texto",
+        "indicador": "Día 03 / Autoridad",
+        "progreso": "30%",
+        "titulo": "No soy el único.",
+        "descripcion": "El poder de un sistema replicable.",
+        "contenido": `<p class="text-base">Pudiera parecer que esto es un don exclusivo, pero te equivocas. Los mismos clientes que viste en la evidencia anterior, hombres que estaban allí en presencial conmigo, también se pusieron en acción. No soy un egoísta que se queda con todo el pastel; mi intención es tan abundante que busco que todos en mi órbita experimenten esta misma libertad. Observa cómo ellos, aplicando las mismas revelaciones que tú has recibido, comienzan a contagiar su propia densidad en el terreno.</p>`,
+        "btnTexto": "Ver clientes en acción →",
+        "siguienteId": "57"
+    },
+
+    "57": {
+        "tipo": "video",
+        "indicador": "Día 03 / Evidencia 02",
+        "progreso": "40%",
+        "titulo": "El contagio de fondo.",
+        "descripcion": "Mis clientes operando en la trinchera.",
+        "url": "https://player.mediadelivery.net/embed/649829/6e0de185-b019-4528-bdf0-edf7ef042fec", 
+        "postTexto": "Lo que acabas de ver es el resultado de un líder que no busca seguidores, sino que forja otros hombres de fondo. No convencemos, contagiamos. Ellos ya no están en la piscina olímpica; están en el mar aprendiendo a ser marineros.",
+        "btnTexto": "Analizar la intención →",
+        "siguienteId": "58"
+    },
+
+    "58": {
+        "tipo": "texto",
+        "indicador": "Día 03 / Estrategia",
+        "progreso": "50%",
+        "titulo": "Intención sobre acción.",
+        "descripcion": "Por qué hacemos lo que hacemos.",
+        "contenido": `<p class="text-base">¿Por qué me acerqué a hablar con esta mujer con mis clientes delante? Porque escojo la incomodidad para que sea ella la que se incomode ante mi presencia. La intención es más importante que la acción misma. La mayor parte de tus interacciones son basura porque no tienes una intención clara. Vas a ver "qué pasa" y tu cerebro te entrega mediocridad. Deja de ser ambiguo. Un hombre de fondo no se mueve por cosas pequeñas, vamos a por todo porque nuestra intención es abundante.</p>`,
+        "btnTexto": "Continuar →",
+        "siguienteId": "59"
+    },
+
+    "59": {
+        "tipo": "texto",
+        "indicador": "Día 03 / Poder invisible",
+        "progreso": "60%",
+        "titulo": "Fuerza gravitacional.",
+        "descripcion": "El impacto de tu órbita.",
+        "contenido": `<p class="text-base">En la evidencia notarás que ella miró su móvil con urgencia pero no se fue. Su instinto le gritaba que hiciera caso omiso de su compromiso para quedarse en mi órbita. Eso es la fuerza gravitacional. No la ves ni la tocas, pero te arrastra. No es manipulación, es ampliar el poder de tu densidad hasta que el entorno se rinda ante tu presencia. De esto hablaremos a fondo en la deepmersion.</p>`,
+        "btnTexto": "Aceptar mi grieta →",
+        "siguienteId": "60"
+    },
+
+    "60": {
+        "tipo": "texto",
+        "indicador": "Día 03 / Anarquía",
+        "progreso": "70%",
+        "titulo": "La grieta transformada.",
+        "descripcion": "Tu defecto es tu mayor virtud.",
+        "contenido": `<p class="text-base">Te hablé de expresarse desde la grieta. Mi grieta fue el racismo. Un "amigo" me dijo una vez: "si fueras blanco tendrías novia". Eso me marcó y me hizo sentir sentenciado. Pero en el fondo entendí que eso era una virtud. Lo que en la superficie era un defecto, en el fondo se volvió mi mayor portal de luz. Te voy a enseñar a usar tu defecto como virtud, a dejar de esconderte y empezar a brillar a través de tus grietas.</p>`,
+        "btnTexto": "El quién contra el cómo →",
+        "siguienteId": "61"
+    },
+
+    "61": {
+        "tipo": "texto",
+        "indicador": "Día 03 / Identidad",
+        "progreso": "80%",
+        "titulo": "El quién contra el cómo.",
+        "descripcion": "El punto de no retorno.",
+        "contenido": `<p class="text-base">Si te enfocas en el "cómo", tu mente buscará recursos externos y se detendrá ante la escasez. Pero si te preguntas "¿quién soy?", la osadía aparece. El juego de la vida lo gana el que mejor se descubre. La superficie quiere que te desconozcas, pero aquí estamos tallando el autoconcepto. Ya no tienes que encajar en el mundo, el mundo tiene que encajar contigo. La conciencia dirige a la mente y al cuerpo, y cuando esa jerarquía es clara, el mundo externo se adapta a tu estándar.</p>`,
+        "btnTexto": "Sellar el Deepfall →",
+        "siguienteId": "62"
+    },
+
     "62": {
         "tipo": "texto",
         "indicador": "Día 03 / Transición",
