@@ -41,30 +41,38 @@ auth.onAuthStateChanged((user) => {
 
         const leccionData = DEEPFALL_DATA[leccionId];
         if(!leccionData) { 
-            alert("Lección no encontrada."); 
+            alert("Lección no encontrada en datos.js."); 
             document.getElementById("loading-screen").style.display = "none";
             return; 
         }
 
-        const workArea = document.getElementById("dynamic-work-area");
-        const btnMando = document.getElementById("btn-mando");
-        const uiLogo = document.getElementById("ui-logo");
+        // 🛡️ DOM INDESTRUCTIBLE: Busca por ID o por Clase
+        const workArea = document.getElementById("dynamic-work-area") || document.querySelector(".work-area");
+        const btnMando = document.getElementById("btn-mando") || document.querySelector(".btn-mando") || document.getElementById("btn-next");
+        const uiLogo = document.getElementById("ui-logo") || document.querySelector(".logo");
+        const uiIndicator = document.getElementById("ui-indicator") || document.querySelector(".indicator");
+        const uiProgress = document.getElementById("ui-progress") || document.querySelector(".progress-fill");
+        const uiTitle = document.getElementById("ui-title") || document.querySelector(".title");
+        const uiDesc = document.getElementById("ui-desc") || document.querySelector(".description");
         
-        // Reset de estilos del botón maestro
+        if(!workArea || !btnMando) {
+            alert("Error: No se encontró el área de trabajo o el botón en tu HTML.");
+            return;
+        }
+
         btnMando.className = "btn-mando"; 
         btnMando.style.cssText = ""; 
         
         if(countdownInterval) clearInterval(countdownInterval);
-
         let isLocked = false;
 
         // --- RENDERIZADO VISUAL CONDICIONAL ---
         if (leccionData.tipo === "candado") {
-            uiLogo.style.display = "none";
-            document.getElementById("ui-indicator").style.display = "none";
-            document.getElementById("ui-progress").parentElement.style.display = "none";
-            document.getElementById("ui-title").style.display = "none";
-            document.getElementById("ui-desc").style.display = "none";
+            if(uiLogo) uiLogo.style.display = "none";
+            if(uiIndicator) uiIndicator.style.display = "none";
+            if(uiProgress && uiProgress.parentElement) uiProgress.parentElement.style.display = "none";
+            if(uiTitle) uiTitle.style.display = "none";
+            if(uiDesc) uiDesc.style.display = "none";
 
             workArea.className = "work-area";
             workArea.innerHTML = `
@@ -85,8 +93,10 @@ auth.onAuthStateChanged((user) => {
                 const now = new Date().getTime(); const distance = countDownDate - now;
                 if (distance < 0) {
                     clearInterval(countdownInterval);
-                    document.getElementById("countdown").style.display = "none";
-                    document.getElementById("status-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
+                    const cd = document.getElementById("countdown");
+                    if(cd) cd.style.display = "none";
+                    const st = document.getElementById("status-text");
+                    if(st) st.innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
                     btnMando.classList.add("btn-ready");
                     btnMando.innerText = "Ingresar al siguiente tramo →";
                     btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
@@ -94,9 +104,12 @@ auth.onAuthStateChanged((user) => {
                     const h = Math.floor(distance / (1000 * 60 * 60));
                     const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     const s = Math.floor((distance % (1000 * 60)) / 1000);
-                    document.getElementById("hrs").innerText = h.toString().padStart(2, "0");
-                    document.getElementById("min").innerText = m.toString().padStart(2, "0");
-                    document.getElementById("seg").innerText = s.toString().padStart(2, "0");
+                    const hrsEl = document.getElementById("hrs");
+                    const minEl = document.getElementById("min");
+                    const segEl = document.getElementById("seg");
+                    if(hrsEl) hrsEl.innerText = h.toString().padStart(2, "0");
+                    if(minEl) minEl.innerText = m.toString().padStart(2, "0");
+                    if(segEl) segEl.innerText = s.toString().padStart(2, "0");
                 }
             }, 1000);
 
@@ -110,15 +123,14 @@ auth.onAuthStateChanged((user) => {
 
             userRef.update({ leccion_actual_DF: "bunker.html?id=63", estado: "Finalizado_DF" });
 
-            document.getElementById("ui-indicator").style.display = "none";
-            document.getElementById("ui-progress").parentElement.style.display = "none";
-            document.getElementById("ui-title").style.display = "none";
-            document.getElementById("ui-desc").style.display = "none";
+            if(uiIndicator) uiIndicator.style.display = "none";
+            if(uiProgress && uiProgress.parentElement) uiProgress.parentElement.style.display = "none";
+            if(uiTitle) uiTitle.style.display = "none";
+            if(uiDesc) uiDesc.style.display = "none";
             
             const nombreExp = data.nombre ? data.nombre.toUpperCase() : "SIN NOMBRE";
 
             workArea.className = "work-area";
-            // Inyectamos el botón de Upsell directamente aquí
             workArea.innerHTML = `
                 <span id="nombre-exp" style="font-size: 11px; font-weight: 600; color: #878787; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; line-height: 1; display: block;">
                     EXPEDICIONARIO: ${nombreExp}
@@ -153,28 +165,28 @@ auth.onAuthStateChanged((user) => {
                 const now = new Date().getTime(); const distance = targetDate - now;
                 if (distance < 0) { 
                     clearInterval(countdownInterval);
-                    document.getElementById("countdown").innerHTML = "<p style='width:100%;text-align:center;font-weight:800;color:#d93025;'>EXPIRADO</p>"; 
+                    const cd = document.getElementById("countdown");
+                    if(cd) cd.innerHTML = "<p style='width:100%;text-align:center;font-weight:800;color:#d93025;'>EXPIRADO</p>"; 
                     return; 
                 }
                 const h = Math.floor(distance / (1000 * 60 * 60));
                 const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const s = Math.floor((distance % (1000 * 60)) / 1000);
-                document.getElementById("hrs").innerText = h.toString().padStart(2, "0");
-                document.getElementById("min").innerText = m.toString().padStart(2, "0");
-                document.getElementById("seg").innerText = s.toString().padStart(2, "0");
+                const hrsEl = document.getElementById("hrs");
+                const minEl = document.getElementById("min");
+                const segEl = document.getElementById("seg");
+                if(hrsEl) hrsEl.innerText = h.toString().padStart(2, "0");
+                if(minEl) minEl.innerText = m.toString().padStart(2, "0");
+                if(segEl) segEl.innerText = s.toString().padStart(2, "0");
             }, 1000);
 
         } else {
-            uiLogo.style.display = "block";
-            document.getElementById("ui-indicator").style.display = "block";
-            document.getElementById("ui-progress").parentElement.style.display = "block";
-            document.getElementById("ui-title").style.display = "block";
-            document.getElementById("ui-desc").style.display = "block";
-
-            document.getElementById("ui-indicator").innerText = leccionData.indicador;
-            document.getElementById("ui-progress").style.width = leccionData.progreso;
-            document.getElementById("ui-title").innerHTML = leccionData.titulo;
-            document.getElementById("ui-desc").innerHTML = leccionData.descripcion || "";
+            if(uiLogo) uiLogo.style.display = "block";
+            if(uiIndicator) { uiIndicator.style.display = "block"; uiIndicator.innerText = leccionData.indicador; }
+            if(uiProgress && uiProgress.parentElement) { uiProgress.parentElement.style.display = "block"; uiProgress.style.width = leccionData.progreso; }
+            if(uiTitle) { uiTitle.style.display = "block"; uiTitle.innerHTML = leccionData.titulo; }
+            if(uiDesc) { uiDesc.style.display = "block"; uiDesc.innerHTML = leccionData.descripcion || ""; }
+            
             btnMando.innerText = leccionData.btnTexto || "Continuar →";
             btnMando.style.display = "block";
 
@@ -194,9 +206,12 @@ auth.onAuthStateChanged((user) => {
                 workArea.innerHTML = `<textarea id="input-dinamico" placeholder="${leccionData.placeholder}"></textarea>`;
                 const campoDB = `bitacora_${leccionId}`;
                 if (data[campoDB]) {
-                    document.getElementById("input-dinamico").value = data[campoDB];
-                    document.getElementById("input-dinamico").readOnly = true;
-                    document.getElementById("input-dinamico").classList.add("locked");
+                    const input = document.getElementById("input-dinamico");
+                    if(input) {
+                        input.value = data[campoDB];
+                        input.readOnly = true;
+                        input.classList.add("locked");
+                    }
                     isLocked = true;
                 }
             }
@@ -240,7 +255,6 @@ auth.onAuthStateChanged((user) => {
                 }
             };
 
-            // Lógica para Egresados: El botón maestro muta a rojo
             if (data.estado === "Finalizado_DF" && !data.access_DM) {
                 if (isLocked) {
                     btnMando.innerText = "Ir al Reporte Final →";
@@ -271,12 +285,10 @@ auth.onAuthStateChanged((user) => {
             }
         }
 
-        // AHORA SÍ: Pantalla liberada sin colapsos
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
     }).catch((error) => {
-        console.error("Error obteniendo documento:", error);
-        document.getElementById("loading-screen").style.display = "none";
-        alert("Error de conexión con la base de datos.");
+        console.error("Error BD:", error);
+        alert("Fallo de conexión.");
     });
 });
