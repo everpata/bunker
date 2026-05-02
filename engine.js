@@ -36,7 +36,11 @@ auth.onAuthStateChanged((user) => {
         }
 
         const leccionData = DEEPFALL_DATA[leccionId];
-        if(!leccionData) { alert("Lección no encontrada."); return; }
+        if(!leccionData) { 
+            document.getElementById("loading-screen").style.display = "none";
+            alert("Protocolo no encontrado."); 
+            return; 
+        }
 
         const workArea = document.getElementById("dynamic-work-area") || document.querySelector(".work-area");
         const btnMando = document.getElementById("btn-mando") || document.querySelector(".btn-mando");
@@ -59,10 +63,9 @@ auth.onAuthStateChanged((user) => {
             if(uiTitle) uiTitle.style.display = "none";
             if(uiDesc) uiDesc.style.display = "none";
 
-            workArea.className = "work-area";
             workArea.innerHTML = `
-                <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado" style="width:100%; max-width:120px; display:block; margin: 0 auto 20px;">
-                <p class="text-base" id="status-text" style="text-align:center;">La siguiente ruta será liberada en:</p>
+                <img src="candado.webp" class="relic-lock-img" alt="Bloqueado" style="width:120px; margin: 0 auto 20px; display:block;">
+                <p class="text-base" style="text-align:center;">La siguiente ruta será liberada en:</p>
                 <div id="countdown" class="stats-container">
                     <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
                     <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
@@ -73,33 +76,28 @@ auth.onAuthStateChanged((user) => {
             btnMando.onclick = () => window.location.reload(true);
             btnMando.style.display = "block";
 
-            const countDownDate = new Date(leccionData.fechaLiberacion).getTime();
-            countdownInterval = setInterval(function() {
-                const now = new Date().getTime(); const distance = countDownDate - now;
-                if (distance < 0) {
+            const cdDate = new Date(leccionData.fechaLiberacion).getTime();
+            countdownInterval = setInterval(() => {
+                const now = new Date().getTime(); const dist = cdDate - now;
+                if (dist < 0) {
                     clearInterval(countdownInterval);
-                    const cd = document.getElementById("countdown");
-                    if(cd) cd.style.display = "none";
-                    btnMando.classList.add("btn-ready");
                     btnMando.innerText = "Ingresar al siguiente tramo →";
                     btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
                 } else {
-                    const h = Math.floor(distance / (1000 * 60 * 60));
-                    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const s = Math.floor((distance % (1000 * 60)) / 1000);
-                    if(document.getElementById("hrs")) document.getElementById("hrs").innerText = h.toString().padStart(2, "0");
-                    if(document.getElementById("min")) document.getElementById("min").innerText = m.toString().padStart(2, "0");
-                    if(document.getElementById("seg")) document.getElementById("seg").innerText = s.toString().padStart(2, "0");
+                    const h = Math.floor(dist / 3600000);
+                    const m = Math.floor((dist % 3600000) / 60000);
+                    const s = Math.floor((dist % 60000) / 1000);
+                    if(document.getElementById("hrs")) document.getElementById("hrs").innerText = h.toString().padStart(2,"0");
+                    if(document.getElementById("min")) document.getElementById("min").innerText = m.toString().padStart(2,"0");
+                    if(document.getElementById("seg")) document.getElementById("seg").innerText = s.toString().padStart(2,"0");
                 }
             }, 1000);
 
         } else if (leccionData.tipo === "reporte") {
-            // SEGURIDAD DE ACCESO
+            // Seguridad: Si ya tiene acceso al Tramo 02, redirigir
             if (data.access_DM === true || data.access_DQ === true) {
-                if (data.access_DQ) window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html";
-                else if (data.estado === "Finalizado_DM") window.location.href = "08_DM_reportefinal.html"; 
-                else window.location.href = data.leccion_actual_DM || "01_DM_texto.html";
-                return; 
+                window.location.href = data.leccion_actual_DM || "bunker.html?id=64";
+                return;
             }
 
             userRef.update({ leccion_actual_DF: "bunker.html?id=63", estado: "Finalizado_DF" });
@@ -111,8 +109,6 @@ auth.onAuthStateChanged((user) => {
             
             const nombreExp = data.nombre ? data.nombre.toUpperCase() : "SIN NOMBRE";
 
-            // RECREACIÓN EXACTA DEL HTML ORIGINAL
-            workArea.className = "work-area-report"; // Clase neutra para evitar conflictos
             workArea.style.textAlign = "center";
             workArea.innerHTML = `
                 <span id="nombre-exp">EXPEDICIONARIO: ${nombreExp}</span>
@@ -137,23 +133,20 @@ auth.onAuthStateChanged((user) => {
             btnMando.style.display = "none"; 
             document.getElementById("btn-upsell-dinamico").onclick = () => window.location.href = leccionData.linkUpsell;
 
-            const targetDate = new Date(leccionData.fechaExpiracion).getTime();
-            countdownInterval = setInterval(function() {
-                const now = new Date().getTime(); const distance = targetDate - now;
-                if (distance < 0) { 
-                    clearInterval(countdownInterval);
-                    document.getElementById("countdown").innerHTML = "EXPIRADO"; 
-                    return; 
-                }
-                const h = Math.floor(distance / (1000 * 60 * 60));
-                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((distance % (1000 * 60)) / 1000);
-                if(document.getElementById("hrs")) document.getElementById("hrs").innerText = h.toString().padStart(2, "0");
-                if(document.getElementById("min")) document.getElementById("min").innerText = m.toString().padStart(2, "0");
-                if(document.getElementById("seg")) document.getElementById("seg").innerText = s.toString().padStart(2, "0");
+            const tDate = new Date(leccionData.fechaExpiracion).getTime();
+            countdownInterval = setInterval(() => {
+                const now = new Date().getTime(); const dist = tDate - now;
+                if (dist < 0) { document.getElementById("countdown").innerHTML = "EXPIRADO"; return; }
+                const h = Math.floor(dist / 3600000);
+                const m = Math.floor((dist % 3600000) / 60000);
+                const s = Math.floor((dist % 60000) / 1000);
+                if(document.getElementById("hrs")) document.getElementById("hrs").innerText = h.toString().padStart(2,"0");
+                if(document.getElementById("min")) document.getElementById("min").innerText = m.toString().padStart(2,"0");
+                if(document.getElementById("seg")) document.getElementById("seg").innerText = s.toString().padStart(2,"0");
             }, 1000);
 
         } else {
+            // LECCIONES ESTÁNDAR
             if(uiLogo) uiLogo.style.display = "block";
             if(uiIndicator) { uiIndicator.style.display = "block"; uiIndicator.innerText = leccionData.indicador; }
             if(uiProgress && uiProgress.parentElement) { uiProgress.parentElement.style.display = "block"; uiProgress.style.width = leccionData.progreso; }
@@ -169,34 +162,24 @@ auth.onAuthStateChanged((user) => {
             } 
             else if (leccionData.tipo === "video") {
                 workArea.className = "work-area";
-                workArea.innerHTML = `<div class="video-container">
-                    <iframe src="${leccionData.url}" loading="lazy" style="border:0; position:absolute; top:0; left:0; height:100%; width:100%; border-radius:16px;" allow="autoplay; fullscreen"></iframe>
-                </div>
-                ${leccionData.postTexto ? `<div class="post-video-box"><p>${leccionData.postTexto}</p></div>` : ""}`;
+                workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" style="border:0; position:absolute; top:0; left:0; height:100%; width:100%; border-radius:16px;" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="post-video-box"><p>${leccionData.postTexto}</p></div>` : ""}`;
             }
             else if (leccionData.tipo === "bitacora") {
                 workArea.className = "work-area card";
                 workArea.innerHTML = `<textarea id="input-dinamico" placeholder="${leccionData.placeholder}"></textarea>`;
-                const campoDB = `bitacora_${leccionId}`;
-                if (data[campoDB]) {
-                    const input = document.getElementById("input-dinamico");
-                    if(input) {
-                        input.value = data[campoDB];
-                        input.readOnly = true;
-                        input.classList.add("locked");
-                    }
+                if (data[`bitacora_${leccionId}`]) {
+                    document.getElementById("input-dinamico").value = data[`bitacora_${leccionId}`];
+                    document.getElementById("input-dinamico").readOnly = true;
+                    document.getElementById("input-dinamico").classList.add("locked");
                     isLocked = true;
                 }
             }
             else if (leccionData.tipo === "quiz") {
                 workArea.className = "work-area";
-                let opcionesHTML = leccionData.opciones.map(op => `<button class="option-btn" onclick="toggleOption(this)">${op}</button>`).join("");
-                workArea.innerHTML = opcionesHTML;
-                const campoDB = `quiz_${leccionId}`;
-                if (data[campoDB] && Array.isArray(data[campoDB])) {
-                    workArea.classList.add("quiz-locked");
+                workArea.innerHTML = leccionData.opciones.map(op => `<button class="option-btn" onclick="toggleOption(this)">${op}</button>`).join("");
+                if (data[`quiz_${leccionId}`]) {
                     document.querySelectorAll(".option-btn").forEach(btn => {
-                        if(data[campoDB].includes(btn.innerText.trim())) btn.classList.add("selected");
+                        if(data[`quiz_${leccionId}`].includes(btn.innerText.trim())) btn.classList.add("selected");
                     });
                     isLocked = true;
                     btnMando.classList.add("btn-disabled");
@@ -204,28 +187,38 @@ auth.onAuthStateChanged((user) => {
                 }
             }
 
-            let urlSiguiente = leccionData.siguienteId.includes(".html") ? leccionData.siguienteId : `bunker.html?id=${leccionData.siguienteId}`;
+            let urlSig = leccionData.siguienteId.includes(".html") ? leccionData.siguienteId : `bunker.html?id=${leccionData.siguienteId}`;
 
             btnMando.onclick = () => {
                 if (isLocked || leccionData.tipo === "texto" || leccionData.tipo === "video") {
-                    window.location.href = urlSiguiente;
+                    window.location.href = urlSig;
                     return;
                 }
                 if (leccionData.tipo === "bitacora") {
                     const txt = document.getElementById("input-dinamico").value;
-                    if(txt.trim() === "") { alert("El búnker exige tu respuesta."); return; }
-                    btnMando.innerText = "Sincronizando..."; btnMando.disabled = true;
-                    userRef.update({ [`bitacora_${leccionId}`]: txt, leccion_actual_DF: urlSiguiente })
-                           .then(() => window.location.href = urlSiguiente);
+                    if(!txt.trim()) return alert("El búnker exige tu respuesta.");
+                    userRef.update({ [`bitacora_${leccionId}`]: txt, leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
                 }
                 else if (leccionData.tipo === "quiz") {
-                    const seleccionados = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
-                    if(seleccionados.length === 0) { alert("Toma una decisión."); return; }
-                    btnMando.innerText = "Sincronizando..."; btnMando.disabled = true;
-                    userRef.update({ [`quiz_${leccionId}`]: seleccionados, leccion_actual_DF: urlSiguiente })
-                           .then(() => window.location.href = urlSiguiente);
+                    const sel = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
+                    if(sel.length === 0) return alert("Toma una decisión.");
+                    userRef.update({ [`quiz_${leccionId}`]: sel, leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
                 }
             };
+
+            // Lógica Egresado: Botón Rojo si ya terminó el DF
+            if (data.estado === "Finalizado_DF" && !data.access_DM && isLocked) {
+                btnMando.innerText = "Ir al Reporte Final →";
+                btnMando.classList.add("btn-status-alert");
+                btnMando.onclick = () => window.location.href = "bunker.html?id=63";
+            }
+        }
+
+        // GPS Seguro
+        const nActual = parseInt(leccionId) || 0;
+        const nGuardado = data.leccion_actual_DF ? (parseInt(data.leccion_actual_DF.match(/\d+/)) || 0) : 0;
+        if (data.estado !== "Finalizado_DF" && !data.access_DM && nActual > nGuardado) {
+            userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}` });
         }
 
         document.getElementById("loading-screen").style.display = "none";
