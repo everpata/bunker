@@ -221,12 +221,5 @@ const DEEPFALL_DATA = {
         "tipo": "reporte",
         "fechaExpiracion": "May 4, 2026 19:00:00 GMT-0500", // La misma fecha de urgencia de tu HTML
         "linkUpsell": "https://deepmersion.deepnessmen.com" // Coloca tu link de pago aquí
-    },
-
-    "hub_df": {
-        "tipo": "hub",
-        "indicador": "Tramo 01 / Centro de mando",
-        "titulo": "Descenso.",
-        "descripcion": "Protocolos fundamentales del descenso."
     }
 };
