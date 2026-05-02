@@ -17,6 +17,11 @@ let countdownInterval;
 
 function toggleOption(btn) { btn.classList.toggle("selected"); }
 
+// 🛡️ SISTEMA DE ALERTA TEMPRANA
+if (typeof DEEPFALL_DATA === "undefined") {
+    alert("🔥 FALLO DEL BÚNKER: El archivo datos.js tiene un error de sintaxis y no pudo cargar. Revisa que no falten comas o llaves en tu código.");
+}
+
 auth.onAuthStateChanged((user) => {
     if (!user) { window.location.href = "index.html"; return; }
     const userRef = db.collection("usuarios").doc(user.uid);
@@ -25,14 +30,23 @@ auth.onAuthStateChanged((user) => {
         if (!doc.exists) { window.location.href = "index.html"; return; }
         const data = doc.data();
 
+        // 🧠 GPS SEGURO (Evita colapsos si la base de datos tiene textos raros)
         if (!leccionId) {
-            let guardada = data.leccion_actual_DF ? data.leccion_actual_DF.match(/\d+/)[0] : "34";
+            let guardada = "34"; // Default
+            if (data.leccion_actual_DF) {
+                const match = String(data.leccion_actual_DF).match(/\d+/);
+                if (match) guardada = match[0];
+            }
             window.location.href = `bunker.html?id=${guardada}`;
             return;
         }
 
         const leccionData = DEEPFALL_DATA[leccionId];
-        if(!leccionData) { alert("Lección no encontrada en el servidor."); return; }
+        if(!leccionData) { 
+            alert("Lección no encontrada en la base de datos."); 
+            document.getElementById("loading-screen").style.display = "none";
+            return; 
+        }
 
         const workArea = document.getElementById("dynamic-work-area");
         const btnMando = document.getElementById("btn-mando");
@@ -45,7 +59,6 @@ auth.onAuthStateChanged((user) => {
 
         // --- RENDERIZADO VISUAL CONDICIONAL ---
         if (leccionData.tipo === "candado") {
-            // LÓGICA DEL CANDADO
             uiLogo.style.display = "none";
             document.getElementById("ui-indicator").style.display = "none";
             document.getElementById("ui-progress").parentElement.style.display = "none";
@@ -87,7 +100,6 @@ auth.onAuthStateChanged((user) => {
             }, 1000);
 
         } else if (leccionData.tipo === "reporte") {
-            // LÓGICA DEL REPORTE FINAL (Puro y sin retorno)
             if (data.access_DM === true || data.access_DQ === true) {
                 if (data.access_DQ) window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html";
                 else if (data.estado === "Finalizado_DM") window.location.href = "08_DM_reportefinal.html"; 
@@ -130,8 +142,6 @@ auth.onAuthStateChanged((user) => {
 
             btnMando.style.display = "none"; 
             const btnUpsell = document.getElementById("btn-alerta-reporte");
-            
-            // Forzamos que el botón fantasma de volver al hub se quede oculto
             document.getElementById("btn-volver-hub").style.display = "none";
 
             btnUpsell.innerText = "AVANZAR AL TRAMO 02 →";
@@ -155,7 +165,6 @@ auth.onAuthStateChanged((user) => {
             }, 1000);
 
         } else {
-            // LÓGICA ESTÁNDAR (Textos, Videos, Bitácoras, Quizes)
             uiLogo.style.display = "block";
             document.getElementById("ui-indicator").style.display = "block";
             document.getElementById("ui-progress").parentElement.style.display = "block";
@@ -229,11 +238,7 @@ auth.onAuthStateChanged((user) => {
             };
             
             const btnRojo = document.getElementById("btn-alerta-reporte");
-            
-            // Ya no hay botón Hub, solo mandamos al reporte
             btnRojo.onclick = () => { window.location.href = "bunker.html?id=63"; }; 
-            
-            // Mantenemos oculto permanentemente el botón Hub que venía en tu HTML
             document.getElementById("btn-volver-hub").style.display = "none";
 
             if (data.estado === "Finalizado_DF" && !data.access_DM) {
@@ -249,10 +254,15 @@ auth.onAuthStateChanged((user) => {
             }
         }
 
-        const numActual = parseInt(leccionId);
-        const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.match(/\d+/)[0]) : 0;
+        // 🧠 GPS SEGURO (Almacenamiento blindado)
+        const numActual = parseInt(leccionId) || 0;
+        let numGuardado = 0;
+        if (data.leccion_actual_DF) {
+            const match = String(data.leccion_actual_DF).match(/\d+/);
+            if (match) numGuardado = parseInt(match[0]);
+        }
 
-        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ && !isNaN(numActual)) {
+        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ && numActual > 0) {
             if (numActual > numGuardado) {
                 userRef.update({ leccion_actual_DF: leccionId });
             }
