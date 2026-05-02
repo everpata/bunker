@@ -45,7 +45,7 @@ auth.onAuthStateChanged((user) => {
 
         // --- RENDERIZADO VISUAL CONDICIONAL ---
         if (leccionData.tipo === "candado") {
-            // Ocultar TODO lo innecesario para el candado
+            // LÓGICA DEL CANDADO
             uiLogo.style.display = "none";
             document.getElementById("ui-indicator").style.display = "none";
             document.getElementById("ui-progress").parentElement.style.display = "none";
@@ -62,37 +62,165 @@ auth.onAuthStateChanged((user) => {
                     <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
                 </div>
             `;
-            
             btnMando.innerText = "Actualizar Protocolo →";
             btnMando.onclick = () => window.location.reload(true);
             btnMando.style.display = "block";
 
             const countDownDate = new Date(leccionData.fechaLiberacion).getTime();
-            
             countdownInterval = setInterval(function() {
-                const now = new Date().getTime();
-                const distance = countDownDate - now;
-
+                const now = new Date().getTime(); const distance = countDownDate - now;
                 if (distance < 0) {
                     clearInterval(countdownInterval);
                     document.getElementById("countdown").style.display = "none";
                     document.getElementById("status-text").innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
-                    
                     btnMando.classList.add("btn-ready");
                     btnMando.innerText = "Ingresar al siguiente tramo →";
                     btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
                 } else {
-                    const hours = Math.floor(distance / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    document.getElementById("hrs").innerText = hours.toString().padStart(2, "0");
-                    document.getElementById("min").innerText = minutes.toString().padStart(2, "0");
-                    document.getElementById("seg").innerText = seconds.toString().padStart(2, "0");
+                    const h = Math.floor(distance / (1000 * 60 * 60));
+                    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((distance % (1000 * 60)) / 1000);
+                    document.getElementById("hrs").innerText = h.toString().padStart(2, "0");
+                    document.getElementById("min").innerText = m.toString().padStart(2, "0");
+                    document.getElementById("seg").innerText = s.toString().padStart(2, "0");
                 }
             }, 1000);
+
+        } else if (leccionData.tipo === "reporte") {
+            // LÓGICA DEL REPORTE FINAL
+            if (data.access_DM === true || data.access_DQ === true) {
+                if (data.access_DQ) window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html";
+                else if (data.estado === "Finalizado_DM") window.location.href = "08_DM_reportefinal.html"; 
+                else window.location.href = data.leccion_actual_DM || "01_DM_texto.html";
+                return; 
+            }
+
+            userRef.update({ leccion_actual_DF: "63", estado: "Finalizado_DF" });
+
+            document.getElementById("ui-indicator").style.display = "none";
+            document.getElementById("ui-progress").parentElement.style.display = "none";
+            document.getElementById("ui-title").style.display = "none";
+            document.getElementById("ui-desc").style.display = "none";
+            
+            const nombreExp = data.nombre ? data.nombre.toUpperCase() : "SIN NOMBRE";
+
+            workArea.className = "work-area";
+            workArea.innerHTML = `
+                <span id="nombre-exp" style="font-size: 11px; font-weight: 600; color: #878787; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; line-height: 1; display: block;">
+                    EXPEDICIONARIO: ${nombreExp}
+                </span>
+                <div class="status-badge" style="background-color: #fce8e6; color: #d93025; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; margin-bottom: 25px; border: 1px solid #d93025; text-transform: uppercase;">
+                    ESTATUS: MÁSCARA ROTA
+                </div>
+                <h1 class="title" style="margin-bottom:10px;">Fin del Descenso.</h1>
+                <p class="description" style="margin-bottom:25px;">Análisis final del Tramo 01 completado.</p>
+                <div class="card" style="text-align:left; padding:20px; background:#f9f9f9; border-radius:16px;">
+                    <p class="text-base" style="margin:0;">
+                        <b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br>
+                        <b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.
+                    </p>
+                </div>
+                <p class="text-base" style="margin-top: 35px; margin-bottom: -20px; width:100%; text-align:center;"><b>La escotilla de acceso cierra en:</b></p>
+                <div id="countdown" class="stats-container" style="display:flex;">
+                    <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
+                    <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
+                    <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
+                </div>
+            `;
+
+            btnMando.style.display = "none"; 
+            const btnUpsell = document.getElementById("btn-alerta-reporte");
+            const btnRepasar = document.getElementById("btn-volver-hub");
+
+            btnUpsell.innerText = "AVANZAR AL TRAMO 02 →";
+            btnUpsell.onclick = () => window.location.href = leccionData.linkUpsell;
+            btnUpsell.style.display = "block";
+
+            btnRepasar.innerText = "← Volver al Hub del Descenso";
+            btnRepasar.onclick = () => window.location.href = "bunker.html?id=hub_df"; // REDIRIGE AL NUEVO HUB
+            btnRepasar.style.display = "block";
+
+            const targetDate = new Date(leccionData.fechaExpiracion).getTime();
+            countdownInterval = setInterval(function() {
+                const now = new Date().getTime(); const distance = targetDate - now;
+                if (distance < 0) { 
+                    clearInterval(countdownInterval);
+                    document.getElementById("countdown").innerHTML = "<p style='width:100%;text-align:center;font-weight:800;color:#d93025;'>EXPIRADO</p>"; 
+                    return; 
+                }
+                const h = Math.floor(distance / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById("hrs").innerText = h.toString().padStart(2, "0");
+                document.getElementById("min").innerText = m.toString().padStart(2, "0");
+                document.getElementById("seg").innerText = s.toString().padStart(2, "0");
+            }, 1000);
+
+        } else if (leccionData.tipo === "hub") {
+            // 🧠 LÓGICA DEL HUB AUTOMATIZADO
+            if (data.access_DM !== true && data.access_DQ !== true && data.estado !== "Finalizado_DF") {
+                window.location.href = `bunker.html?id=${data.leccion_actual_DF ? data.leccion_actual_DF.match(/\d+/)[0] : "1"}`;
+                return;
+            }
+
+            uiLogo.style.display = "block";
+            document.getElementById("ui-indicator").style.display = "block";
+            document.getElementById("ui-progress").parentElement.style.display = "none";
+            document.getElementById("ui-title").style.display = "block";
+            document.getElementById("ui-desc").style.display = "block";
+
+            document.getElementById("ui-indicator").innerText = leccionData.indicador;
+            document.getElementById("ui-title").innerHTML = leccionData.titulo;
+            document.getElementById("ui-desc").innerHTML = leccionData.descripcion;
+
+            let gridHTML = `<div class="hub-grid">`;
+            
+            // Generador dinámico de botones
+            let keysNumeric = Object.keys(DEEPFALL_DATA).filter(k => !isNaN(k)).sort((a,b) => parseInt(a) - parseInt(b));
+            keysNumeric.forEach(key => {
+                let card = DEEPFALL_DATA[key];
+                if (card.tipo !== "candado" && card.tipo !== "reporte" && card.tipo !== "hub") {
+                    let tituloCorto = card.titulo.replace('.', ''); // Limpia el punto final si lo hay
+                    gridHTML += `
+                    <a href="bunker.html?id=${key}" class="lesson-card">
+                        <div class="lesson-info"><b>${key}. ${tituloCorto}</b><span>${card.indicador.split('/')[1] || card.indicador}</span></div>
+                        <span style="color: #ccc;">→</span>
+                    </a>`;
+                }
+            });
+
+            gridHTML += `</div>
+                <button id="btn-ir-dq" class="btn-mando" style="display: none; margin-top: 35px;">Ir al Hub de la Cúspide (DQ) →</button>
+                <button id="btn-ir-dm" class="btn-mando" style="display: none; margin-top: 35px;">Ir al Hub de la Inmersión (DM) →</button>
+                <button id="btn-ir-reporte" class="btn-mando" style="display: none; margin-top: 35px;">Ver Reporte de Diagnóstico →</button>
+            `;
+
+            workArea.className = "work-area";
+            workArea.innerHTML = gridHTML;
+            btnMando.style.display = "none";
+            document.getElementById("btn-alerta-reporte").style.display = "none";
+            document.getElementById("btn-volver-hub").style.display = "none";
+            
+            const dmBtn = document.getElementById("btn-ir-dm");
+            const dqBtn = document.getElementById("btn-ir-dq");
+            const repBtn = document.getElementById("btn-ir-reporte");
+
+            dmBtn.onclick = () => { window.location.href = "09_DM_hub.html"; };
+            dqBtn.onclick = () => { window.location.href = "09_DQ_hub.html"; };
+            repBtn.onclick = () => { window.location.href = "bunker.html?id=63"; };
+
+            if (data.access_DQ === true) {
+                dqBtn.style.display = "block";
+                dmBtn.className = "btn-ghost margin-top-ghost";
+                dmBtn.style.display = "block";
+            } else if (data.access_DM === true) {
+                dmBtn.style.display = "block";
+            } else if (data.estado === "Finalizado_DF") {
+                repBtn.style.display = "block";
+            }
+
         } else {
-            // Mostrar logo y elementos para tarjetas normales
+            // LÓGICA ESTÁNDAR (Textos, Videos, Bitácoras, Quizes)
             uiLogo.style.display = "block";
             document.getElementById("ui-indicator").style.display = "block";
             document.getElementById("ui-progress").parentElement.style.display = "block";
@@ -145,7 +273,7 @@ auth.onAuthStateChanged((user) => {
 
             btnMando.onclick = () => {
                 if (isLocked || leccionData.tipo === "texto" || leccionData.tipo === "video") {
-                    window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
+                    window.location.href = leccionData.siguienteId.includes(".html") ? leccionData.siguienteId : `bunker.html?id=${leccionData.siguienteId}`;
                     return;
                 }
 
@@ -164,33 +292,33 @@ auth.onAuthStateChanged((user) => {
                            .then(() => window.location.href = `bunker.html?id=${leccionData.siguienteId}`);
                 }
             };
-        }
+            
+            const btnRojo = document.getElementById("btn-alerta-reporte");
+            const btnHub = document.getElementById("btn-volver-hub");
 
-        const btnRojo = document.getElementById("btn-alerta-reporte");
-        const btnHub = document.getElementById("btn-volver-hub");
+            btnRojo.onclick = () => { window.location.href = "bunker.html?id=63"; }; 
+            btnHub.onclick = () => { window.location.href = "bunker.html?id=hub_df"; }; // Ahora vuelve al Hub dinámico
 
-        document.getElementById("btn-alerta-reporte").onclick = () => { window.location.href = "08_DF_reportefinal.html"; };
-        document.getElementById("btn-volver-hub").onclick = () => { window.location.href = "09_DF_hub.html"; };
-
-        if (data.estado === "Finalizado_DF" && !data.access_DM) {
-            btnMando.style.display = isLocked ? "none" : "block";
-            btnRojo.style.display = "block";
-            btnHub.style.display = "none";
-        } else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
-            btnMando.style.display = "block";
-            btnRojo.style.display = "none";
-            btnHub.style.display = "block";
-            if(isLocked) { btnMando.innerText = "Continuar →"; btnMando.classList.remove("btn-disabled"); }
-        } else {
-            btnMando.style.display = "block";
-            btnRojo.style.display = "none";
-            btnHub.style.display = "none";
+            if (data.estado === "Finalizado_DF" && !data.access_DM) {
+                btnMando.style.display = isLocked ? "none" : "block";
+                btnRojo.style.display = "block";
+                btnHub.style.display = "none";
+            } else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
+                btnMando.style.display = "block";
+                btnRojo.style.display = "none";
+                btnHub.style.display = "block";
+                if(isLocked) { btnMando.innerText = "Continuar →"; btnMando.classList.remove("btn-disabled"); }
+            } else {
+                btnMando.style.display = "block";
+                btnRojo.style.display = "none";
+                btnHub.style.display = "none";
+            }
         }
 
         const numActual = parseInt(leccionId);
         const numGuardado = data.leccion_actual_DF ? parseInt(data.leccion_actual_DF.match(/\d+/)[0]) : 0;
 
-        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ) {
+        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ && !isNaN(numActual)) {
             if (numActual > numGuardado) {
                 userRef.update({ leccion_actual_DF: leccionId });
             }
