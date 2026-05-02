@@ -17,10 +17,6 @@ let countdownInterval;
 
 function toggleOption(btn) { btn.classList.toggle("selected"); }
 
-if (typeof DEEPFALL_DATA === "undefined") {
-    alert("🔥 ERROR CRÍTICO: Tu archivo datos.js tiene un error de sintaxis.");
-}
-
 auth.onAuthStateChanged((user) => {
     if (!user) { window.location.href = "index.html"; return; }
     const userRef = db.collection("usuarios").doc(user.uid);
@@ -40,24 +36,15 @@ auth.onAuthStateChanged((user) => {
         }
 
         const leccionData = DEEPFALL_DATA[leccionId];
-        if(!leccionData) { 
-            alert("Lección no encontrada en datos.js."); 
-            document.getElementById("loading-screen").style.display = "none";
-            return; 
-        }
+        if(!leccionData) { alert("Lección no encontrada."); return; }
 
         const workArea = document.getElementById("dynamic-work-area") || document.querySelector(".work-area");
-        const btnMando = document.getElementById("btn-mando") || document.querySelector(".btn-mando") || document.getElementById("btn-next");
+        const btnMando = document.getElementById("btn-mando") || document.querySelector(".btn-mando");
         const uiLogo = document.getElementById("ui-logo") || document.querySelector(".logo");
         const uiIndicator = document.getElementById("ui-indicator") || document.querySelector(".indicator");
         const uiProgress = document.getElementById("ui-progress") || document.querySelector(".progress-fill");
         const uiTitle = document.getElementById("ui-title") || document.querySelector(".title");
         const uiDesc = document.getElementById("ui-desc") || document.querySelector(".description");
-        
-        if(!workArea || !btnMando) {
-            alert("Error: No se encontró el área de trabajo en tu HTML.");
-            return;
-        }
 
         btnMando.className = "btn-mando"; 
         btnMando.style.cssText = ""; 
@@ -65,7 +52,6 @@ auth.onAuthStateChanged((user) => {
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
 
-        // --- RENDERIZADO VISUAL CONDICIONAL ---
         if (leccionData.tipo === "candado") {
             if(uiLogo) uiLogo.style.display = "none";
             if(uiIndicator) uiIndicator.style.display = "none";
@@ -75,7 +61,7 @@ auth.onAuthStateChanged((user) => {
 
             workArea.className = "work-area";
             workArea.innerHTML = `
-                <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado">
+                <img src="candado.webp" class="relic-lock-img" alt="Protocolo Bloqueado" style="width:100%; max-width:120px; display:block; margin: 0 auto 20px;">
                 <p class="text-base" id="status-text" style="text-align:center;">La siguiente ruta será liberada en:</p>
                 <div id="countdown" class="stats-container">
                     <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
@@ -94,8 +80,6 @@ auth.onAuthStateChanged((user) => {
                     clearInterval(countdownInterval);
                     const cd = document.getElementById("countdown");
                     if(cd) cd.style.display = "none";
-                    const st = document.getElementById("status-text");
-                    if(st) st.innerHTML = "<b>La resistencia ha sido neutralizada.</b><br><br>Actualiza el protocolo para acceder a las coordenadas.";
                     btnMando.classList.add("btn-ready");
                     btnMando.innerText = "Ingresar al siguiente tramo →";
                     btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
@@ -103,16 +87,14 @@ auth.onAuthStateChanged((user) => {
                     const h = Math.floor(distance / (1000 * 60 * 60));
                     const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     const s = Math.floor((distance % (1000 * 60)) / 1000);
-                    const hrsEl = document.getElementById("hrs");
-                    const minEl = document.getElementById("min");
-                    const segEl = document.getElementById("seg");
-                    if(hrsEl) hrsEl.innerText = h.toString().padStart(2, "0");
-                    if(minEl) minEl.innerText = m.toString().padStart(2, "0");
-                    if(segEl) segEl.innerText = s.toString().padStart(2, "0");
+                    if(document.getElementById("hrs")) document.getElementById("hrs").innerText = h.toString().padStart(2, "0");
+                    if(document.getElementById("min")) document.getElementById("min").innerText = m.toString().padStart(2, "0");
+                    if(document.getElementById("seg")) document.getElementById("seg").innerText = s.toString().padStart(2, "0");
                 }
             }, 1000);
 
         } else if (leccionData.tipo === "reporte") {
+            // SEGURIDAD DE ACCESO
             if (data.access_DM === true || data.access_DQ === true) {
                 if (data.access_DQ) window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html";
                 else if (data.estado === "Finalizado_DM") window.location.href = "08_DM_reportefinal.html"; 
@@ -129,27 +111,27 @@ auth.onAuthStateChanged((user) => {
             
             const nombreExp = data.nombre ? data.nombre.toUpperCase() : "SIN NOMBRE";
 
-            workArea.className = "work-area";
+            // RECREACIÓN EXACTA DEL HTML ORIGINAL
+            workArea.className = "work-area-report"; // Clase neutra para evitar conflictos
+            workArea.style.textAlign = "center";
             workArea.innerHTML = `
                 <span id="nombre-exp">EXPEDICIONARIO: ${nombreExp}</span>
                 <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
-                <h1 class="title" style="margin-bottom:10px;">Fin del Descenso.</h1>
-                <p class="description" style="margin-bottom:25px;">Análisis final del Tramo 01 completado.</p>
-                <div class="card" style="text-align:left; padding:20px; background:#f9f9f9; border-radius:16px;">
+                <h1 class="title">Fin del Descenso.</h1>
+                <p class="description">Análisis final del Tramo 01 completado.</p>
+                <div class="card" style="text-align:left; padding:20px; background:#f5f5f7; border-radius:16px; margin-bottom: 35px;">
                     <p class="text-base" style="margin:0;">
                         <b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br>
                         <b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.
                     </p>
                 </div>
-                <p class="text-base" style="margin-top: 35px; margin-bottom: -20px; width:100%; text-align:center;"><b>La escotilla de acceso cierra en:</b></p>
+                <p class="text-base" style="margin-top: 35px; margin-bottom: -20px;"><b>La escotilla de acceso cierra en:</b></p>
                 <div id="countdown" class="stats-container">
                     <div class="stat-box"><span class="stat-value" id="hrs">00</span><span class="stat-label">Horas</span></div>
                     <div class="stat-box"><span class="stat-value" id="min">00</span><span class="stat-label">Minutos</span></div>
                     <div class="stat-box"><span class="stat-value" id="seg">00</span><span class="stat-label">Segundos</span></div>
                 </div>
-                <button id="btn-upsell-dinamico" class="btn-status-alert">
-                    AVANZAR AL TRAMO 02 →
-                </button>
+                <button id="btn-upsell-dinamico" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
             `;
 
             btnMando.style.display = "none"; 
@@ -160,19 +142,15 @@ auth.onAuthStateChanged((user) => {
                 const now = new Date().getTime(); const distance = targetDate - now;
                 if (distance < 0) { 
                     clearInterval(countdownInterval);
-                    const cd = document.getElementById("countdown");
-                    if(cd) cd.innerHTML = "<p style='width:100%;text-align:center;font-weight:800;color:#d93025;'>EXPIRADO</p>"; 
+                    document.getElementById("countdown").innerHTML = "EXPIRADO"; 
                     return; 
                 }
                 const h = Math.floor(distance / (1000 * 60 * 60));
                 const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const s = Math.floor((distance % (1000 * 60)) / 1000);
-                const hrsEl = document.getElementById("hrs");
-                const minEl = document.getElementById("min");
-                const segEl = document.getElementById("seg");
-                if(hrsEl) hrsEl.innerText = h.toString().padStart(2, "0");
-                if(minEl) minEl.innerText = m.toString().padStart(2, "0");
-                if(segEl) segEl.innerText = s.toString().padStart(2, "0");
+                if(document.getElementById("hrs")) document.getElementById("hrs").innerText = h.toString().padStart(2, "0");
+                if(document.getElementById("min")) document.getElementById("min").innerText = m.toString().padStart(2, "0");
+                if(document.getElementById("seg")) document.getElementById("seg").innerText = s.toString().padStart(2, "0");
             }, 1000);
 
         } else {
@@ -233,7 +211,6 @@ auth.onAuthStateChanged((user) => {
                     window.location.href = urlSiguiente;
                     return;
                 }
-
                 if (leccionData.tipo === "bitacora") {
                     const txt = document.getElementById("input-dinamico").value;
                     if(txt.trim() === "") { alert("El búnker exige tu respuesta."); return; }
@@ -249,41 +226,9 @@ auth.onAuthStateChanged((user) => {
                            .then(() => window.location.href = urlSiguiente);
                 }
             };
-
-            if (data.estado === "Finalizado_DF" && !data.access_DM) {
-                if (isLocked) {
-                    btnMando.innerText = "Ir al Reporte Final →";
-                    btnMando.style.backgroundColor = "#fce8e6";
-                    btnMando.style.color = "#d93025";
-                    btnMando.style.border = "1px solid #d93025";
-                    btnMando.onclick = () => { window.location.href = "bunker.html?id=63"; };
-                }
-            } else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
-                if(isLocked) { 
-                    btnMando.innerText = "Continuar →"; 
-                    btnMando.classList.remove("btn-disabled"); 
-                    btnMando.onclick = () => { window.location.href = urlSiguiente; };
-                }
-            }
-        }
-
-        const numActual = parseInt(leccionId) || 0;
-        let numGuardado = 0;
-        if (data.leccion_actual_DF) {
-            const match = String(data.leccion_actual_DF).match(/\d+/);
-            if (match) numGuardado = parseInt(match[0]);
-        }
-
-        if (data.estado !== "Finalizado_DF" && !data.access_DM && !data.access_DQ && numActual > 0) {
-            if (numActual > numGuardado) {
-                userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}` });
-            }
         }
 
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
-    }).catch((error) => {
-        console.error("Error BD:", error);
-        alert("Fallo de conexión.");
     });
 });
