@@ -8,7 +8,8 @@
     <style>
         /* 🚨 ESTILOS GLOBALES MAESTROS */
         .btn-status-alert { display: none; background-color: #fce8e6 !important; color: #d93025 !important; border: 1px solid #d93025 !important; font-weight: 700 !important; width: 100%; padding: 20px; border-radius: 16px; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1); animation: btnElastic 4s ease-in-out infinite; text-align: center; margin-top: 35px !important; }
-        @keyframes btnElastic { 0% { padding-top: 18px; padding-bottom: 18px; } 50% { padding-top: 24px; padding-bottom: 24px; } 100% { padding-top: 18px; padding-bottom: 18px; } }
+        @keyframes btnElastic { 0%, 100% { padding-top: 18px; padding-bottom: 18px; } 50% { padding-top: 24px; padding-bottom: 24px; } }
+        
         #btn-mando, #btn-alerta-reporte, #btn-volver-hub { display: none; }
         #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: fixed; top: 0; left: 0; z-index: 9999; }
         
@@ -23,9 +24,11 @@
         .post-video-box b { color: #333333; }
 
         /* 🔒 ESTILOS DEL CANDADO DINÁMICO */
-        .relic-lock-img { width: 100%; max-width: 450px; height: auto; margin-bottom: 35px; display: block; opacity: 0.95; animation: relicPulse 3s ease-in-out infinite; }
+        .relic-lock-img { width: 100%; max-width: 450px; height: auto; margin: 0 auto 35px auto; display: block; opacity: 0.95; animation: relicPulse 3s ease-in-out infinite; }
         @keyframes relicPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.02); opacity: 1; } }
         #status-text { width: 100%; text-align: center !important; margin: 0; padding: 0 5px; }
+
+        /* 📊 CONTENEDORES DE STATS (CANDADO Y REPORTE) */
         .stats-container { display: flex !important; flex-direction: row !important; gap: 10px; width: 100%; margin-top: 25px; margin-bottom: 35px; }
         .stat-box { flex: 1; background-color: #f5f5f7; padding: 22px 5px; border-radius: 16px; text-align: center; border: 1px solid #e0e0e0; }
         .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
@@ -33,38 +36,22 @@
         @keyframes pulseReady { 0%, 100% { background-color: #333; } 50% { background-color: #000; transform: scale(1.02); } }
         .btn-ready { animation: pulseReady 2s infinite !important; }
 
-        /* 🗂️ ESTILOS DEL HUB DINÁMICO */
-        .hub-grid { width: 100%; display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 0 !important; }
-        .lesson-card { background: #f5f5f7; border: 1px solid #e0e0e0; border-radius: 16px; padding: 22px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #333; transition: all 0.3s; }
-        .lesson-card:hover { border-color: #333; background: #fff; transform: translateY(-2px); }
-        .lesson-info b { display: block; font-size: 15px; margin-bottom: 4px; color: #333; }
-        .lesson-info span { font-size: 12px; color: #878787; font-weight: 500; }
-        .margin-top-ghost { margin-top: 20px !important; }
-
         /* 🚨 ESTILOS REPORTE FINAL V5.0 */
-#nombre-exp { 
-    font-size: 11px; font-weight: 600; color: #878787; 
-    letter-spacing: 1.5px; text-transform: uppercase; 
-    margin-bottom: 18px; line-height: 1; display: block; width: 100%; text-align: center;
-}
-.status-badge { 
-    background-color: #fce8e6; color: #d93025; 
-    padding: 6px 12px; border-radius: 6px; 
-    font-size: 10px; font-weight: 800; display: inline-block !important; 
-    margin: 0 auto 25px auto; border: 1px solid #d93025; 
-    text-transform: uppercase; width: auto; 
-}
-.stats-container { display: flex !important; flex-direction: row !important; gap: 10px; width: 100%; margin-top: 35px; }
-.stat-box { flex: 1; background-color: #f5f5f7; padding: 22px 5px; border-radius: 16px; text-align: center; }
-.stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
-.stat-label { font-size: 9px; font-weight: 700; color: #878787; margin-top: 8px; display: block; text-transform: uppercase; }
-.btn-status-alert { 
-    width: 100%; margin-top: 35px !important; background-color: #fce8e6 !important; 
-    color: #d93025 !important; border: 1px solid #d93025 !important; 
-    font-weight: 700 !important; animation: btnElastic 4s ease-in-out infinite; 
-    border-radius: 16px !important; padding: 20px; font-size: 16px; cursor: pointer; 
-}
-@keyframes btnElastic { 0%, 100% { padding-top: 18px; padding-bottom: 18px; } 50% { padding-top: 24px; padding-bottom: 24px; } }
+        #nombre-exp { 
+            font-size: 11px; font-weight: 600; color: #878787; 
+            letter-spacing: 1.5px; text-transform: uppercase; 
+            margin-bottom: 18px; line-height: 1; display: block; width: 100%; text-align: center;
+        }
+        .status-badge { 
+            background-color: #fce8e6; color: #d93025; 
+            padding: 6px 12px; border-radius: 6px; 
+            font-size: 10px; font-weight: 800; 
+            display: table !important; /* Mide solo lo que mide el texto */
+            margin: 0 auto 25px auto !important; 
+            border: 1px solid #d93025; 
+            text-transform: uppercase; 
+        }
+    </style>
 </head>
 <body>
     <div id="loading-screen"><img src="DF.png" class="loading-logo" alt="Cargando..."></div>
@@ -81,8 +68,7 @@
         <div id="dynamic-work-area"></div>
 
         <button id="btn-mando" class="btn-mando"></button>
-        <button id="btn-alerta-reporte" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
-        <button id="btn-volver-hub" class="btn-ghost" style="margin-top: 20px;">← Volver al Hub</button>
+        <button id="btn-volver-hub" class="btn-ghost" style="margin-top: 20px; display: none;">← Volver al Hub</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
