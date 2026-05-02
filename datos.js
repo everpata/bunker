@@ -204,5 +204,29 @@ const DEEPFALL_DATA = {
         "tipo": "candado",
         "fechaLiberacion": "May 2, 2026 12:30:00", // Cambia la fecha para el inicio del Día 3
         "siguienteId": "53" // A dónde los enviará cuando el tiempo llegue a 0
+    },
+
+    "62": {
+        "tipo": "texto",
+        "indicador": "Día 03 / Transición",
+        "progreso": "100%",
+        "titulo": "Salto a la Deepmersion.",
+        "descripcion": "El tramo uno ha sido completado.",
+        "contenido": `<p class="text-base">Acabas de completar el tramo uno, el deepfall. Has renunciado al lastre y has reconocido la trampa de la superficie. Ahora nos vamos para la deepmersion, el tramo número dos. Abajo se requiere equipo de alta presión porque la tensión se eleva. Allí es donde te vas a curtir. Allí es donde vas a descubrir la versión de ti que se había resistido a nacer en la superficie. Nos vemos en el fondo.</p>`,
+        "btnTexto": "Generar Reporte Final →",
+        "siguienteId": "63" // Apunta a la nueva tarjeta dinámica
+    },
+
+    "63": {
+        "tipo": "reporte",
+        "fechaExpiracion": "May 4, 2026 19:00:00 GMT-0500", // La misma fecha de urgencia de tu HTML
+        "linkUpsell": "https://deepmersion.deepnessmen.com" // Coloca tu link de pago aquí
+    },
+
+    "hub_df": {
+        "tipo": "hub",
+        "indicador": "Tramo 01 / Centro de mando",
+        "titulo": "Descenso.",
+        "descripcion": "Protocolos fundamentales del descenso."
     }
 };
