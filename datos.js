@@ -208,7 +208,7 @@ const DEEPFALL_DATA = {
 
     "53": {
         "tipo": "texto",
-        "indicator": "Día 03 / Propósito",
+        "indicador": "Día 03 / Propósito",
         "progreso": "5%",
         "titulo": "La osadía del propósito.",
         "descripcion": "El entorno no dicta la acción.",
