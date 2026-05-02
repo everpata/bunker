@@ -87,7 +87,7 @@ auth.onAuthStateChanged((user) => {
             }, 1000);
 
         } else if (leccionData.tipo === "reporte") {
-            // LÓGICA DEL REPORTE FINAL
+            // LÓGICA DEL REPORTE FINAL (Puro y sin retorno)
             if (data.access_DM === true || data.access_DQ === true) {
                 if (data.access_DQ) window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html";
                 else if (data.estado === "Finalizado_DM") window.location.href = "08_DM_reportefinal.html"; 
@@ -130,15 +130,13 @@ auth.onAuthStateChanged((user) => {
 
             btnMando.style.display = "none"; 
             const btnUpsell = document.getElementById("btn-alerta-reporte");
-            const btnRepasar = document.getElementById("btn-volver-hub");
+            
+            // Forzamos que el botón fantasma de volver al hub se quede oculto
+            document.getElementById("btn-volver-hub").style.display = "none";
 
             btnUpsell.innerText = "AVANZAR AL TRAMO 02 →";
             btnUpsell.onclick = () => window.location.href = leccionData.linkUpsell;
             btnUpsell.style.display = "block";
-
-            btnRepasar.innerText = "← Volver al Hub del Descenso";
-            btnRepasar.onclick = () => window.location.href = "bunker.html?id=hub_df"; // REDIRIGE AL NUEVO HUB
-            btnRepasar.style.display = "block";
 
             const targetDate = new Date(leccionData.fechaExpiracion).getTime();
             countdownInterval = setInterval(function() {
@@ -155,69 +153,6 @@ auth.onAuthStateChanged((user) => {
                 document.getElementById("min").innerText = m.toString().padStart(2, "0");
                 document.getElementById("seg").innerText = s.toString().padStart(2, "0");
             }, 1000);
-
-        } else if (leccionData.tipo === "hub") {
-            // 🧠 LÓGICA DEL HUB AUTOMATIZADO
-            if (data.access_DM !== true && data.access_DQ !== true && data.estado !== "Finalizado_DF") {
-                window.location.href = `bunker.html?id=${data.leccion_actual_DF ? data.leccion_actual_DF.match(/\d+/)[0] : "1"}`;
-                return;
-            }
-
-            uiLogo.style.display = "block";
-            document.getElementById("ui-indicator").style.display = "block";
-            document.getElementById("ui-progress").parentElement.style.display = "none";
-            document.getElementById("ui-title").style.display = "block";
-            document.getElementById("ui-desc").style.display = "block";
-
-            document.getElementById("ui-indicator").innerText = leccionData.indicador;
-            document.getElementById("ui-title").innerHTML = leccionData.titulo;
-            document.getElementById("ui-desc").innerHTML = leccionData.descripcion;
-
-            let gridHTML = `<div class="hub-grid">`;
-            
-            // Generador dinámico de botones
-            let keysNumeric = Object.keys(DEEPFALL_DATA).filter(k => !isNaN(k)).sort((a,b) => parseInt(a) - parseInt(b));
-            keysNumeric.forEach(key => {
-                let card = DEEPFALL_DATA[key];
-                if (card.tipo !== "candado" && card.tipo !== "reporte" && card.tipo !== "hub") {
-                    let tituloCorto = card.titulo.replace('.', ''); // Limpia el punto final si lo hay
-                    gridHTML += `
-                    <a href="bunker.html?id=${key}" class="lesson-card">
-                        <div class="lesson-info"><b>${key}. ${tituloCorto}</b><span>${card.indicador.split('/')[1] || card.indicador}</span></div>
-                        <span style="color: #ccc;">→</span>
-                    </a>`;
-                }
-            });
-
-            gridHTML += `</div>
-                <button id="btn-ir-dq" class="btn-mando" style="display: none; margin-top: 35px;">Ir al Hub de la Cúspide (DQ) →</button>
-                <button id="btn-ir-dm" class="btn-mando" style="display: none; margin-top: 35px;">Ir al Hub de la Inmersión (DM) →</button>
-                <button id="btn-ir-reporte" class="btn-mando" style="display: none; margin-top: 35px;">Ver Reporte de Diagnóstico →</button>
-            `;
-
-            workArea.className = "work-area";
-            workArea.innerHTML = gridHTML;
-            btnMando.style.display = "none";
-            document.getElementById("btn-alerta-reporte").style.display = "none";
-            document.getElementById("btn-volver-hub").style.display = "none";
-            
-            const dmBtn = document.getElementById("btn-ir-dm");
-            const dqBtn = document.getElementById("btn-ir-dq");
-            const repBtn = document.getElementById("btn-ir-reporte");
-
-            dmBtn.onclick = () => { window.location.href = "09_DM_hub.html"; };
-            dqBtn.onclick = () => { window.location.href = "09_DQ_hub.html"; };
-            repBtn.onclick = () => { window.location.href = "bunker.html?id=63"; };
-
-            if (data.access_DQ === true) {
-                dqBtn.style.display = "block";
-                dmBtn.className = "btn-ghost margin-top-ghost";
-                dmBtn.style.display = "block";
-            } else if (data.access_DM === true) {
-                dmBtn.style.display = "block";
-            } else if (data.estado === "Finalizado_DF") {
-                repBtn.style.display = "block";
-            }
 
         } else {
             // LÓGICA ESTÁNDAR (Textos, Videos, Bitácoras, Quizes)
@@ -294,24 +229,23 @@ auth.onAuthStateChanged((user) => {
             };
             
             const btnRojo = document.getElementById("btn-alerta-reporte");
-            const btnHub = document.getElementById("btn-volver-hub");
-
+            
+            // Ya no hay botón Hub, solo mandamos al reporte
             btnRojo.onclick = () => { window.location.href = "bunker.html?id=63"; }; 
-            btnHub.onclick = () => { window.location.href = "bunker.html?id=hub_df"; }; // Ahora vuelve al Hub dinámico
+            
+            // Mantenemos oculto permanentemente el botón Hub que venía en tu HTML
+            document.getElementById("btn-volver-hub").style.display = "none";
 
             if (data.estado === "Finalizado_DF" && !data.access_DM) {
                 btnMando.style.display = isLocked ? "none" : "block";
                 btnRojo.style.display = "block";
-                btnHub.style.display = "none";
             } else if (data.access_DM === true || data.estado === "Finalizado_DM" || data.access_DQ === true) {
                 btnMando.style.display = "block";
                 btnRojo.style.display = "none";
-                btnHub.style.display = "block";
                 if(isLocked) { btnMando.innerText = "Continuar →"; btnMando.classList.remove("btn-disabled"); }
             } else {
                 btnMando.style.display = "block";
                 btnRojo.style.display = "none";
-                btnHub.style.display = "none";
             }
         }
 
