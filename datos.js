@@ -1,6 +1,17 @@
 const DEEPFALL_DATA = {
-    // 1. TIPO: TEXTO (Apertura y narrativa)
+    // 1. TIPO: PERFIL (Identificación obligatoria)
     "1": {
+        "tipo": "perfil",
+        "indicador": "00 / Acceso",
+        "progreso": "1%",
+        "titulo": "Protocolo de Identidad.",
+        "descripcion": "Antes de descender, el búnker requiere tus coordenadas biográficas.",
+        "btnTexto": "Registrar Identidad →",
+        "siguienteId": "2"
+    },
+
+    // 2. TIPO: TEXTO (Apertura y narrativa)
+    "2": {
         "tipo": "texto",
         "indicador": "01 / Narrativa",
         "progreso": "10%",
@@ -8,11 +19,11 @@ const DEEPFALL_DATA = {
         "descripcion": "Ayer allanamos el terreno, hoy toca construir.",
         "contenido": `<p class="text-base">El día de ayer logramos tres hitos importantes: descubriste la <b>máscara</b>, conociste los criterios para dejar de ser un <b>hombre de superficie</b> y realizaste tu primer <b>acto de renuncia</b>.</p>`,
         "btnTexto": "Siguiente →",
-        "siguienteId": "2"
+        "siguienteId": "3"
     },
 
-    // 2. TIPO: IMAGEN (Evidencia visual fija)
-    "2": {
+    // 3. TIPO: IMAGEN (Evidencia visual fija)
+    "3": {
         "tipo": "imagen",
         "indicador": "02 / Evidencia",
         "progreso": "20%",
@@ -20,11 +31,11 @@ const DEEPFALL_DATA = {
         "descripcion": "Las coordenadas exactas de la interacción.",
         "url": "escenario.jpg", 
         "btnTexto": "Analizar entorno →",
-        "siguienteId": "3"
+        "siguienteId": "4"
     },
 
-    // 3. TIPO: CARRUSEL (Conceptos dinámicos)
-    "3": {
+    // 4. TIPO: CARRUSEL (Conceptos dinámicos)
+    "4": {
         "tipo": "carrusel",
         "indicador": "03 / Pilares",
         "progreso": "30%",
@@ -36,11 +47,11 @@ const DEEPFALL_DATA = {
             { "texto": "<b>Osadía:</b> La capacidad de actuar con miedo.", "img": "pilar3.png" }
         ],
         "btnTexto": "Entendido →",
-        "siguienteId": "4"
+        "siguienteId": "5"
     },
 
-    // 4. TIPO: QUIZ (Toma de decisiones)
-    "4": {
+    // 5. TIPO: QUIZ (Toma de decisiones)
+    "5": {
         "tipo": "quiz",
         "indicador": "04 / Decisión",
         "progreso": "40%",
@@ -48,11 +59,11 @@ const DEEPFALL_DATA = {
         "descripcion": "¿Cómo crees que reacciona un hombre de fondo?",
         "opciones": ["Contuve el impulso.", "Me sentí mal.", "Actué siguiendo el impulso."],
         "btnTexto": "Ver resultado →",
-        "siguienteId": "5"
+        "siguienteId": "6"
     },
 
-    // 5. TIPO: VIDEO (Reproductor Bunny.net)
-    "5": {
+    // 6. TIPO: VIDEO (Reproductor Bunny.net)
+    "6": {
         "tipo": "video",
         "indicador": "05 / Acción",
         "progreso": "50%",
@@ -61,11 +72,11 @@ const DEEPFALL_DATA = {
         "url": "https://player.mediadelivery.net/embed/649829/1d9c53ab-54e0-4abc-8b7e-5538c44fdc03", 
         "postTexto": "<b>No importa lo que dices, sino desde dónde lo dices.</b>",
         "btnTexto": "Extraer lección →",
-        "siguienteId": "6"
+        "siguienteId": "7"
     },
 
-    // 6. TIPO: BITÁCORA (Captura de reflexión)
-    "6": {
+    // 7. TIPO: BITÁCORA (Captura de reflexión)
+    "7": {
         "tipo": "bitacora",
         "indicador": "06 / Reflexión",
         "progreso": "60%",
@@ -73,11 +84,11 @@ const DEEPFALL_DATA = {
         "descripcion": "Sin el mundo de la forma ¿qué la hace atractiva?",
         "placeholder": "Escribe las cualidades internas aquí...",
         "btnTexto": "Sellar respuesta →",
-        "siguienteId": "7"
+        "siguienteId": "8"
     },
 
-    // 7. TIPO: PRINCIPIO (Ritual de revelación mística)
-    "7": {
+    // 8. TIPO: PRINCIPIO (Ritual de revelación mística)
+    "8": {
         "tipo": "principio",
         "imgReliquia": "hacha.png",
         "textoToque": "Toca para desenterrar el Principio",
@@ -85,35 +96,35 @@ const DEEPFALL_DATA = {
         "principio": "\"Afilamos el hacha aunque no vayamos a cortar ningún árbol.\"",
         "contenido": "El entrenamiento es el estado natural del hombre profundo.",
         "btnTexto": "Asimilado →",
-        "siguienteId": "8"
+        "siguienteId": "9"
     },
 
-    // 8. TIPO: HUB (Navegación por el día)
-    "8": {
+    // 9. TIPO: HUB (Navegación por el día)
+    "9": {
         "tipo": "hub",
         "indicador": "08 / Mapa",
         "progreso": "80%",
         "titulo": "Centro de Control",
         "descripcion": "Repasa los hitos o avanza al cierre.",
         "lecciones": [
-            { "id": "1", "tag": "INTRO", "titulo": "Apertura" },
-            { "id": "4", "tag": "QUIZ", "titulo": "Decisión" },
-            { "id": "5", "tag": "VIDEO", "titulo": "Evidencia" },
-            { "id": "7", "tag": "RITUAL", "titulo": "Principio" }
+            { "id": "2", "tag": "INTRO", "titulo": "Apertura" },
+            { "id": "5", "tag": "QUIZ", "titulo": "Decisión" },
+            { "id": "6", "tag": "VIDEO", "titulo": "Evidencia" },
+            { "id": "8", "tag": "RITUAL", "titulo": "Principio" }
         ],
         "btnTexto": "Ir al final →",
-        "siguienteId": "9"
-    },
-
-    // 9. TIPO: CANDADO (Bloqueo temporal)
-    "9": {
-        "tipo": "candado",
-        "fechaLiberacion": "May 10, 2026 12:00:00",
         "siguienteId": "10"
     },
 
-    // 10. TIPO: REPORTE (Cierre y Upsell)
+    // 10. TIPO: CANDADO (Bloqueo temporal)
     "10": {
+        "tipo": "candado",
+        "fechaLiberacion": "May 10, 2026 12:00:00",
+        "siguienteId": "11"
+    },
+
+    // 11. TIPO: REPORTE (Cierre y Upsell)
+    "11": {
         "tipo": "reporte",
         "fechaExpiracion": "May 15, 2026 19:00:00",
         "linkUpsell": "https://deepmersion.deepnessmen.com"
