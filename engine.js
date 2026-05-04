@@ -15,7 +15,12 @@ const urlParams = new URLSearchParams(window.location.search);
 let leccionId = urlParams.get("id");
 let countdownInterval;
 
-function toggleOption(btn) { btn.classList.toggle("selected"); }
+// ESCUDO QUIZ: Si el botón tiene la clase .locked, no permite desmarcar/marcar
+function toggleOption(btn) { 
+    if(!btn.classList.contains("locked")) {
+        btn.classList.toggle("selected"); 
+    }
+}
 
 if (typeof DEEPFALL_DATA === "undefined") {
     alert("🔥 ERROR CRÍTICO: datos.js no detectado.");
@@ -70,14 +75,12 @@ auth.onAuthStateChanged((user) => {
             uiTitle.innerHTML = leccionData.titulo;
             uiDesc.innerHTML = leccionData.descripcion || "";
             
-            // Eliminado el nombre (ya está en DB) y añadida caja elegante para teléfono
+            // Removida la caja gris. Vuelve al estilo minimalista original.
             workArea.innerHTML = `
                 <div class="work-area card">
                     <input type="number" id="p-edad" class="input-line" placeholder="Edad" value="${data.edad || ''}">
                     <input type="text" id="p-ocupacion" class="input-line" placeholder="Ocupación" value="${data.ocupacion || ''}">
-                    <div class="phone-box-wrapper">
-                        <input type="tel" id="p-telefono" value="${data.telefono || ''}">
-                    </div>
+                    <input type="tel" id="p-telefono" value="${data.telefono || ''}">
                 </div>
             `;
 
@@ -118,7 +121,7 @@ auth.onAuthStateChanged((user) => {
         } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.innerHTML = `
-                <img src="candado.webp" class="evidence-image" style="width:100%; border-radius:16px; margin-bottom:20px; animation: pulse-logo 1.8s infinite ease-in-out;">
+                <img src="candado.webp" class="relic-image-lock">
                 <p class="text-base" style="text-align:center;">La siguiente ruta será liberada en:</p>
                 <div id="countdown" style="display:flex; justify-content:center; gap:12px; margin-top:10px; width:100%;">
                     <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span style="display:block; font-size:26px; font-weight:800; color:#333;" id="hrs">00</span><span style="font-size:10px; color:#878787; text-transform:uppercase;">Hrs</span></div>
@@ -235,8 +238,16 @@ auth.onAuthStateChanged((user) => {
                 workArea.innerHTML = `<div class="work-area card"><textarea id="input-dinamico" placeholder="${leccionData.placeholder}"></textarea></div>`;
                 if(data[`bitacora_${leccionId}`]) { const i = document.getElementById("input-dinamico"); i.value = data[`bitacora_${leccionId}`]; i.readOnly = true; i.classList.add("locked"); isLocked = true; }
             } else if (leccionData.tipo === "quiz") {
-                workArea.innerHTML = `<div class="work-area">${leccionData.opciones.map(op => `<button class="option-btn" onclick="toggleOption(this)">${op}</button>`).join("")}</div>`;
-                if(data[`quiz_${leccionId}`]) { document.querySelectorAll(".option-btn").forEach(b => { if(data[`quiz_${leccionId}`].includes(b.innerText.trim())) b.classList.add("selected"); }); isLocked = true; btnMando.innerText = "REGISTRO SELLADO ✓"; }
+                workArea.innerHTML = `<div class="work-area">${leccionData.opciones.map(op => `<button class="option-btn">${op}</button>`).join("")}</div>`;
+                if(data[`quiz_${leccionId}`]) { 
+                    document.querySelectorAll(".option-btn").forEach(b => { 
+                        if(data[`quiz_${leccionId}`].includes(b.innerText.trim())) b.classList.add("selected"); 
+                        b.classList.add("locked"); // Inyecta el estado atenuado y bloquea los clicks
+                    }); 
+                    isLocked = true; btnMando.innerText = "REGISTRO SELLADO ✓"; 
+                } else {
+                    document.querySelectorAll(".option-btn").forEach(b => b.onclick = () => toggleOption(b));
+                }
             }
 
             let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
