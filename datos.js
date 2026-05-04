@@ -29,7 +29,7 @@ const DEEPFALL_DATA = {
         "progreso": "20%",
         "titulo": "El Escenario.",
         "descripcion": "Las coordenadas exactas de la interacción.",
-        "url": "escenario.jpg", 
+        "url": "mariano.webp", 
         "btnTexto": "Analizar entorno →",
         "siguienteId": "4"
     },
@@ -42,9 +42,9 @@ const DEEPFALL_DATA = {
         "titulo": "Los 3 Pilares del Fondo",
         "descripcion": "Desliza para entender la estructura de tu nueva identidad.",
         "items": [
-            { "texto": "<b>Presencia:</b> No es estar, es habitar el momento.", "img": "pilar1.png" },
-            { "texto": "<b>Densidad:</b> El peso de tu verdad interna.", "img": "pilar2.png" },
-            { "texto": "<b>Osadía:</b> La capacidad de actuar con miedo.", "img": "pilar3.png" }
+            { "texto": "<b>Presencia:</b> No es estar, es habitar el momento.", "img": "familia.webp" },
+            { "texto": "<b>Densidad:</b> El peso de tu verdad interna.", "img": "salud.webp" },
+            { "texto": "<b>Osadía:</b> La capacidad de actuar con miedo.", "img": "perro.webp" }
         ],
         "btnTexto": "Entendido →",
         "siguienteId": "5"
