@@ -12,7 +12,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 const urlParams = new URLSearchParams(window.location.search);
-let leccionId = urlParams.get("id"); 
+let leccionId = urlParams.get("id");
 let countdownInterval;
 
 function toggleOption(btn) { btn.classList.toggle("selected"); }
@@ -28,18 +28,15 @@ auth.onAuthStateChanged((user) => {
     userRef.get().then((doc) => {
         const data = doc.exists ? doc.data() : {};
 
-        // 🛡️ ESCUDO DE SEGURIDAD Y GPS
         let nA = parseInt(leccionId) || 0;
         let nG = data.leccion_actual_DF ? (parseInt(data.leccion_actual_DF.match(/\d+/)) || 0) : 0;
         
-        // Si entra sin ID en la URL
         if (!leccionId) {
             let guardada = nG > 0 ? nG : 1; 
             window.location.href = `bunker.html?id=${guardada}`;
             return;
         }
 
-        // Anti-saltos: Si intenta acceder a una lección mayor a la guardada (y no es el inicio absoluto)
         if (data.estado !== "Finalizado_DF" && nA > nG && !(nA === 1 && nG === 0)) {
             alert(`🛡️ Acceso denegado a la coordenada ${nA}. Volviendo a tu nivel actual.`);
             window.location.href = `bunker.html?id=${nG > 0 ? nG : 1}`;
@@ -53,7 +50,7 @@ auth.onAuthStateChanged((user) => {
         }
 
         const workArea = document.getElementById("dynamic-work-area");
-        workArea.style.width = "100%"; // SOLUCIÓN: Fuerza el ancho total para inputs, bitácoras y quizzes
+        workArea.style.width = "100%"; 
         
         const btnMando = document.getElementById("btn-mando");
         const uiLogo = document.getElementById("ui-logo");
@@ -73,12 +70,14 @@ auth.onAuthStateChanged((user) => {
             uiTitle.innerHTML = leccionData.titulo;
             uiDesc.innerHTML = leccionData.descripcion || "";
             
+            // Eliminado el nombre (ya está en DB) y añadida caja elegante para teléfono
             workArea.innerHTML = `
                 <div class="work-area card">
-                    <input type="text" id="p-nombre" placeholder="Nombre completo" value="${data.nombre || ''}">
-                    <input type="number" id="p-edad" placeholder="Edad" value="${data.edad || ''}">
-                    <input type="text" id="p-ocupacion" placeholder="Ocupación" value="${data.ocupacion || ''}">
-                    <input type="tel" id="p-telefono" value="${data.telefono || ''}">
+                    <input type="number" id="p-edad" class="input-line" placeholder="Edad" value="${data.edad || ''}">
+                    <input type="text" id="p-ocupacion" class="input-line" placeholder="Ocupación" value="${data.ocupacion || ''}">
+                    <div class="phone-box-wrapper">
+                        <input type="tel" id="p-telefono" value="${data.telefono || ''}">
+                    </div>
                 </div>
             `;
 
@@ -86,7 +85,10 @@ auth.onAuthStateChanged((user) => {
             if(window.intlTelInput) {
                 phoneInput = window.intlTelInput(document.querySelector("#p-telefono"), {
                     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-                    preferredCountries: ["mx", "co", "es", "ar", "pe", "cl"],
+                    initialCountry: "auto",
+                    geoIpLookup: function(success, failure) {
+                        fetch("https://ipapi.co/json").then(res => res.json()).then(data => success(data.country_code)).catch(() => success("us"));
+                    },
                     separateDialCode: true
                 });
             }
@@ -94,23 +96,20 @@ auth.onAuthStateChanged((user) => {
             btnMando.style.display = "block";
             btnMando.innerText = leccionData.btnTexto || "Registrar Identidad →";
             btnMando.onclick = () => {
-                const nombre = document.getElementById("p-nombre").value;
                 const edad = document.getElementById("p-edad").value;
                 const ocup = document.getElementById("p-ocupacion").value;
                 const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
 
-                if(!nombre || !edad || !ocup || !tel) return alert("El búnker exige datos completos.");
+                if(!edad || !ocup || !tel) return alert("El búnker exige datos completos.");
 
                 let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
                 userRef.update({
-                    nombre: nombre,
                     edad: edad,
                     ocupacion: ocup,
                     telefono: tel,
                     leccion_actual_DF: urlSig
                 }).then(() => window.location.href = urlSig).catch(err => {
-                    // Si el usuario es completamente nuevo y no tiene doc previo, se crea
-                    userRef.set({ nombre, edad, ocupacion, telefono, leccion_actual_DF: urlSig }, {merge: true})
+                    userRef.set({ edad, ocupacion, telefono, leccion_actual_DF: urlSig }, {merge: true})
                     .then(() => window.location.href = urlSig);
                 });
             };
@@ -119,7 +118,7 @@ auth.onAuthStateChanged((user) => {
         } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.innerHTML = `
-                <img src="candado.webp" class="relic-image" style="width:120px; margin: 0 auto 20px auto; display:block; animation: pulse-logo 1.8s infinite ease-in-out;">
+                <img src="candado.webp" class="evidence-image" style="width:100%; border-radius:16px; margin-bottom:20px; animation: pulse-logo 1.8s infinite ease-in-out;">
                 <p class="text-base" style="text-align:center;">La siguiente ruta será liberada en:</p>
                 <div id="countdown" style="display:flex; justify-content:center; gap:12px; margin-top:10px; width:100%;">
                     <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span style="display:block; font-size:26px; font-weight:800; color:#333;" id="hrs">00</span><span style="font-size:10px; color:#878787; text-transform:uppercase;">Hrs</span></div>
@@ -139,7 +138,7 @@ auth.onAuthStateChanged((user) => {
                 }
             }, 1000);
 
-        // --- TIPO: REPORTE FINAL ---
+        // --- TIPO: REPORTE ---
         } else if (leccionData.tipo === "reporte") {
             userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}`, estado: "Finalizado_DF" });
             [uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
@@ -147,8 +146,8 @@ auth.onAuthStateChanged((user) => {
                 <span style="font-size:11px; font-weight:600; color:#878787; letter-spacing:1.5px; margin-bottom:5px; display:block;">ESTATUS ACTUAL</span>
                 <h1 class="title" style="margin-bottom:20px;">Máscara Rota.</h1>
                 <div class="work-area card" style="margin-bottom:35px;">
-                    <p class="text-base" style="margin:0; color:#333;">
-                        <b>Diagnóstico Crítico:</b><br><br>Tu capacidad para mentirte ha sido neutralizada. El saboteador invisible ha sido expuesto y eliminado.<br><br><b>Orden:</b> La superficie ya no puede sostenerte. Inicia la inmersión al Tramo 02 de inmediato.
+                    <p class="text-base" style="margin:0;">
+                        <b style="color:#333;">Diagnóstico Crítico:</b><br><br>Tu capacidad para mentirte ha sido neutralizada. El saboteador invisible ha sido expuesto y eliminado.<br><br><b style="color:#333;">Orden:</b> La superficie ya no puede sostenerte. Inicia la inmersión al Tramo 02 de inmediato.
                     </p>
                 </div>
                 <button id="btn-upsell" class="btn-status-alert" style="display:block; width:100%;">AVANZAR AL TRAMO 02 →</button>
@@ -158,7 +157,19 @@ auth.onAuthStateChanged((user) => {
         // --- TIPO: PRINCIPIO ---
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p></div><div class="revelation-screen"><div class="logo"><img src="DF.png"></div><p class="indicator">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
+            workArea.innerHTML = `
+                <div id="pantalla-reliquia" class="interruption-screen">
+                    <img src="${leccionData.imgReliquia}" class="relic-image">
+                    <p class="indicator" style="text-align:center;">${leccionData.textoToque || "Toca para desenterrar"}</p>
+                </div>
+                <div class="revelation-screen">
+                    <div class="logo"><img src="DF.png"></div>
+                    <p class="indicator">${leccionData.indicador}</p>
+                    <div class="work-area card">
+                        <span class="principle-statement">${leccionData.principio}</span>
+                        <p class="text-base">${leccionData.contenido}</p>
+                    </div>
+                </div>`;
             document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); btnMando.style.display = "block"; };
             btnMando.innerText = leccionData.btnTexto || "Asimilado →";
             
@@ -189,7 +200,7 @@ auth.onAuthStateChanged((user) => {
                 </button>
             `).join("");
             
-            workArea.innerHTML = `<div class="work-area" style="width:100%; gap:12px;">${hubHTML}</div>`;
+            workArea.innerHTML = `<div class="work-area" style="width:100%; gap:12px; margin-bottom: 25px;">${hubHTML}</div>`;
             btnMando.style.display = "block"; btnMando.className = "btn-ghost"; btnMando.innerText = leccionData.btnTexto || "Volver al flujo →";
             
             let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
@@ -216,7 +227,7 @@ auth.onAuthStateChanged((user) => {
             } else if (leccionData.tipo === "imagen") {
                 workArea.innerHTML = `<img src="${leccionData.url}" class="evidence-image">`;
             } else if (leccionData.tipo === "video") {
-                workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="work-area card" style="margin-top:15px;"><p class="text-base" style="margin:0;">${leccionData.postTexto}</p></div>` : ""}`;
+                workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="work-area card" style="margin-top:15px;"><p class="text-base">${leccionData.postTexto}</p></div>` : ""}`;
             } else if (leccionData.tipo === "carrusel") {
                 let items = leccionData.items.map(item => `<div class="carousel-item">${item.img ? `<img src="${item.img}" class="evidence-image">` : ""}<p class="text-base">${item.texto}</p></div>`).join("");
                 workArea.innerHTML = `<div class="carousel-container">${items}</div>`;
@@ -249,7 +260,6 @@ auth.onAuthStateChanged((user) => {
             };
         }
 
-        // GUARDA EL GPS SOLO SI ES LA PRIMERA VEZ QUE LLEGA
         if (data.estado !== "Finalizado_DF" && nA > nG && !["perfil", "candado", "reporte"].includes(leccionData.tipo)) {
             userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}` });
         }
@@ -260,4 +270,4 @@ auth.onAuthStateChanged((user) => {
         console.error(err); 
         document.getElementById("loading-screen").style.display = "none";
     });
-}); 
+});
