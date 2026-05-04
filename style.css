@@ -161,70 +161,67 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
         margin-right: auto;
     }
 
-   /* --- CONSOLA DE AUDIO PREMIUM --- */
-.audio-dashboard {
-    width: 100%;
-    background: #f5f5f7;
-    padding: 20px;
-    border-radius: 16px;
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.audio-controls {
-    display: flex;
+  /* --- CÁPSULA DE AUDIO MINIMALISTA --- */
+.audio-capsule {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 25px;
+    background: #f5f5f7;
+    border: 1px solid #d1d1d6;
+    border-radius: 50px;
+    padding: 8px 16px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    gap: 12px;
+    height: 40px;
+    overflow: hidden;
 }
 
-.audio-btn-circle {
+.audio-capsule span {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #878787;
+    white-space: nowrap;
+}
+
+/* Controles ocultos inicialmente */
+.capsule-controls {
+    display: none; /* Se activa con JS */
+    align-items: center;
+    gap: 15px;
+}
+
+.capsule-btn {
     background: transparent;
     border: none;
-    cursor: pointer;
     color: #333;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s;
-}
-
-.audio-btn-circle:active { transform: scale(0.9); }
-
-.audio-btn-main {
-    background: #333;
-    color: #fff;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.audio-time-skip {
     font-size: 10px;
     font-weight: 800;
-    color: #878787;
-    text-transform: uppercase;
 }
 
-/* Barra de progreso de audio */
-.audio-progress-bg {
-    width: 100%;
-    height: 4px;
-    background: #e5e5e7;
-    border-radius: 2px;
-    cursor: pointer;
-    position: relative;
-}
-
-.audio-progress-fill {
-    height: 100%;
+.capsule-btn-main {
     background: #333;
-    width: 0%;
-    border-radius: 2px;
-    transition: width 0.1s linear;
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+
+/* Estado Activo: Cuando el audio está cargado/sonando */
+.audio-capsule.active {
+    padding: 8px 12px;
+}
+
+.audio-capsule.active span {
+    display: none;
+}
+
+.audio-capsule.active .capsule-controls {
+    display: flex;
 }
