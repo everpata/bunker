@@ -16,6 +16,7 @@ const DEEPFALL_DATA = {
         "indicador": "01 / Narrativa",
         "progreso": "10%",
         "titulo": "Recap de victorias.",
+        "audio": "reel.mp3",
         "descripcion": "Ayer allanamos el terreno, hoy toca construir.",
         "contenido": `<p class="text-base">El día de ayer logramos tres hitos importantes: descubriste la <b>máscara</b>, conociste los criterios para dejar de ser un <b>hombre de superficie</b> y realizaste tu primer <b>acto de renuncia</b>.</p>`,
         "btnTexto": "Siguiente →",
