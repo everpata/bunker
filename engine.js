@@ -15,7 +15,7 @@ const urlParams = new URLSearchParams(window.location.search);
 let leccionId = urlParams.get("id");
 let countdownInterval;
 
-// ESCUDO QUIZ: Si el botón tiene la clase .locked, no permite desmarcar/marcar
+// ESCUDO QUIZ: Solo permite clicks si no está bloqueado
 function toggleOption(btn) { 
     if(!btn.classList.contains("locked")) {
         btn.classList.toggle("selected"); 
@@ -75,12 +75,14 @@ auth.onAuthStateChanged((user) => {
             uiTitle.innerHTML = leccionData.titulo;
             uiDesc.innerHTML = leccionData.descripcion || "";
             
-            // Removida la caja gris. Vuelve al estilo minimalista original.
+            // Verifica si ya hay datos previos para aplicar el bloqueo
+            let profileLocked = (data.edad && data.ocupacion && data.telefono);
+            
             workArea.innerHTML = `
                 <div class="work-area card">
-                    <input type="number" id="p-edad" class="input-line" placeholder="Edad" value="${data.edad || ''}">
-                    <input type="text" id="p-ocupacion" class="input-line" placeholder="Ocupación" value="${data.ocupacion || ''}">
-                    <input type="tel" id="p-telefono" value="${data.telefono || ''}">
+                    <input type="number" id="p-edad" class="input-line ${profileLocked ? 'locked' : ''}" placeholder="Edad" value="${data.edad || ''}" ${profileLocked ? 'readonly' : ''}>
+                    <input type="text" id="p-ocupacion" class="input-line ${profileLocked ? 'locked' : ''}" placeholder="Ocupación" value="${data.ocupacion || ''}" ${profileLocked ? 'readonly' : ''}>
+                    <input type="tel" id="p-telefono" class="${profileLocked ? 'locked' : ''}" value="${data.telefono || ''}" ${profileLocked ? 'readonly' : ''}>
                 </div>
             `;
 
@@ -90,22 +92,44 @@ auth.onAuthStateChanged((user) => {
                     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
                     initialCountry: "auto",
                     geoIpLookup: function(success, failure) {
-                        fetch("https://ipapi.co/json").then(res => res.json()).then(data => success(data.country_code)).catch(() => success("us"));
+                        fetch("https://ipapi.co/json").then(res => res.json()).then(geoData => success(geoData.country_code)).catch(() => success("us"));
                     },
                     separateDialCode: true
                 });
             }
 
+            // Si está bloqueado, añadimos la clase de opacidad al input generado por la librería
+            if (profileLocked) {
+                setTimeout(() => {
+                    const itiWrapper = document.querySelector(".iti");
+                    const itiInput = document.querySelector(".iti__input");
+                    if(itiWrapper) itiWrapper.classList.add("locked");
+                    if(itiInput) itiInput.setAttribute("readonly", true);
+                }, 50);
+            }
+
             btnMando.style.display = "block";
-            btnMando.innerText = leccionData.btnTexto || "Registrar Identidad →";
+            btnMando.innerText = profileLocked ? "IDENTIDAD CONFIRMADA ✓" : (leccionData.btnTexto || "Registrar Identidad →");
             btnMando.onclick = () => {
+                let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
+                
+                // Si el perfil ya estaba guardado, solo avanzar (no sobreescribir)
+                if (profileLocked) {
+                    if (data.estado !== "Finalizado_DF" && nA === nG) {
+                        userRef.update({ leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
+                    } else {
+                        window.location.href = urlSig;
+                    }
+                    return;
+                }
+
+                // Guardado inicial
                 const edad = document.getElementById("p-edad").value;
                 const ocup = document.getElementById("p-ocupacion").value;
                 const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
 
                 if(!edad || !ocup || !tel) return alert("El búnker exige datos completos.");
 
-                let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
                 userRef.update({
                     edad: edad,
                     ocupacion: ocup,
@@ -167,7 +191,7 @@ auth.onAuthStateChanged((user) => {
                 </div>
                 <div class="revelation-screen">
                     <div class="logo"><img src="DF.png"></div>
-                    <p class="indicator">${leccionData.indicador}</p>
+                    <p class="indicator" style="margin-bottom: 32px;">${leccionData.indicador}</p>
                     <div class="work-area card">
                         <span class="principle-statement">${leccionData.principio}</span>
                         <p class="text-base">${leccionData.contenido}</p>
@@ -242,7 +266,7 @@ auth.onAuthStateChanged((user) => {
                 if(data[`quiz_${leccionId}`]) { 
                     document.querySelectorAll(".option-btn").forEach(b => { 
                         if(data[`quiz_${leccionId}`].includes(b.innerText.trim())) b.classList.add("selected"); 
-                        b.classList.add("locked"); // Inyecta el estado atenuado y bloquea los clicks
+                        b.classList.add("locked"); 
                     }); 
                     isLocked = true; btnMando.innerText = "REGISTRO SELLADO ✓"; 
                 } else {
