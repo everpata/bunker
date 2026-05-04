@@ -1,6 +1,6 @@
 const DEEPFALL_DATA = {
     // 1. TIPO: PERFIL (Identificación obligatoria)
-    "1": {
+    "1": { 
         "tipo": "perfil",
         "indicador": "00 / Acceso",
         "progreso": "1%",
