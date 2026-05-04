@@ -4,7 +4,7 @@ const firebaseConfig = {
     authDomain: "deepfall-b3601.firebaseapp.com", 
     projectId: "deepfall-b3601", 
     storageBucket: "deepfall-b3601.firebasestorage.app", 
-    messagingSenderId: "207043962011",  
+    messagingSenderId: "207043962011", 
     appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
 };
 if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
@@ -197,9 +197,7 @@ auth.onAuthStateChanged((user) => {
                     audioHTML = `
                     <div id="capsule-${leccionId}" class="audio-capsule" onclick="window.activateAudio('${leccionId}')">
                         <audio id="audio-player" src="${leccionData.audio}"></audio>
-                        
                         <span>Escuchar lección</span>
-
                         <div class="capsule-controls">
                             <button class="capsule-btn" onclick="event.stopPropagation(); document.getElementById('audio-player').currentTime -= 15"> -15 </button>
                             <button class="capsule-btn capsule-btn-main" onclick="event.stopPropagation(); window.togglePlay();">
@@ -209,8 +207,6 @@ auth.onAuthStateChanged((user) => {
                         </div>
                     </div>`;
                 }
-                workArea.innerHTML = `${audioHTML} <div class="work-area card">${leccionData.contenido}</div>`;
-            }
                 workArea.innerHTML = `${audioHTML} <div class="work-area card">${leccionData.contenido}</div>`;
             } else if (leccionData.tipo === "imagen") {
                 workArea.innerHTML = `<img src="${leccionData.url}" class="evidence-image">`;
