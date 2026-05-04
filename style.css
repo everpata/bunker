@@ -7,7 +7,7 @@ html, body {
     background-color: #ffffff; 
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     display: flex;
-    justify-content: center; /* Centra el contenedor en escritorio */
+    justify-content: center;
     align-items: center;
     -webkit-text-size-adjust: 100%;
 }
@@ -18,172 +18,118 @@ html, body {
     padding: 60px 45px; 
     display: flex; 
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start !important; /* Fuerza el inicio arriba para evitar huecos */
+    align-items: center; /* Centrado base */
 }
 
-/* --- CABECERA --- */
-.logo { margin: 0 0 30px -15px; flex-shrink: 0; }
-.logo img { height: 55px; width: auto; display: block; }
+/* --- CABECERA Y ANIMACIONES --- */
+.logo { margin: 0 0 30px 0; width: 100%; text-align: left; }
+.logo img, .loading-logo { height: 55px; width: auto; animation: pulse-logo 2s infinite ease-in-out; }
 
-.indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; }
-
-.progress-container {
-    width: 100%;
-    height: 2px;
-    background-color: #f5f5f7;
-    margin-bottom: 32px;
-    border-radius: 2px;
+@keyframes pulse-logo {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.95); opacity: 0.7; }
 }
+
+.indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase; width: 100%; text-align: left; }
+
+.progress-container { width: 100%; height: 2px; background-color: #f5f5f7; margin-bottom: 32px; border-radius: 2px; }
 .progress-fill { height: 100%; background-color: #333333; transition: width 0.8s ease; }
 
-.title { font-size: 28px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; width: 100%; }
-.description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; width: 100%; }
+.title { font-size: 28px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; width: 100%; text-align: left; }
+.description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; width: 100%; text-align: left; }
 
-/* --- ÁREAS DE TRABAJO (RESET DE MÁRGENES) --- */
-.work-area, .work-area.card, .hub-grid, .video-container, .stats-container { 
-    width: 100%; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 12px; 
-    margin-bottom: 0 !important; /* Ley de margen cero abajo */
+/* --- LIENZO DINÁMICO --- */
+#dynamic-work-area { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+
+.work-area { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+.work-area.card { background-color: #f5f5f7; padding: 26px; border-radius: 16px; width: 100%; }
+
+/* --- FORMULARIO DE DATOS (REPARADO) --- */
+.work-area.card input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #d1d1d6;
+    padding: 16px 0;
+    font-size: 16px;
+    font-family: inherit;
+    color: #333;
+    outline: none;
+    margin-bottom: 5px;
 }
+.iti { width: 100%; }
+.iti__input { border: none !important; border-bottom: 1px solid #d1d1d6 !important; border-radius: 0 !important; width: 100% !important; padding: 16px 0 16px 50px !important; background: transparent !important; }
 
-.work-area.card { 
-    background-color: #f5f5f7; 
-    padding: 26px; 
-    border-radius: 16px; 
-}
-
-/* --- NUEVO: ESTRUCTURA DEL HUB (REJILLA) --- */
-.hub-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Crea dos columnas iguales */
-    gap: 12px;
-}
-
-/* --- NUEVO: CARRUSEL TÁCTICO --- */
+/* --- CARRUSEL (REPARADO CON FADE) --- */
 .carousel-container {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     gap: 16px;
-    padding-bottom: 10px;
+    width: 100vw; /* Se sale del contenedor para el efecto fade */
+    max-width: 460px;
+    padding: 0 0 10px 0;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Oculta scrollbar en Firefox */
-    width: 100%;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
-.carousel-container::-webkit-scrollbar { display: none; } /* Oculta scrollbar en Chrome */
+.carousel-container::-webkit-scrollbar { display: none; }
 
 .carousel-item {
-    flex: 0 0 85%; /* Muestra el 85% de la tarjeta para que la otra se asome */
-    scroll-snap-align: center;
-    background-color: #f5f5f7;
-    padding: 26px;
-    border-radius: 16px;
+    flex: 0 0 85%;
+    scroll-snap-align: start;
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
+.carousel-item .evidence-image { border-radius: 16px; width: 100%; }
 
-/* --- BOTONES Y NAVEGACIÓN --- */
-
-/* Botón Principal (Mando y Alerta) */
-.btn-mando, .btn-status-alert { 
-    width: 100%; 
-    background: #333333; 
-    color: #ffffff; 
-    border: none; 
-    padding: 20px; 
-    border-radius: 16px; 
-    font-size: 16px; 
-    font-weight: 600; 
-    cursor: pointer; 
-    margin-top: 35px !important; 
-    margin-bottom: 0 !important;
-    -webkit-appearance: none;
-    transition: transform 0.1s;
-}
-.btn-mando:active { transform: scale(0.98); }
-
-/* Botón Fantasma / Enlace (Volver / Repasar) */
-.btn-ghost, .btn-ghost-hub, .btn-ghost-exit {
-    background: transparent;
-    border: none;
-    color: #878787;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    width: 100%;
-    text-align: center;
-    font-family: inherit;
-    margin-top: 20px !important; 
-    transition: color 0.3s;
-}
-.btn-ghost:hover, .btn-ghost-hub:hover { color: #333333; }
-
-/* --- CONTENIDO --- */
-.text-base { font-size: 16px; color: #878787; line-height: 1.6; }
-.text-base b { color: #333333; font-weight: 700; }
-.principle-statement { font-size: 22px; font-weight: 800; color: #333333; line-height: 1.2; margin-bottom: 12px; display: block; }
-
-/* Multimedia */
-.video-container, .evidence-image { 
-    width: 100%; 
-    border-radius: 16px; 
-    overflow: hidden; 
-}
-.video-container { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
-.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-.evidence-image { width: 100%; height: auto; display: block; border-radius: 16px; }
-
-/* Quiz */
+/* --- COMPONENTES DE INTERACCIÓN (FULL WIDTH) --- */
 .option-btn { 
     width: 100%; 
     background-color: #f5f5f7; 
     border: 2px solid transparent; 
-    padding: 18px; 
+    padding: 20px; 
     border-radius: 16px; 
-    color: #878787; 
+    color: #333; 
     font-size: 16px; 
     font-weight: 500; 
     text-align: left; 
     cursor: pointer; 
     transition: 0.2s; 
-    font-family: inherit;
 }
-.option-btn.selected { border-color: #333333; color: #333333; }
+.option-btn.selected { border-color: #333333; background: #ffffff; }
 
-textarea { width: 100%; background: transparent; border: none; resize: none; font-family: inherit; font-size: 16px; color: #333333; outline: none; min-height: 120px; line-height: 1.5; }
+textarea { width: 100%; background: transparent; border: none; resize: none; font-family: inherit; font-size: 16px; color: #333; outline: none; min-height: 120px; }
 
-/* --- RITUAL DE PRINCIPIOS --- */
-.interruption-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
-.relic-image { width: 100%; max-width: 240px; margin-bottom: 30px; animation: softFloat 6s ease-in-out infinite; }
-@keyframes softFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+/* --- RITUAL DE PRINCIPIOS (CENTRADOS) --- */
+.interruption-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; cursor: pointer; }
+.relic-image { width: 150px; height: auto; margin-bottom: 30px; animation: softFloat 4s ease-in-out infinite; }
+@keyframes softFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
 
-.revelation-screen { display: none; width: 100%; }
+.revelation-screen { display: none; width: 100%; animation: fadeIn 0.8s ease forwards; }
 body.revealed .interruption-screen { display: none !important; }
-body.revealed .revelation-screen { display: block !important; animation: fadeIn 0.8s ease forwards; }
-body.revealed .indicator { margin-bottom: 32px; }
-body.revealed .progress-container { display: none; }
+body.revealed .revelation-screen { display: block !important; }
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-@media (max-width: 480px) {
-    .container { padding: 40px 30px; }
-    .title { font-size: 26px; }
+/* --- BOTONES DE MANDO --- */
+.btn-mando, .btn-status-alert { 
+    width: 100%; background: #333; color: #fff; border: none; padding: 22px; border-radius: 16px; 
+    font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 30px; transition: transform 0.1s; 
 }
+.btn-status-alert { 
+    background-color: #fce8e6 !important; color: #d93025 !important; border: 1px solid #d93025 !important; 
+    animation: btnElastic 4s ease-in-out infinite; 
+}
+@keyframes btnElastic { 0%, 100% { padding: 20px; } 50% { padding: 26px 20px; } }
+.btn-ghost { background: transparent; border: none; color: #878787; font-size: 14px; width: 100%; margin-top: 20px; cursor: pointer; }
+
+/* --- MULTIMEDIA --- */
+.video-container { width: 100%; position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 16px; overflow: hidden; }
+.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+.evidence-image { width: 100%; height: auto; display: block; border-radius: 16px; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* --- LOADING --- */
-@keyframes pulse-logo {
-    0% { transform: scale(0.95); opacity: 0.6; }
-    50% { transform: scale(1.02); opacity: 1; }
-    100% { transform: scale(0.95); opacity: 0.6; }
-}
-.loading-logo { height: 60px; width: auto; animation: pulse-logo 1.8s infinite ease-in-out; }
-
-#loading-screen {
-    display: flex; align-items: center; justify-content: center; 
-    height: 100vh; width: 100vw; background: #ffffff; 
-    position: fixed; z-index: 9999; top: 0; left: 0;
-}
+#loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; justify-content: center; align-items: center; z-index: 9999; }
