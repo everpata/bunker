@@ -160,4 +160,43 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
         margin-left: auto;
         margin-right: auto;
     }
+
+    /* --- BOTÓN DE AUDIO OPCIONAL --- */
+.audio-wrapper {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #eaeaea;
+    width: 100%;
+}
+
+.btn-audio {
+    background: #ffffff;
+    border: 1px solid #d1d1d6;
+    padding: 10px 18px;
+    border-radius: 50px;
+    color: #878787;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.btn-audio:hover {
+    background: #f5f5f7;
+    color: #333;
+    border-color: #333;
+}
+
+.btn-audio svg {
+    margin-left: 6px;
+    transition: transform 0.2s ease;
+}
+
+.btn-audio:active {
+    transform: scale(0.96);
 }
