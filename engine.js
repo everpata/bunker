@@ -197,17 +197,20 @@ auth.onAuthStateChanged((user) => {
                     audioHTML = `
                     <div id="capsule-${leccionId}" class="audio-capsule" onclick="window.activateAudio('${leccionId}')">
                         <audio id="audio-player" src="${leccionData.audio}"></audio>
-                        <svg class="icon-play-simple" width="12" height="12" viewBox="0 0 24 24" fill="#878787"><path d="M8 5v14l11-7z"/></svg>
+                        
                         <span>Escuchar lección</span>
+
                         <div class="capsule-controls">
                             <button class="capsule-btn" onclick="event.stopPropagation(); document.getElementById('audio-player').currentTime -= 15"> -15 </button>
                             <button class="capsule-btn capsule-btn-main" onclick="event.stopPropagation(); window.togglePlay();">
-                                <svg id="play-icon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                <svg id="play-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                             </button>
                             <button class="capsule-btn" onclick="event.stopPropagation(); document.getElementById('audio-player').currentTime += 15"> +15 </button>
                         </div>
                     </div>`;
                 }
+                workArea.innerHTML = `${audioHTML} <div class="work-area card">${leccionData.contenido}</div>`;
+            }
                 workArea.innerHTML = `${audioHTML} <div class="work-area card">${leccionData.contenido}</div>`;
             } else if (leccionData.tipo === "imagen") {
                 workArea.innerHTML = `<img src="${leccionData.url}" class="evidence-image">`;
