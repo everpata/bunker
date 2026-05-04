@@ -22,45 +22,59 @@ function toggleOption(btn) {
     }
 }
 
-// Función para permitir arrastre con ratón en carruseles (Desktop)
+// --- ACTIVADOR DE ARRASTRE OPTIMIZADO (Mouse & Trackpad) ---
 function enableMouseDrag() {
     const slider = document.querySelector('.carousel-container');
-    if (!slider) return;
+    if (!slider || slider.dataset.dragEnabled === "true") return;
 
     let isDown = false;
     let startX;
     let scrollLeft;
 
+    slider.style.cursor = 'grab';
+    slider.dataset.dragEnabled = "true"; // Evita duplicar el efecto
+
     slider.addEventListener('mousedown', (e) => {
         isDown = true;
+        slider.classList.add('active');
         slider.style.cursor = 'grabbing';
         startX = e.pageX - slider.offsetLeft;
         scrollLeft = slider.scrollLeft;
+        // Evita que el navegador intente "arrastrar" la imagen como archivo
+        if(e.target.tagName === 'IMG') e.preventDefault(); 
     });
+
     slider.addEventListener('mouseleave', () => {
         isDown = false;
         slider.style.cursor = 'grab';
     });
+
     slider.addEventListener('mouseup', () => {
         isDown = false;
         slider.style.cursor = 'grab';
     });
+
     slider.addEventListener('mousemove', (e) => {
         if (!isDown) return;
         e.preventDefault();
         const x = e.pageX - slider.offsetLeft;
-        const walk = (x - startX) * 2; 
+        const walk = (x - startX) * 2.5; // Aumentado a 2.5 para más velocidad
         slider.scrollLeft = scrollLeft - walk;
     });
 }
 
-// Observador para detectar cuándo se inyecta un carrusel en el DOM
-const observer = new MutationObserver(() => {
-    if (document.querySelector('.carousel-container')) {
-        enableMouseDrag();
+// Observador ultra-ligero
+const observer = new MutationObserver((mutations) => {
+    for (let mutation of mutations) {
+        if (mutation.addedNodes.length) {
+            if (document.querySelector('.carousel-container')) {
+                enableMouseDrag();
+                break;
+            }
+        }
     }
 });
-observer.observe(document.getElementById('dynamic-work-area'), { childList: true });
+observer.observe(document.getElementById('dynamic-work-area'), { childList: true, subtree: true });
 
 
 if (typeof DEEPFALL_DATA === "undefined") {
