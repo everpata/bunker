@@ -17,11 +17,6 @@ let countdownInterval;
 
 function toggleOption(btn) { btn.classList.toggle("selected"); }
 
-// Alerta si datos.js falla
-if (typeof DEEPFALL_DATA === "undefined") {
-    alert("🔥 ERROR CRÍTICO: El archivo datos.js no cargó.");
-}
-
 auth.onAuthStateChanged((user) => {
     if (!user) { window.location.href = "index.html"; return; }
     const userRef = db.collection("usuarios").doc(user.uid);
@@ -30,7 +25,6 @@ auth.onAuthStateChanged((user) => {
         if (!doc.exists) { window.location.href = "index.html"; return; }
         const data = doc.data();
 
-        // GPS Seguro
         if (!leccionId) {
             let guardada = "34"; 
             if (data.leccion_actual_DF) {
@@ -55,7 +49,8 @@ auth.onAuthStateChanged((user) => {
         const uiTitle = document.getElementById("ui-title");
         const uiDesc = document.getElementById("ui-desc");
 
-        // Limpieza
+        // --- LIMPIEZA Y RESET DE ESTADOS ---
+        document.body.classList.remove('revealed'); // Quita la revelación previa
         if(btnMando) { btnMando.style.display = "none"; btnMando.className = "btn-mando"; }
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
@@ -79,11 +74,35 @@ auth.onAuthStateChanged((user) => {
 
         // --- TIPO: REPORTE ---
         } else if (leccionData.tipo === "reporte") {
-            if (data.estado === "Finalizado_DF") { /* Lógica de redirección si ya pagó */ }
             userRef.update({ leccion_actual_DF: "bunker.html?id=63", estado: "Finalizado_DF" });
             [uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.innerHTML = `<h1 class="title">Estatus: Máscara Rota</h1><div class="work-area card"><p class="text-base">Tu capacidad para mentirte ha sido neutralizada.</p></div><button id="btn-upsell" class="btn-status-alert" style="display:block;">AVANZAR AL TRAMO 02 →</button>`;
             document.getElementById("btn-upsell").onclick = () => window.location.href = leccionData.linkUpsell;
+
+        // --- TIPO: PRINCIPIO (RITUAL DE REVELACIÓN) ---
+        } else if (leccionData.tipo === "principio") {
+            [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
+            
+            workArea.innerHTML = `
+                <div id="pantalla-reliquia" class="interruption-screen">
+                    <img src="${leccionData.imgReliquia}" class="relic-image">
+                    <p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p>
+                </div>
+                <div class="revelation-screen">
+                    <div class="logo"><img src="DF.png"></div>
+                    <p class="indicator">${leccionData.indicador}</p>
+                    <div class="work-area card">
+                        <span class="principle-statement">${leccionData.principio}</span>
+                        <p class="text-base">${leccionData.contenido}</p>
+                    </div>
+                </div>`;
+
+            document.getElementById("pantalla-reliquia").onclick = () => {
+                document.body.classList.add('revealed');
+                btnMando.style.display = "block";
+            };
+            btnMando.innerText = leccionData.btnTexto || "Asimilado →";
+            btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
 
         // --- LECCIONES ESTÁNDAR ---
         } else {
@@ -95,7 +114,6 @@ auth.onAuthStateChanged((user) => {
             btnMando.style.display = "block";
             btnMando.innerText = leccionData.btnTexto || "Continuar →";
 
-            // --- RENDER DE CADA ARMA ---
             if (leccionData.tipo === "texto") {
                 workArea.innerHTML = `<div class="work-area card">${leccionData.contenido}</div>`;
             } 
@@ -128,23 +146,19 @@ auth.onAuthStateChanged((user) => {
                 }
             }
 
-            // ACCIÓN DEL BOTÓN MANDO
             let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
             btnMando.onclick = () => {
                 if (isLocked || ["texto", "video", "imagen", "carrusel"].includes(leccionData.tipo)) return window.location.href = urlSig;
-                
                 const txt = document.getElementById("input-dinamico") ? document.getElementById("input-dinamico").value : "";
                 const sel = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
-
                 if(leccionData.tipo === "bitacora" && !txt.trim()) return alert("El búnker exige tu respuesta.");
                 if(leccionData.tipo === "quiz" && !sel.length) return alert("Toma una decisión.");
-                
                 const update = leccionData.tipo === "bitacora" ? { [`bitacora_${leccionId}`]: txt, leccion_actual_DF: urlSig } : { [`quiz_${leccionId}`]: sel, leccion_actual_DF: urlSig };
                 userRef.update(update).then(() => window.location.href = urlSig);
             };
         }
 
-        // GPS Seguro: Guardar progreso
+        // GPS Seguro
         const nA = parseInt(leccionId) || 0;
         const nG = data.leccion_actual_DF ? (parseInt(data.leccion_actual_DF.match(/\d+/)) || 0) : 0;
         if (data.estado !== "Finalizado_DF" && nA > nG) {
