@@ -154,12 +154,17 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
     }
 
     /* Reducimos la imagen del Candado en PC */
-    .relic-image-lock {
-        max-width: 450px; /* Un poco más grande que el hacha, pero controlada */
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
+   .relic-image-lock {
+    width: 100%;
+    max-width: 450px; /* Tamaño controlado para PC */
+    height: auto;
+    display: block;
+    margin: 0 auto 20px auto; /* Centrado automático */
+    border-radius: 16px;
+    animation: pulse-lock 3.5s infinite ease-in-out;
+    background-color: #f5f5f7; /* Color de respaldo por si la imagen no carga */
+    min-height: 200px; /* Espacio reservado para que no salte el diseño */
+}
 
  /* --- CÁPSULA DE AUDIO ULTRA-MINIMALISTA V2 --- */
 .audio-capsule {
