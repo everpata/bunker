@@ -6,7 +6,7 @@ html, body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     display: flex; justify-content: center; align-items: center; -webkit-text-size-adjust: 100%;
 }
-
+ 
 .container { width: 100%; max-width: 460px; padding: 60px 45px; display: flex; flex-direction: column; align-items: flex-start; }
 
 /* --- CABECERA --- */
