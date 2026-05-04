@@ -15,12 +15,53 @@ const urlParams = new URLSearchParams(window.location.search);
 let leccionId = urlParams.get("id");
 let countdownInterval;
 
-// ESCUDO QUIZ: Solo permite clicks si no está bloqueado
+// --- UTILIDADES DE INTERACCIÓN ---
 function toggleOption(btn) { 
     if(!btn.classList.contains("locked")) {
         btn.classList.toggle("selected"); 
     }
 }
+
+// Función para permitir arrastre con ratón en carruseles (Desktop)
+function enableMouseDrag() {
+    const slider = document.querySelector('.carousel-container');
+    if (!slider) return;
+
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.style.cursor = 'grabbing';
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2; 
+        slider.scrollLeft = scrollLeft - walk;
+    });
+}
+
+// Observador para detectar cuándo se inyecta un carrusel en el DOM
+const observer = new MutationObserver(() => {
+    if (document.querySelector('.carousel-container')) {
+        enableMouseDrag();
+    }
+});
+observer.observe(document.getElementById('dynamic-work-area'), { childList: true });
+
 
 if (typeof DEEPFALL_DATA === "undefined") {
     alert("🔥 ERROR CRÍTICO: datos.js no detectado.");
@@ -43,7 +84,7 @@ auth.onAuthStateChanged((user) => {
         }
 
         if (data.estado !== "Finalizado_DF" && nA > nG && !(nA === 1 && nG === 0)) {
-            alert(`🛡️ Acceso denegado a la coordenada ${nA}. Volviendo a tu nivel actual.`);
+            alert(`🛡️ Acceso denegado. Volviendo a tu nivel actual.`);
             window.location.href = `bunker.html?id=${nG > 0 ? nG : 1}`;
             return;
         }
@@ -75,7 +116,6 @@ auth.onAuthStateChanged((user) => {
             uiTitle.innerHTML = leccionData.titulo;
             uiDesc.innerHTML = leccionData.descripcion || "";
             
-            // Verifica si ya hay datos previos para aplicar el bloqueo
             let profileLocked = (data.edad && data.ocupacion && data.telefono);
             
             workArea.innerHTML = `
@@ -98,7 +138,6 @@ auth.onAuthStateChanged((user) => {
                 });
             }
 
-            // Si está bloqueado, añadimos la clase de opacidad al input generado por la librería
             if (profileLocked) {
                 setTimeout(() => {
                     const itiWrapper = document.querySelector(".iti");
@@ -112,33 +151,15 @@ auth.onAuthStateChanged((user) => {
             btnMando.innerText = profileLocked ? "IDENTIDAD CONFIRMADA ✓" : (leccionData.btnTexto || "Registrar Identidad →");
             btnMando.onclick = () => {
                 let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
-                
-                // Si el perfil ya estaba guardado, solo avanzar (no sobreescribir)
                 if (profileLocked) {
-                    if (data.estado !== "Finalizado_DF" && nA === nG) {
-                        userRef.update({ leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
-                    } else {
-                        window.location.href = urlSig;
-                    }
+                    window.location.href = urlSig;
                     return;
                 }
-
-                // Guardado inicial
                 const edad = document.getElementById("p-edad").value;
                 const ocup = document.getElementById("p-ocupacion").value;
                 const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
-
                 if(!edad || !ocup || !tel) return alert("El búnker exige datos completos.");
-
-                userRef.update({
-                    edad: edad,
-                    ocupacion: ocup,
-                    telefono: tel,
-                    leccion_actual_DF: urlSig
-                }).then(() => window.location.href = urlSig).catch(err => {
-                    userRef.set({ edad, ocupacion, telefono, leccion_actual_DF: urlSig }, {merge: true})
-                    .then(() => window.location.href = urlSig);
-                });
+                userRef.update({ edad, ocupacion, telefono: tel, leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
             };
 
         // --- TIPO: CANDADO ---
@@ -170,14 +191,11 @@ auth.onAuthStateChanged((user) => {
             userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}`, estado: "Finalizado_DF" });
             [uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.innerHTML = `
-                <span style="font-size:11px; font-weight:600; color:#878787; letter-spacing:1.5px; margin-bottom:5px; display:block;">ESTATUS ACTUAL</span>
                 <h1 class="title" style="margin-bottom:20px;">Máscara Rota.</h1>
                 <div class="work-area card" style="margin-bottom:35px;">
-                    <p class="text-base" style="margin:0;">
-                        <b style="color:#333;">Diagnóstico Crítico:</b><br><br>Tu capacidad para mentirte ha sido neutralizada. El saboteador invisible ha sido expuesto y eliminado.<br><br><b style="color:#333;">Orden:</b> La superficie ya no puede sostenerte. Inicia la inmersión al Tramo 02 de inmediato.
-                    </p>
+                    <p class="text-base"><b style="color:#333;">Diagnóstico Crítico:</b> Tu capacidad para mentirte ha sido neutralizada.<br><br><b style="color:#333;">Orden:</b> Inicia la inmersión al Tramo 02.</p>
                 </div>
-                <button id="btn-upsell" class="btn-status-alert" style="display:block; width:100%;">AVANZAR AL TRAMO 02 →</button>
+                <button id="btn-upsell" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>
             `;
             document.getElementById("btn-upsell").onclick = () => window.location.href = leccionData.linkUpsell;
 
@@ -187,7 +205,7 @@ auth.onAuthStateChanged((user) => {
             workArea.innerHTML = `
                 <div id="pantalla-reliquia" class="interruption-screen">
                     <img src="${leccionData.imgReliquia}" class="relic-image">
-                    <p class="indicator" style="text-align:center;">${leccionData.textoToque || "Toca para desenterrar"}</p>
+                    <p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p>
                 </div>
                 <div class="revelation-screen">
                     <div class="logo"><img src="DF.png"></div>
@@ -199,45 +217,22 @@ auth.onAuthStateChanged((user) => {
                 </div>`;
             document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); btnMando.style.display = "block"; };
             btnMando.innerText = leccionData.btnTexto || "Asimilado →";
-            
-            let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
-            btnMando.onclick = () => {
-                if (data.estado !== "Finalizado_DF" && nA === nG) {
-                    userRef.update({ leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
-                } else {
-                    window.location.href = urlSig;
-                }
-            };
+            btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
 
         // --- TIPO: HUB ---
         } else if (leccionData.tipo === "hub") {
-            [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
             uiIndicator.innerText = leccionData.indicador;
             uiProgress.style.width = leccionData.progreso;
             uiTitle.innerHTML = leccionData.titulo;
             uiDesc.innerHTML = leccionData.descripcion || "";
-            
             let hubHTML = leccionData.lecciones.map(l => `
                 <button class="option-btn" style="text-align:left; padding:20px; display:flex; justify-content:space-between; align-items:center;" onclick="window.location.href='bunker.html?id=${l.id}'">
-                    <div>
-                        <span style="display:block; font-size:10px; color:#878787; margin-bottom:5px; line-height:1;">${l.tag}</span>
-                        <span style="display:block; font-size:16px; font-weight:700; color:#333; line-height:1.2;">${l.titulo}</span>
-                    </div>
-                    <span style="color:#878787;">→</span>
+                    <div><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="display:block; font-size:16px; font-weight:700; color:#333;">${l.titulo}</span></div><span style="color:#878787;">→</span>
                 </button>
             `).join("");
-            
-            workArea.innerHTML = `<div class="work-area" style="width:100%; gap:12px; margin-bottom: 25px;">${hubHTML}</div>`;
+            workArea.innerHTML = `<div class="work-area" style="margin-bottom: 25px;">${hubHTML}</div>`;
             btnMando.style.display = "block"; btnMando.className = "btn-ghost"; btnMando.innerText = leccionData.btnTexto || "Volver al flujo →";
-            
-            let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
-            btnMando.onclick = () => {
-                if (data.estado !== "Finalizado_DF" && nA === nG) {
-                    userRef.update({ leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
-                } else {
-                    window.location.href = urlSig;
-                }
-            };
+            btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
 
         // --- TIPOS ESTÁNDAR ---
         } else {
@@ -260,7 +255,10 @@ auth.onAuthStateChanged((user) => {
                 workArea.innerHTML = `<div class="carousel-container">${items}</div>`;
             } else if (leccionData.tipo === "bitacora") {
                 workArea.innerHTML = `<div class="work-area card"><textarea id="input-dinamico" placeholder="${leccionData.placeholder}"></textarea></div>`;
-                if(data[`bitacora_${leccionId}`]) { const i = document.getElementById("input-dinamico"); i.value = data[`bitacora_${leccionId}`]; i.readOnly = true; i.classList.add("locked"); isLocked = true; }
+                if(data[`bitacora_${leccionId}`]) { 
+                    const i = document.getElementById("input-dinamico"); 
+                    i.value = data[`bitacora_${leccionId}`]; i.readOnly = true; i.classList.add("locked"); isLocked = true; 
+                }
             } else if (leccionData.tipo === "quiz") {
                 workArea.innerHTML = `<div class="work-area">${leccionData.opciones.map(op => `<button class="option-btn">${op}</button>`).join("")}</div>`;
                 if(data[`quiz_${leccionId}`]) { 
@@ -277,16 +275,11 @@ auth.onAuthStateChanged((user) => {
             let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
             btnMando.onclick = () => {
                 if (isLocked || ["texto", "video", "imagen", "carrusel"].includes(leccionData.tipo)) {
-                    if (data.estado !== "Finalizado_DF" && nA === nG) {
-                        userRef.update({ leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
-                    } else {
-                        window.location.href = urlSig;
-                    }
+                    window.location.href = urlSig;
                     return;
                 }
                 const txt = document.getElementById("input-dinamico") ? document.getElementById("input-dinamico").value : "";
                 const sel = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
-                
                 if(leccionData.tipo === "bitacora" && !txt.trim()) return alert("El búnker exige tu respuesta.");
                 if(leccionData.tipo === "quiz" && !sel.length) return alert("Toma una decisión.");
                 
