@@ -5,7 +5,7 @@ const firebaseConfig = {
     projectId: "deepfall-b3601", 
     storageBucket: "deepfall-b3601.firebasestorage.app", 
     messagingSenderId: "207043962011", 
-    appId: "1:207043962011:web:681397c7d540b4b3d4523e"  
+    appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
 };
 if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const auth = firebase.auth();
@@ -14,6 +14,17 @@ const db = firebase.firestore();
 const urlParams = new URLSearchParams(window.location.search);
 let leccionId = urlParams.get("id");
 let countdownInterval;
+
+// --- UTILIDADES DE INTERACCIÓN ---
+
+// Detener todos los audios al cambiar de tarjeta
+function stopAllAudio() {
+    const players = document.querySelectorAll('audio');
+    players.forEach(p => {
+        p.pause();
+        p.currentTime = 0;
+    });
+}
 
 function toggleOption(btn) { 
     if(!btn.classList.contains("locked")) { btn.classList.toggle("selected"); }
@@ -104,6 +115,7 @@ auth.onAuthStateChanged((user) => {
             btnMando.style.display = "block";
             btnMando.innerText = profileLocked ? "IDENTIDAD CONFIRMADA ✓" : (leccionData.btnTexto || "Registrar Identidad →");
             btnMando.onclick = () => {
+                stopAllAudio();
                 if (profileLocked) { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; return; }
                 const edad = document.getElementById("p-edad").value;
                 const ocup = document.getElementById("p-ocupacion").value;
@@ -116,13 +128,13 @@ auth.onAuthStateChanged((user) => {
         // --- TIPO: CANDADO ---
         } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            workArea.innerHTML = `<img src="candado.webp" class="relic-image-lock"><p class="text-base" style="text-align:center;">Liberación en:</p><div id="countdown" style="display:flex; justify-content:center; gap:12px; margin-top:10px;"><div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="hrs" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Hrs</span></div><div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="min" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Min</span></div><div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="seg" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Seg</span></div></div>`;
+            workArea.innerHTML = `<img src="img/candado.webp" class="relic-image-lock"><p class="text-base" style="text-align:center;">Liberación en:</p><div id="countdown" style="display:flex; justify-content:center; gap:12px; margin-top:10px;"><div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="hrs" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Hrs</span></div><div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="min" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Min</span></div><div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="seg" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Seg</span></div></div>`;
             btnMando.style.display = "block"; btnMando.innerText = "Actualizar Protocolo →";
             btnMando.onclick = () => window.location.reload(true);
             const release = new Date(leccionData.fechaLiberacion).getTime();
             countdownInterval = setInterval(() => {
                 const dist = release - new Date().getTime();
-                if (dist < 0) { clearInterval(countdownInterval); btnMando.innerText = "Ingresar →"; btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }
+                if (dist < 0) { clearInterval(countdownInterval); btnMando.innerText = "Ingresar →"; btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; } }
                 else {
                     document.getElementById("hrs").innerText = Math.floor(dist / 3600000).toString().padStart(2,"0");
                     document.getElementById("min").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2,"0");
@@ -135,25 +147,25 @@ auth.onAuthStateChanged((user) => {
             userRef.update({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" });
             [uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.innerHTML = `<h1 class="title">Máscara Rota.</h1><div class="work-area card" style="margin-bottom:35px;"><p class="text-base"><b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada.</p></div><button id="btn-upsell" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>`;
-            document.getElementById("btn-upsell").onclick = () => window.location.href = leccionData.linkUpsell;
+            document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell; }
 
         // --- TIPO: PRINCIPIO ---
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p></div><div class="revelation-screen"><div class="logo"><img src="DF.png"></div><p class="indicator" style="margin-bottom:32px;">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
             document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); btnMando.style.display = "block"; };
-            btnMando.innerText = "Asimilado →"; btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
+            btnMando.innerText = "Asimilado →"; btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }
 
         // --- TIPO: HUB ---
         } else if (leccionData.tipo === "hub") {
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
-            let hubHTML = leccionData.lecciones.map(l => `<button class="option-btn" style="padding:20px; display:flex; justify-content:space-between;" onclick="window.location.href='bunker.html?id=${l.id}'"><div><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="font-size:16px; font-weight:700;">${l.titulo}</span></div><span>→</span></button>`).join("");
+            let hubHTML = leccionData.lecciones.map(l => `<button class="option-btn" style="padding:20px; display:flex; justify-content:space-between;" onclick="stopAllAudio(); window.location.href='bunker.html?id=${l.id}'"><div><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="font-size:16px; font-weight:700;">${l.titulo}</span></div><span>→</span></button>`).join("");
             workArea.innerHTML = `<div class="work-area" style="margin-bottom:25px;">${hubHTML}</div>`;
             btnMando.style.display = "block"; btnMando.className = "btn-ghost"; btnMando.innerText = "Volver al flujo →";
-            btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
+            btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }
 
-        // --- TIPOS ESTÁNDAR (CON AUDIO OPCIONAL) ---
+        // --- TIPOS ESTÁNDAR (CON AUDIO SUPERIOR) ---
         } else {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
@@ -161,16 +173,35 @@ auth.onAuthStateChanged((user) => {
             btnMando.style.display = "block"; btnMando.innerText = leccionData.btnTexto || "Continuar →";
 
             if (leccionData.tipo === "texto") {
-                // Lógica de Audio Opcional
-                let audioBtn = leccionData.audio ? `
-                    <div class="audio-wrapper">
+                let audioDashboard = "";
+                if (leccionData.audio) {
+                    audioDashboard = `
+                    <div class="audio-dashboard">
                         <audio id="audio-player" src="${leccionData.audio}"></audio>
-                        <button class="btn-audio" onclick="const a=document.getElementById('audio-player'); a.paused?a.play():a.pause();">
-                            ESCUCHAR LECCIÓN 
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-left:8px;"><path d="M8 5v14l11-7z"/></svg>
-                        </button>
-                    </div>` : "";
-                workArea.innerHTML = `<div class="work-area card">${leccionData.contenido} ${audioBtn}</div>`;
+                        <div class="audio-controls">
+                            <button class="audio-btn-circle audio-time-skip" onclick="document.getElementById('audio-player').currentTime -= 15"> -15s </button>
+                            <button class="audio-btn-circle audio-btn-main" onclick="const a=document.getElementById('audio-player'); a.paused ? a.play() : a.pause();">
+                                <svg id="play-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </button>
+                            <button class="audio-btn-circle audio-time-skip" onclick="document.getElementById('audio-player').currentTime += 15"> +15s </button>
+                        </div>
+                        <div class="audio-progress-bg" onclick="const a=document.getElementById('audio-player'); a.currentTime = (event.offsetX / this.offsetWidth) * a.duration;">
+                            <div id="audio-bar" class="audio-progress-fill"></div>
+                        </div>
+                    </div>`;
+                }
+                workArea.innerHTML = `${audioDashboard} <div class="work-area card">${leccionData.contenido}</div>`;
+                
+                // Lógica visual del audio
+                if (leccionData.audio) {
+                    const player = document.getElementById('audio-player');
+                    const bar = document.getElementById('audio-bar');
+                    const icon = document.getElementById('play-icon');
+                    player.ontimeupdate = () => { bar.style.width = (player.currentTime / player.duration) * 100 + "%"; };
+                    player.onplay = () => icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                    player.onpause = () => icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+                }
+
             } else if (leccionData.tipo === "imagen") {
                 workArea.innerHTML = `<img src="${leccionData.url}" class="evidence-image">`;
             } else if (leccionData.tipo === "video") {
@@ -189,6 +220,7 @@ auth.onAuthStateChanged((user) => {
             }
 
             btnMando.onclick = () => {
+                stopAllAudio(); // SE DETIENE EL AUDIO AQUÍ
                 let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
                 if (isLocked || ["texto", "video", "imagen", "carrusel"].includes(leccionData.tipo)) {
                     if (data.estado !== "Finalizado_DF" && nA === nG) { userRef.update({ leccion_actual_DF: leccionData.siguienteId }).then(() => window.location.href = urlSig); }
