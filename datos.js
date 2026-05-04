@@ -337,5 +337,16 @@ const DEEPFALL_DATA = {
         "tipo": "reporte",
         "fechaExpiracion": "May 4, 2026 19:00:00 GMT-0500",
         "linkUpsell": "https://deepmersion.deepnessmen.com"
+    },
+    
+    "64": {
+        "tipo": "principio",
+        "imgReliquia": "hacha.png",
+        "textoToque": "Toca para desenterrar el Principio III",
+        "indicador": "Principio III / Descenso",
+        "principio": "\"Afilamos el hacha aunque no vayamos a cortar ningún árbol.\"",
+        "contenido": "El entrenamiento es el estado natural del hombre profundo.",
+        "btnTexto": "Asimilado →",
+        "siguienteId": "65"
     }
 };
