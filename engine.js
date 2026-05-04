@@ -260,4 +260,4 @@ auth.onAuthStateChanged((user) => {
         console.error(err); 
         document.getElementById("loading-screen").style.display = "none";
     });
-});
+}); 
