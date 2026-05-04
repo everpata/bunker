@@ -63,42 +63,38 @@
         const db = firebase.firestore();
 
         let isLoginMode = false;
-
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                db.collection("usuarios").doc(user.uid).get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        
-                        // 🧠 NUEVO CEREBRO DE ENRUTAMIENTO MAESTRO
-                        
-                        // FILTRO 1: Si ya está en etapas avanzadas (Tramo 02 o 03)
-                        if (data.access_DQ === true || data.estado === "Finalizado_DM" || data.access_DM === true) {
-                            // Por ahora, como el Búnker es la base, lo mandamos al index del futuro Tramo 02
-                            // (Cambiarás esto cuando conectes la Deepmersion real)
-                            window.location.href = data.leccion_actual_DM || "index.html"; 
-                        }
-                        // FILTRO 2: Si ya terminó el Deepfall (Lo mandamos a su reporte final)
-                        else if (data.estado === "Finalizado_DF") { 
-                            window.location.href = "bunker.html?id=11"; 
-                        } 
-                        // FILTRO 3: Tiene progreso guardado (GPS Dinámico)
-                        else if (data.leccion_actual_DF) { 
-                            window.location.href = data.leccion_actual_DF;
-                        } 
-                        // FILTRO 4: Es completamente nuevo (Lo mandamos a la Lección 1: Perfil)
-                        else {
-                            window.location.href = "bunker.html?id=1"; 
-                        }
+// BUSCA ESTA SECCIÓN DENTRO DEL <script> DE TU index.html Y REEMPLÁZALA:
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        db.collection("usuarios").doc(user.uid).get().then((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                
+                if (data.access_DQ === true || data.estado === "Finalizado_DM" || data.access_DM === true) {
+                    window.location.href = "index.html"; 
+                }
+                else if (data.estado === "Finalizado_DF") { 
+                    window.location.href = "bunker.html?id=11"; 
+                } 
+                else if (data.leccion_actual_DF) { 
+                    // NUEVA LÓGICA: Si es un número (ID limpio), construye la URL. 
+                    // Si es una ruta vieja (bunker.html...), la usa tal cual para no romper nada.
+                    let target = data.leccion_actual_DF;
+                    if (!isNaN(target)) {
+                        window.location.href = `bunker.html?id=${target}`;
                     } else {
-                        // Si por algún error el documento no se creó, lo forzamos al inicio
-                        window.location.href = "bunker.html?id=1";
+                        window.location.href = target;
                     }
-                }).catch(() => { 
+                } 
+                else {
                     window.location.href = "bunker.html?id=1"; 
-                });
+                }
+            } else {
+                window.location.href = "bunker.html?id=1";
             }
         });
+    }
+});
 
         // Lógica de interfaz
         document.getElementById('toggle-auth').addEventListener('click', () => {
