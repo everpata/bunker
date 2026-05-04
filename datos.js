@@ -129,4 +129,4 @@ const DEEPFALL_DATA = {
         "fechaExpiracion": "May 15, 2026 19:00:00",
         "linkUpsell": "https://deepmersion.deepnessmen.com"
     }
-};
+}; 
