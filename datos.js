@@ -45,6 +45,21 @@ const DEEPFALL_DATA = {
         "siguienteId": "38"
     },
 
+    "37.1": {
+        "tipo": "carrusel",
+        "indicador": "Día 02 / Conceptos",
+        "progreso": "18%",
+        "titulo": "Los 3 Pilares del Fondo",
+        "descripcion": "Desliza para entender la estructura.",
+        "items": [
+            { "texto": "<b>Presencia:</b> No es estar, es habitar el momento.", "img": "pilar1.png" },
+            { "texto": "<b>Densidad:</b> El peso de tu verdad interna.", "img": "pilar2.png" },
+            { "texto": "<b>Osadía:</b> La capacidad de actuar con miedo.", "img": "pilar3.png" }
+        ],
+        "btnTexto": "Entendido →",
+        "siguienteId": "38"
+    },
+
     "38": {
         "tipo": "quiz",
         "indicador": "Día 02 / El impulso",
