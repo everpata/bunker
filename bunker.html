@@ -5,117 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Deepfall / Sistema Activo</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+    
     <style>
-        /* 🚨 ESTILOS GLOBALES MAESTROS */
-        #loading-screen { 
-            display: flex; align-items: center; justify-content: center; 
-            height: 100vh; width: 100vw; background: #fff; 
-            position: fixed; top: 0; left: 0; z-index: 9999; 
-        }
-
-        /* BOTONES Y ACCIONES */
-        #btn-mando { display: none; } /* El motor lo activa */
+        /* 🚨 ESTILOS MAESTROS UNIFICADOS */
+        #loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: fixed; top: 0; left: 0; z-index: 9999; }
+        #btn-mando { display: none; } 
         
-        .btn-status-alert { 
-            display: block; background-color: #fce8e6 !important; 
-            color: #d93025 !important; border: 1px solid #d93025 !important; 
-            font-weight: 700 !important; width: 100%; padding: 20px; 
-            border-radius: 16px; font-size: 16px; cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(217, 48, 37, 0.1); 
-            animation: btnElastic 4s ease-in-out infinite; 
-            text-align: center; margin-top: 35px !important; 
-        }
-
-        @keyframes btnElastic { 
-            0%, 100% { padding-top: 18px; padding-bottom: 18px; } 
-            50% { padding-top: 24px; padding-bottom: 24px; } 
-        }
+        /* FORMULARIO DE PERFIL (DÍA 1) */
+        .iti { width: 100%; margin-top: 10px; } 
+        .iti__input { border: none !important; border-bottom: 1px solid #eaeaea !important; border-radius: 0 !important; font-size: 16px !important; width: 100% !important; padding: 12px 0 12px 50px !important; background: transparent !important; }
+        .form-area input { width: 100%; border: none; border-bottom: 1px solid #eaeaea; padding: 12px 0; font-size: 16px; color: #333333; outline: none; background: transparent; font-family: inherit; margin-bottom: 10px; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         /* BLOQUEOS Y ESTADOS */
         textarea.locked { color: #878787; background-color: #f9f9f9; cursor: not-allowed; border-color: #e0e0e0; }
         .quiz-locked .option-btn { pointer-events: none; opacity: 0.7; }
         .quiz-locked .option-btn.selected { opacity: 1; border-color: #333333 !important; color: #333333 !important; font-weight: 700; }
-        .btn-disabled { background-color: #f5f5f7 !important; color: #878787 !important; border: 1px solid #e0e0e0 !important; cursor: default !important; box-shadow: none !important; animation: none !important; }
+        .btn-disabled { background-color: #f5f5f7 !important; color: #878787 !important; border: 1px solid #e0e0e0 !important; cursor: default !important; }
 
-        /* ELEMENTOS DE CONTENIDO */
-        .post-video-box { 
-            background-color: #f5f5f7; border-radius: 16px; 
-            padding: 20px; width: 100%; margin-top: 25px; 
-            margin-bottom: 10px; box-sizing: border-box; text-align: left; 
-        }
-        .post-video-box p { font-size: 16px; color: #878787; line-height: 1.6; margin: 0; }
-        .post-video-box b { color: #333333; }
-
-        /* 🔒 ESTILOS DEL CANDADO DINÁMICO */
-        .relic-lock-img { 
-            width: 90%; max-width: 500px; height: auto; 
-            margin: 0 auto 35px auto; display: block; 
-            opacity: 0.95; animation: relicPulse 3s ease-in-out infinite; 
-        }
-        @keyframes relicPulse { 
-            0%, 100% { transform: scale(1); opacity: 0.9; } 
-            50% { transform: scale(1.02); opacity: 1; } 
-        }
-
-        /* 🚨 ESTILOS ESPECÍFICOS DEL REPORTE FINAL */
-        #nombre-exp { 
-            font-size: 11px; font-weight: 600; color: #878787; 
-            letter-spacing: 1.5px; text-transform: uppercase; 
-            margin-bottom: 18px; line-height: 1; display: block; 
-            width: 100%; text-align: left; 
-        }
-
-        .status-badge { 
-            background-color: #fce8e6; color: #d93025; 
-            padding: 6px 12px; border-radius: 6px; 
-            font-size: 10px; font-weight: 800; 
-            display: table !important; 
-            margin: 0 0 25px 0 !important; 
-            border: 1px solid #d93025; text-transform: uppercase; 
-        }
-
-        /* CONTENEDOR DE CRONÓMETRO */
-        .stats-container { 
-            display: flex !important; flex-direction: row !important; 
-            gap: 10px; width: 100%; margin-top: 25px; margin-bottom: 35px; 
-        }
-        .stat-box { 
-            flex: 1; background-color: #f5f5f7; padding: 22px 5px; 
-            border-radius: 16px; text-align: center; border: 1px solid #e0e0e0; 
-        }
+        /* CANDADO Y REPORTE */
+        .relic-lock-img { width: 90%; max-width: 500px; height: auto; margin: 0 auto 35px auto; display: block; animation: relicPulse 3s ease-in-out infinite; }
+        @keyframes relicPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.02); opacity: 1; } }
+        
+        .status-badge { background-color: #fce8e6; color: #d93025; padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; display: table !important; margin: 0 0 25px 0 !important; border: 1px solid #d93025; text-transform: uppercase; }
+        #nombre-exp { font-size: 11px; font-weight: 600; color: #878787; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; line-height: 1; display: block; text-align: left; }
+        
+        .stats-container { display: flex !important; flex-direction: row !important; gap: 10px; width: 100%; margin-top: 25px; margin-bottom: 35px; }
+        .stat-box { flex: 1; background-color: #f5f5f7; padding: 22px 5px; border-radius: 16px; text-align: center; border: 1px solid #e0e0e0; }
         .stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; }
-        .stat-label { 
-            font-size: 9px; font-weight: 700; color: #878787; 
-            margin-top: 8px; display: block; text-transform: uppercase; 
-        }
+        .stat-label { font-size: 9px; font-weight: 700; color: #878787; margin-top: 8px; display: block; text-transform: uppercase; }
+
+        .btn-status-alert { display: block; background-color: #fce8e6 !important; color: #d93025 !important; border: 1px solid #d93025 !important; font-weight: 700 !important; width: 100%; padding: 20px; border-radius: 16px; font-size: 16px; cursor: pointer; animation: btnElastic 4s ease-in-out infinite; text-align: center; margin-top: 35px !important; }
+        @keyframes btnElastic { 0%, 100% { padding-top: 18px; padding-bottom: 18px; } 50% { padding-top: 24px; padding-bottom: 24px; } }
     </style>
 </head>
 <body>
-    <div id="loading-screen">
-        <img src="DF.png" class="loading-logo" alt="Cargando...">
-    </div>
+    <div id="loading-screen"><img src="DF.png" style="height: 60px;"></div>
 
     <div class="container" id="bunker-content" style="display: none;">
         <div class="logo" id="ui-logo"><img src="DF.png"></div>
-        
         <p class="indicator" id="ui-indicator"></p>
-        <div class="progress-container">
-            <div class="progress-fill" id="ui-progress"></div>
-        </div>
-        
+        <div class="progress-container"><div class="progress-fill" id="ui-progress"></div></div>
         <h1 class="title" id="ui-title"></h1>
         <p class="description" id="ui-desc"></p>
         
         <div id="dynamic-work-area"></div>
 
         <button id="btn-mando" class="btn-mando"></button>
-        
-        <button id="btn-volver-hub" class="btn-ghost" style="margin-top: 20px; display: none;">← Volver</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     
     <script src="datos.js"></script>
     <script src="engine.js"></script>
