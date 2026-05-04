@@ -4,7 +4,7 @@ const firebaseConfig = {
     authDomain: "deepfall-b3601.firebaseapp.com", 
     projectId: "deepfall-b3601", 
     storageBucket: "deepfall-b3601.firebasestorage.app", 
-    messagingSenderId: "207043962011", 
+    messagingSenderId: "207043962011",  
     appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
 };
 if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
