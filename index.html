@@ -50,7 +50,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 🔴 ACTUALIZAR: Credenciales de Firebase (Solo si cambias de base de datos)
         const firebaseConfig = {
             apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8",
             authDomain: "deepfall-b3601.firebaseapp.com",
@@ -71,48 +70,37 @@
                     if (doc.exists) {
                         const data = doc.data();
                         
-                        // FILTRO 1: ULTRA-VIP (Tramo 03 pagado)
-                        if (data.access_DQ === true) {
-                            // 🔴 ACTUALIZAR: Archivo de inicio o Hub del Tramo 03 (DQ)
-                            window.location.href = data.leccion_actual_DQ || "01_DQ_texto.html"; 
+                        // 🧠 NUEVO CEREBRO DE ENRUTAMIENTO MAESTRO
+                        
+                        // FILTRO 1: Si ya está en etapas avanzadas (Tramo 02 o 03)
+                        if (data.access_DQ === true || data.estado === "Finalizado_DM" || data.access_DM === true) {
+                            // Por ahora, como el Búnker es la base, lo mandamos al index del futuro Tramo 02
+                            // (Cambiarás esto cuando conectes la Deepmersion real)
+                            window.location.href = data.leccion_actual_DM || "index.html"; 
                         }
-                        // FILTRO 2: BLOQUEO TRAMO 02 (Terminó DM)
-                        else if (data.estado === "Finalizado_DM") {
-                            // 🔴 ACTUALIZAR: Archivo de venta del Tramo 03 (DQ)
-                            window.location.href = "08_DM_reportefinal.html"; 
-                        }
-                        // FILTRO 3: VIP (Tramo 02 pagado)
-                        else if (data.access_DM === true) {
-                            // 🔴 ACTUALIZAR: Archivo de inicio o Hub del Tramo 02 (DM)
-                            window.location.href = data.leccion_actual_DM || "01_DM_texto.html"; 
-                        }
-                        // FILTRO 4: BLOQUEO TRAMO 01 (Terminó DF)
+                        // FILTRO 2: Si ya terminó el Deepfall (Lo mandamos a su reporte final)
                         else if (data.estado === "Finalizado_DF") { 
-                            // 🔴 ACTUALIZAR: Archivo de venta del Tramo 02 (DM)
-                            window.location.href = "08_DF_reportefinal.html"; 
+                            window.location.href = "bunker.html?id=11"; 
                         } 
-                        // FILTRO 5: ENTRENAMIENTO BÁSICO (Tramo 01)
+                        // FILTRO 3: Tiene progreso guardado (GPS Dinámico)
                         else if (data.leccion_actual_DF) { 
-                            // GPS Automático: No requiere actualización manual
                             window.location.href = data.leccion_actual_DF;
                         } 
-                        // FILTRO 6: NUEVO INGRESO
+                        // FILTRO 4: Es completamente nuevo (Lo mandamos a la Lección 1: Perfil)
                         else {
-                            // 🔴 ACTUALIZAR: Archivo de recolección de datos
-                            window.location.href = "00_DF_datos.html"; 
+                            window.location.href = "bunker.html?id=1"; 
                         }
                     } else {
-                        // 🔴 ACTUALIZAR: Archivo de recolección de datos (Fallo de documento)
-                        window.location.href = "00_DF_datos.html";
+                        // Si por algún error el documento no se creó, lo forzamos al inicio
+                        window.location.href = "bunker.html?id=1";
                     }
                 }).catch(() => { 
-                    // 🔴 ACTUALIZAR: Archivo de recolección de datos (Fallo de conexión)
-                    window.location.href = "00_DF_datos.html"; 
+                    window.location.href = "bunker.html?id=1"; 
                 });
             }
         });
 
-        // Lógica de interfaz (Sin balizas, edición libre)
+        // Lógica de interfaz
         document.getElementById('toggle-auth').addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             const nameInput = document.getElementById('userName');
@@ -144,16 +132,20 @@
             if (!email || !pass) { alert("Completa los campos."); return; }
 
             if (isLoginMode) {
-                auth.signInWithEmailAndPassword(email, pass).catch(err => alert("Error: " + err.message));
+                auth.signInWithEmailAndPassword(email, pass).catch(err => alert("Error de acceso: " + err.message));
             } else {
-                if (!name) { alert("Nombre obligatorio."); return; }
+                if (!name) { alert("El nombre es obligatorio para el registro."); return; }
                 auth.createUserWithEmailAndPassword(email, pass)
                     .then((res) => {
                         return db.collection("usuarios").doc(res.user.uid).set({
-                            nombre: name, email: email, estado: "Registrado"
+                            nombre: name, 
+                            email: email, 
+                            estado: "Registrado",
+                            // Inyectamos la primera coordenada inmediatamente
+                            leccion_actual_DF: "bunker.html?id=1" 
                         });
                     })
-                    .catch(err => alert("Error: " + err.message));
+                    .catch(err => alert("Error de registro: " + err.message));
             }
         });
     </script>
