@@ -17,6 +17,11 @@ let countdownInterval;
 
 function toggleOption(btn) { btn.classList.toggle("selected"); }
 
+// Verificación de carga de datos
+if (typeof DEEPFALL_DATA === "undefined") {
+    alert("🔥 ERROR CRÍTICO: datos.js no detectado.");
+}
+
 auth.onAuthStateChanged((user) => {
     if (!user) { window.location.href = "index.html"; return; }
     const userRef = db.collection("usuarios").doc(user.uid);
@@ -25,6 +30,7 @@ auth.onAuthStateChanged((user) => {
         if (!doc.exists) { window.location.href = "index.html"; return; }
         const data = doc.data();
 
+        // GPS SEGURO: Si no hay ID en la URL, enviar a la última guardada o a la 34
         if (!leccionId) {
             let guardada = "34"; 
             if (data.leccion_actual_DF) {
@@ -49,8 +55,8 @@ auth.onAuthStateChanged((user) => {
         const uiTitle = document.getElementById("ui-title");
         const uiDesc = document.getElementById("ui-desc");
 
-        // --- LIMPIEZA Y RESET DE ESTADOS ---
-        document.body.classList.remove('revealed'); // Quita la revelación previa
+        // RESET DE INTERFAZ
+        document.body.classList.remove('revealed');
         if(btnMando) { btnMando.style.display = "none"; btnMando.className = "btn-mando"; }
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
@@ -79,32 +85,27 @@ auth.onAuthStateChanged((user) => {
             workArea.innerHTML = `<h1 class="title">Estatus: Máscara Rota</h1><div class="work-area card"><p class="text-base">Tu capacidad para mentirte ha sido neutralizada.</p></div><button id="btn-upsell" class="btn-status-alert" style="display:block;">AVANZAR AL TRAMO 02 →</button>`;
             document.getElementById("btn-upsell").onclick = () => window.location.href = leccionData.linkUpsell;
 
-        // --- TIPO: PRINCIPIO (RITUAL DE REVELACIÓN) ---
+        // --- TIPO: PRINCIPIO ---
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            
-            workArea.innerHTML = `
-                <div id="pantalla-reliquia" class="interruption-screen">
-                    <img src="${leccionData.imgReliquia}" class="relic-image">
-                    <p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p>
-                </div>
-                <div class="revelation-screen">
-                    <div class="logo"><img src="DF.png"></div>
-                    <p class="indicator">${leccionData.indicador}</p>
-                    <div class="work-area card">
-                        <span class="principle-statement">${leccionData.principio}</span>
-                        <p class="text-base">${leccionData.contenido}</p>
-                    </div>
-                </div>`;
-
-            document.getElementById("pantalla-reliquia").onclick = () => {
-                document.body.classList.add('revealed');
-                btnMando.style.display = "block";
-            };
+            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p></div><div class="revelation-screen"><div class="logo"><img src="DF.png"></div><p class="indicator">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
+            document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); btnMando.style.display = "block"; };
             btnMando.innerText = leccionData.btnTexto || "Asimilado →";
             btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
 
-        // --- LECCIONES ESTÁNDAR ---
+        // --- TIPO: HUB ---
+        } else if (leccionData.tipo === "hub") {
+            [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
+            uiIndicator.innerText = leccionData.indicador;
+            uiProgress.style.width = leccionData.progreso;
+            uiTitle.innerHTML = leccionData.titulo;
+            uiDesc.innerHTML = leccionData.descripcion || "";
+            let hubHTML = leccionData.lecciones.map(l => `<button class="option-btn" style="text-align:center; padding: 20px 10px;" onclick="window.location.href='bunker.html?id=${l.id}'"><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="display:block; font-size:14px; font-weight:700; color:#333;">${l.titulo}</span></button>`).join("");
+            workArea.innerHTML = `<div class="hub-grid">${hubHTML}</div>`;
+            btnMando.style.display = "block"; btnMando.className = "btn-ghost"; btnMando.innerText = leccionData.btnTexto || "Volver al flujo →";
+            btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
+
+        // --- TIPOS ESTÁNDAR ---
         } else {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
             uiIndicator.innerText = leccionData.indicador;
@@ -116,34 +117,19 @@ auth.onAuthStateChanged((user) => {
 
             if (leccionData.tipo === "texto") {
                 workArea.innerHTML = `<div class="work-area card">${leccionData.contenido}</div>`;
-            } 
-            else if (leccionData.tipo === "imagen") {
+            } else if (leccionData.tipo === "imagen") {
                 workArea.innerHTML = `<img src="${leccionData.url}" class="evidence-image">`;
-            }
-            else if (leccionData.tipo === "video") {
+            } else if (leccionData.tipo === "video") {
                 workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<p class="text-base" style="margin-top:15px;">${leccionData.postTexto}</p>` : ""}`;
-            } 
-            else if (leccionData.tipo === "carrusel") {
-                let itemsHTML = leccionData.items.map(item => `
-                    <div class="carousel-item">
-                        ${item.img ? `<img src="${item.img}" class="evidence-image">` : ""}
-                        <p class="text-base">${item.texto}</p>
-                    </div>`).join("");
-                workArea.innerHTML = `<div class="carousel-container">${itemsHTML}</div>`;
-            }
-            else if (leccionData.tipo === "bitacora") {
+            } else if (leccionData.tipo === "carrusel") {
+                let items = leccionData.items.map(item => `<div class="carousel-item">${item.img ? `<img src="${item.img}" class="evidence-image">` : ""}<p class="text-base">${item.texto}</p></div>`).join("");
+                workArea.innerHTML = `<div class="carousel-container">${items}</div>`;
+            } else if (leccionData.tipo === "bitacora") {
                 workArea.innerHTML = `<div class="work-area card"><textarea id="input-dinamico" placeholder="${leccionData.placeholder}"></textarea></div>`;
-                if(data[`bitacora_${leccionId}`]) {
-                    const i = document.getElementById("input-dinamico");
-                    i.value = data[`bitacora_${leccionId}`]; i.readOnly = true; i.classList.add("locked"); isLocked = true;
-                }
-            } 
-            else if (leccionData.tipo === "quiz") {
+                if(data[`bitacora_${leccionId}`]) { const i = document.getElementById("input-dinamico"); i.value = data[`bitacora_${leccionId}`]; i.readOnly = true; i.classList.add("locked"); isLocked = true; }
+            } else if (leccionData.tipo === "quiz") {
                 workArea.innerHTML = `<div class="work-area">${leccionData.opciones.map(op => `<button class="option-btn" onclick="toggleOption(this)">${op}</button>`).join("")}</div>`;
-                if(data[`quiz_${leccionId}`]) {
-                    document.querySelectorAll(".option-btn").forEach(b => { if(data[`quiz_${leccionId}`].includes(b.innerText.trim())) b.classList.add("selected"); });
-                    isLocked = true; btnMando.innerText = "REGISTRO SELLADO ✓";
-                }
+                if(data[`quiz_${leccionId}`]) { document.querySelectorAll(".option-btn").forEach(b => { if(data[`quiz_${leccionId}`].includes(b.innerText.trim())) b.classList.add("selected"); }); isLocked = true; btnMando.innerText = "REGISTRO SELLADO ✓"; }
             }
 
             let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
@@ -158,7 +144,7 @@ auth.onAuthStateChanged((user) => {
             };
         }
 
-        // GPS Seguro
+        // GUARDADO DE PROGRESO AUTOMÁTICO
         const nA = parseInt(leccionId) || 0;
         const nG = data.leccion_actual_DF ? (parseInt(data.leccion_actual_DF.match(/\d+/)) || 0) : 0;
         if (data.estado !== "Finalizado_DF" && nA > nG) {
