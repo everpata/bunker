@@ -26,22 +26,23 @@ auth.onAuthStateChanged((user) => {
     const userRef = db.collection("usuarios").doc(user.uid);
 
     userRef.get().then((doc) => {
-        if (!doc.exists) { window.location.href = "index.html"; return; }
-        const data = doc.data();
+        const data = doc.exists ? doc.data() : {};
 
-        // 🛡️ ESCUDO DE SEGURIDAD (ANTI-SALTOS)
+        // 🛡️ ESCUDO DE SEGURIDAD Y GPS
         let nA = parseInt(leccionId) || 0;
         let nG = data.leccion_actual_DF ? (parseInt(data.leccion_actual_DF.match(/\d+/)) || 0) : 0;
         
+        // Si entra sin ID en la URL
         if (!leccionId) {
-            window.location.href = `bunker.html?id=${nG || 1}`;
+            let guardada = nG > 0 ? nG : 1; 
+            window.location.href = `bunker.html?id=${guardada}`;
             return;
         }
 
-        // Si intenta acceder a una lección mayor a la guardada (y no es la lección 1 inicial)
+        // Anti-saltos: Si intenta acceder a una lección mayor a la guardada (y no es el inicio absoluto)
         if (data.estado !== "Finalizado_DF" && nA > nG && !(nA === 1 && nG === 0)) {
             alert(`🛡️ Acceso denegado a la coordenada ${nA}. Volviendo a tu nivel actual.`);
-            window.location.href = `bunker.html?id=${nG || 1}`;
+            window.location.href = `bunker.html?id=${nG > 0 ? nG : 1}`;
             return;
         }
 
@@ -52,7 +53,7 @@ auth.onAuthStateChanged((user) => {
         }
 
         const workArea = document.getElementById("dynamic-work-area");
-        workArea.style.width = "100%"; // SOLUCIÓN ERRORES 4, 6 Y 7: Fuerza el ancho total
+        workArea.style.width = "100%"; // SOLUCIÓN: Fuerza el ancho total para inputs, bitácoras y quizzes
         
         const btnMando = document.getElementById("btn-mando");
         const uiLogo = document.getElementById("ui-logo");
@@ -66,8 +67,56 @@ auth.onAuthStateChanged((user) => {
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
 
-        // --- TIPO: CANDADO (SOLUCIÓN ERROR 9) ---
-        if (leccionData.tipo === "candado") {
+        // --- TIPO: PERFIL ---
+        if (leccionData.tipo === "perfil") {
+            [uiIndicator, uiProgress.parentElement].forEach(el => el && (el.style.display = "none"));
+            uiTitle.innerHTML = leccionData.titulo;
+            uiDesc.innerHTML = leccionData.descripcion || "";
+            
+            workArea.innerHTML = `
+                <div class="work-area card">
+                    <input type="text" id="p-nombre" placeholder="Nombre completo" value="${data.nombre || ''}">
+                    <input type="number" id="p-edad" placeholder="Edad" value="${data.edad || ''}">
+                    <input type="text" id="p-ocupacion" placeholder="Ocupación" value="${data.ocupacion || ''}">
+                    <input type="tel" id="p-telefono" value="${data.telefono || ''}">
+                </div>
+            `;
+
+            let phoneInput;
+            if(window.intlTelInput) {
+                phoneInput = window.intlTelInput(document.querySelector("#p-telefono"), {
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+                    preferredCountries: ["mx", "co", "es", "ar", "pe", "cl"],
+                    separateDialCode: true
+                });
+            }
+
+            btnMando.style.display = "block";
+            btnMando.innerText = leccionData.btnTexto || "Registrar Identidad →";
+            btnMando.onclick = () => {
+                const nombre = document.getElementById("p-nombre").value;
+                const edad = document.getElementById("p-edad").value;
+                const ocup = document.getElementById("p-ocupacion").value;
+                const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
+
+                if(!nombre || !edad || !ocup || !tel) return alert("El búnker exige datos completos.");
+
+                let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
+                userRef.update({
+                    nombre: nombre,
+                    edad: edad,
+                    ocupacion: ocup,
+                    telefono: tel,
+                    leccion_actual_DF: urlSig
+                }).then(() => window.location.href = urlSig).catch(err => {
+                    // Si el usuario es completamente nuevo y no tiene doc previo, se crea
+                    userRef.set({ nombre, edad, ocupacion, telefono, leccion_actual_DF: urlSig }, {merge: true})
+                    .then(() => window.location.href = urlSig);
+                });
+            };
+
+        // --- TIPO: CANDADO ---
+        } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.innerHTML = `
                 <img src="candado.webp" class="relic-image" style="width:120px; margin: 0 auto 20px auto; display:block; animation: pulse-logo 1.8s infinite ease-in-out;">
@@ -90,9 +139,9 @@ auth.onAuthStateChanged((user) => {
                 }
             }, 1000);
 
-        // --- TIPO: REPORTE FINAL (SOLUCIÓN ERROR 10) ---
+        // --- TIPO: REPORTE FINAL ---
         } else if (leccionData.tipo === "reporte") {
-            userRef.update({ leccion_actual_DF: "bunker.html?id=10", estado: "Finalizado_DF" });
+            userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}`, estado: "Finalizado_DF" });
             [uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.innerHTML = `
                 <span style="font-size:11px; font-weight:600; color:#878787; letter-spacing:1.5px; margin-bottom:5px; display:block;">ESTATUS ACTUAL</span>
@@ -112,9 +161,17 @@ auth.onAuthStateChanged((user) => {
             workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p></div><div class="revelation-screen"><div class="logo"><img src="DF.png"></div><p class="indicator">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
             document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); btnMando.style.display = "block"; };
             btnMando.innerText = leccionData.btnTexto || "Asimilado →";
-            btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
+            
+            let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
+            btnMando.onclick = () => {
+                if (data.estado !== "Finalizado_DF" && nA === nG) {
+                    userRef.update({ leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
+                } else {
+                    window.location.href = urlSig;
+                }
+            };
 
-        // --- TIPO: HUB (SOLUCIÓN ERROR 8) ---
+        // --- TIPO: HUB ---
         } else if (leccionData.tipo === "hub") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
             uiIndicator.innerText = leccionData.indicador;
@@ -122,20 +179,27 @@ auth.onAuthStateChanged((user) => {
             uiTitle.innerHTML = leccionData.titulo;
             uiDesc.innerHTML = leccionData.descripcion || "";
             
-            // Botones del Hub en formato de lista ancha
             let hubHTML = leccionData.lecciones.map(l => `
                 <button class="option-btn" style="text-align:left; padding:20px; display:flex; justify-content:space-between; align-items:center;" onclick="window.location.href='bunker.html?id=${l.id}'">
                     <div>
-                        <span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span>
-                        <span style="display:block; font-size:16px; font-weight:700; color:#333;">${l.titulo}</span>
+                        <span style="display:block; font-size:10px; color:#878787; margin-bottom:5px; line-height:1;">${l.tag}</span>
+                        <span style="display:block; font-size:16px; font-weight:700; color:#333; line-height:1.2;">${l.titulo}</span>
                     </div>
                     <span style="color:#878787;">→</span>
                 </button>
             `).join("");
             
-            workArea.innerHTML = `<div class="work-area" style="width:100%;">${hubHTML}</div>`;
+            workArea.innerHTML = `<div class="work-area" style="width:100%; gap:12px;">${hubHTML}</div>`;
             btnMando.style.display = "block"; btnMando.className = "btn-ghost"; btnMando.innerText = leccionData.btnTexto || "Volver al flujo →";
-            btnMando.onclick = () => window.location.href = `bunker.html?id=${leccionData.siguienteId}`;
+            
+            let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
+            btnMando.onclick = () => {
+                if (data.estado !== "Finalizado_DF" && nA === nG) {
+                    userRef.update({ leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
+                } else {
+                    window.location.href = urlSig;
+                }
+            };
 
         // --- TIPOS ESTÁNDAR ---
         } else {
@@ -152,7 +216,6 @@ auth.onAuthStateChanged((user) => {
             } else if (leccionData.tipo === "imagen") {
                 workArea.innerHTML = `<img src="${leccionData.url}" class="evidence-image">`;
             } else if (leccionData.tipo === "video") {
-                // SOLUCIÓN ERROR 5: Texto dentro de la caja gris
                 workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="work-area card" style="margin-top:15px;"><p class="text-base" style="margin:0;">${leccionData.postTexto}</p></div>` : ""}`;
             } else if (leccionData.tipo === "carrusel") {
                 let items = leccionData.items.map(item => `<div class="carousel-item">${item.img ? `<img src="${item.img}" class="evidence-image">` : ""}<p class="text-base">${item.texto}</p></div>`).join("");
@@ -168,7 +231,6 @@ auth.onAuthStateChanged((user) => {
             let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
             btnMando.onclick = () => {
                 if (isLocked || ["texto", "video", "imagen", "carrusel"].includes(leccionData.tipo)) {
-                    // Evitamos sobreescribir la base de datos en tarjetas que no son interactivas
                     if (data.estado !== "Finalizado_DF" && nA === nG) {
                         userRef.update({ leccion_actual_DF: urlSig }).then(() => window.location.href = urlSig);
                     } else {
@@ -178,6 +240,7 @@ auth.onAuthStateChanged((user) => {
                 }
                 const txt = document.getElementById("input-dinamico") ? document.getElementById("input-dinamico").value : "";
                 const sel = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
+                
                 if(leccionData.tipo === "bitacora" && !txt.trim()) return alert("El búnker exige tu respuesta.");
                 if(leccionData.tipo === "quiz" && !sel.length) return alert("Toma una decisión.");
                 
@@ -186,7 +249,15 @@ auth.onAuthStateChanged((user) => {
             };
         }
 
+        // GUARDA EL GPS SOLO SI ES LA PRIMERA VEZ QUE LLEGA
+        if (data.estado !== "Finalizado_DF" && nA > nG && !["perfil", "candado", "reporte"].includes(leccionData.tipo)) {
+            userRef.update({ leccion_actual_DF: `bunker.html?id=${leccionId}` });
+        }
+
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
-    }).catch(err => { console.error(err); });
+    }).catch(err => { 
+        console.error(err); 
+        document.getElementById("loading-screen").style.display = "none";
+    });
 });
