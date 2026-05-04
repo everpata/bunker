@@ -12,7 +12,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 const urlParams = new URLSearchParams(window.location.search);
-let leccionId = urlParams.get("id");
+let leccionId = urlParams.get("id"); 
 let countdownInterval;
 
 function toggleOption(btn) { btn.classList.toggle("selected"); }
