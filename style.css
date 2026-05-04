@@ -52,12 +52,25 @@ input[type=number] { -moz-appearance: textfield; }
 
 /* --- CARRUSEL --- */
 .carousel-container {
-    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 16px; width: 100vw; max-width: 460px; padding: 0 0 10px 0;
-    -webkit-overflow-scrolling: touch; scrollbar-width: none;
-    mask-image: linear-gradient(to right, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    display: flex; 
+    overflow-x: auto; 
+    scroll-snap-type: x mandatory; 
+    gap: 16px; 
+    width: 100%; /* Respetará el margen del contenedor */
+    padding: 0 0 10px 0;
+    -webkit-overflow-scrolling: touch; 
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, black 85%, transparent 100%); 
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
 .carousel-container::-webkit-scrollbar { display: none; }
-.carousel-item { flex: 0 0 85%; scroll-snap-align: start; display: flex; flex-direction: column; gap: 12px; }
+.carousel-item { 
+    flex: 0 0 85%; /* La tarjeta ocupa el 85% del espacio alineado */
+    scroll-snap-align: start; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+}
 .carousel-item .evidence-image { border-radius: 16px; width: 100%; }
 
 /* --- COMPONENTES DE INTERACCIÓN --- */
