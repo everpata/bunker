@@ -120,7 +120,7 @@ const DEEPFALL_DATA = {
     // 10. TIPO: CANDADO (Bloqueo temporal)
     "10": {
         "tipo": "candado",
-        "fechaLiberacion": "May 10, 2026 12:00:00",
+        "fechaLiberacion": "May 4, 2026 21:25:00",
         "siguienteId": "11"
     },
 
