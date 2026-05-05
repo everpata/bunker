@@ -352,3 +352,8 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
 .mt-l  { margin-top: var(--gap-l) !important; }
 .mt-m  { margin-top: var(--gap-m) !important; }
 .mt-s  { margin-top: var(--gap-s) !important; }
+
+/* Utilidades de Alineación */
+.text-center { text-align: center !important; }
+.align-center { align-items: center !important; }
+.w-full { width: 100% !important; }
