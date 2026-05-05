@@ -172,45 +172,35 @@ auth.onAuthStateChanged((user) => {
                 }
             }, 1000);
 
-        // --- TIPO REPORTE FINAL (NUEVO DISEÑO) ---
+        // --- TIPO REPORTE FINAL ---
         } else if (leccionData.tipo === "reporte") {
             userRef.set({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" }, { merge: true });
-            
-            // Ocultamos la UI por defecto para dibujar todo a medida
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.style.width = "100%";
-            
-            const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "DESCONOCIDO";
+            const nombreUsr = (data.nombre || "Expedicionario").toUpperCase();
 
             workArea.innerHTML = `
                 <div style="width: 100%; display: flex; flex-direction: column; align-items: flex-start; text-align: left;">
                     <div class="logo" style="margin: 0 0 30px -12px;"><img src="DF.png" style="height: 55px;"></div>
-                    
                     <span class="nombre-exp">EXPEDICIONARIO: ${nombreUsr}</span>
                     <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
-                    
                     <h1 class="title">Fin del Descenso.</h1>
                     <p class="description">Análisis final del Tramo 01 completado.</p>
-
                     <div class="work-area card" style="width: 100%;">
                         <p class="text-base">
                             <b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br>
                             <b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.
                         </p>
                     </div>
-
                     <p class="text-base" style="margin-top: 35px; margin-bottom: 0px;"><b>La escotilla de acceso cierra en:</b></p>
-                    
                     <div id="countdown-upsell" class="stats-container">
                         <div class="stat-box"><span class="stat-value" id="u-hrs">00</span><span class="stat-label">Horas</span></div>
                         <div class="stat-box"><span class="stat-value" id="u-min">00</span><span class="stat-label">Minutos</span></div>
                         <div class="stat-box"><span class="stat-value" id="u-seg">00</span><span class="stat-label">Segundos</span></div>
                     </div>
-
-                    <button id="btn-upsell" class="btn-mando btn-status-alert" style="margin-top: 35px;">
+                    <button id="btn-upsell" class="btn-mando btn-status-alert" style="margin-top: 35px; display: block !important;">
                         AVANZAR AL TRAMO 02 →
                     </button>
-                    
                     <button id="btn-repasar" class="btn-ghost" style="margin-top: 20px;">
                         ← Volver al Hub del Descenso
                     </button>
@@ -220,23 +210,19 @@ auth.onAuthStateChanged((user) => {
             document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell || "#"; };
             document.getElementById("btn-repasar").onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.hubId || 1}`; };
 
-            // Lógica del Temporizador del Upsell
             if (leccionData.fechaExpiracion) {
                 const targetDate = new Date(leccionData.fechaExpiracion).getTime();
                 countdownInterval = setInterval(() => {
-                    const now = new Date().getTime(); 
-                    const distance = targetDate - now;
+                    const now = new Date().getTime(); const distance = targetDate - now;
                     if (distance < 0) { 
                         clearInterval(countdownInterval);
-                        document.getElementById("countdown-upsell").innerHTML = "<div style='padding:20px; background:#fce8e6; color:#d93025; border-radius:16px; width:100%; text-align:center; font-weight:800; font-size:16px;'>TIEMPO EXPIRADO</div>"; 
+                        document.getElementById("countdown-upsell").innerHTML = "<div style='padding:20px; background:#fce8e6; color:#d93025; border-radius:16px; width:100%; text-align:center; font-weight:800;'>TIEMPO EXPIRADO</div>"; 
                         return; 
                     }
                     document.getElementById("u-hrs").innerText = Math.floor(distance / (1000 * 60 * 60)).toString().padStart(2, '0');
                     document.getElementById("u-min").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
                     document.getElementById("u-seg").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
                 }, 1000);
-            } else {
-                document.getElementById("countdown-upsell").style.display = "none";
             }
 
         } else if (leccionData.tipo === "principio") {
