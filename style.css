@@ -1,6 +1,6 @@
 /* =========================================================
-   DEEPFALL V4.5 - DESIGN SYSTEM (TOKENS MAESTROS)
-   Arquitectura limpia, mantenible y responsiva.
+   DEEPFALL V5.0 - DESIGN SYSTEM (STACK REFACTOR)
+   Arquitectura de margen único superior para simetría total.
 ========================================================= */
 
 :root {
@@ -11,22 +11,22 @@
     --color-text-sec: #878787;
     --color-border: #d1d1d6;
     
-    /* Alerta / Táctico */
     --color-alert-bg: #fce8e6;
     --color-alert-text: #d93025;
 
     /* 2. TIPOGRAFÍA */
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     
-    /* 3. ESPACIADOS Y DIMENSIONES */
+    /* 3. SISTEMA DE MÁRGENES (CASCADA) */
+    --gap-xl: 60px; /* Bordes de pantalla */
+    --gap-l:  45px; /* Bloques e hitos de acción */
+    --gap-m:  30px; /* Transiciones y complementos */
+    --gap-s:  15px; /* Elementos hermanos y listas */
+
     --max-width-mobile: 460px;
     --max-width-desktop: 700px;
-    --padding-container-v: 60px;
     --padding-container-h: 45px;
     --padding-card: 26px;
-    
-    --gap-standard: 15px;
-    --margin-btn-top: 30px; /* Separación estándar antes del botón principal */
     
     --radius-standard: 16px;
     --radius-pill: 50px;
@@ -48,15 +48,15 @@ html, body {
     font-family: var(--font-family);
     display: flex; 
     justify-content: center; 
-    align-items: flex-start; /* Permite el scroll natural */
+    align-items: flex-start;
     -webkit-text-size-adjust: 100%;
 }
 
-/* Contenedor Maestro */
+/* Contenedor Maestro (Padding vertical eliminado para usar márgenes) */
 .container { 
     width: 100%; 
     max-width: var(--max-width-mobile); 
-    padding: var(--padding-container-v) var(--padding-container-h);  
+    padding: 0 var(--padding-container-h); 
     display: flex; 
     flex-direction: column; 
     align-items: flex-start; 
@@ -66,22 +66,41 @@ html, body {
 /* =========================================================
    SISTEMA TIPOGRÁFICO
 ========================================================= */
+.indicator { 
+    font-size: 11px; 
+    font-weight: 600; 
+    color: var(--color-text-sec); 
+    letter-spacing: 1.5px; 
+    text-transform: uppercase; 
+    width: 100%; 
+    line-height: 1;
+    margin-top: var(--gap-l); /* Hito de ubicación */
+}
+
+.progress-container { 
+    width: 100%; 
+    height: 2px; 
+    background-color: var(--color-bg-card); 
+    border-radius: 2px; 
+    margin-top: var(--gap-l); 
+}
+
 .title { 
     font-size: 28px; 
     font-weight: 700; 
     color: var(--color-text-main); 
-    margin-bottom: 16px; 
     line-height: 1.1; 
     letter-spacing: -0.8px; 
     width: 100%; 
+    margin-top: var(--gap-s); /* Hermano del indicador */
 }
 
 .description { 
     font-size: 16px; 
     color: var(--color-text-sec); 
-    margin-bottom: 32px; 
     line-height: 1.5; 
     width: 100%; 
+    margin-top: var(--gap-s); /* Hermano del título */
 }
 
 .text-base { 
@@ -90,20 +109,9 @@ html, body {
     line-height: 1.6; 
 }
 
-.text-base b { 
-    color: var(--color-text-main); 
-    font-weight: 700; 
-}
-
-.indicator { 
-    font-size: 11px; 
-    font-weight: 600; 
-    color: var(--color-text-sec); 
-    margin-bottom: 10px; 
-    letter-spacing: 1.5px; 
-    text-transform: uppercase; 
-    width: 100%; 
-    line-height: 1; 
+/* Texto complementario después de media u audio */
+.work-area.card .text-base, .mt-m {
+    margin-top: var(--gap-m); 
 }
 
 .principle-statement { 
@@ -111,54 +119,59 @@ html, body {
     font-weight: 800; 
     color: var(--color-text-main); 
     line-height: 1.2; 
-    margin-bottom: 12px; 
     display: block; 
 }
 
 /* =========================================================
    ESTRUCTURA Y COMPONENTES
 ========================================================= */
-.logo { margin: 0 0 30px -12px; flex-shrink: 0; width: 100%; text-align: left; }
+.logo { 
+    margin-top: var(--gap-xl); /* Borde superior */
+    margin-left: -12px;
+    flex-shrink: 0; 
+    width: 100%; 
+    text-align: left; 
+}
 .logo img { height: 55px; width: auto; display: block; }
 
-.progress-container { width: 100%; height: 2px; background-color: var(--color-bg-card); margin-bottom: 32px; border-radius: 2px; }
-.progress-fill { height: 100%; background-color: var(--color-text-main); transition: width 0.8s ease; }
-
 /* Áreas de Trabajo */
-#dynamic-work-area { width: 100%; display: flex; flex-direction: column; align-items: center; gap: var(--gap-standard); }
-.work-area { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+#dynamic-work-area { 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    margin-top: var(--gap-l); /* Hito de contenido */
+}
+
+.work-area { width: 100%; display: flex; flex-direction: column; }
 .work-area.card { background-color: var(--color-bg-card); padding: var(--padding-card); border-radius: var(--radius-standard); width: 100%; }
 
-/* Formulario */
+/* Formulario e Inputs */
 .input-line {
     width: 100%; background: transparent !important; border: none !important; border-bottom: 1px solid var(--color-border) !important;
     padding: 16px 0 !important; font-size: 16px !important; font-family: inherit !important; color: var(--color-text-main) !important; 
-    outline: none !important; margin-bottom: 15px !important; border-radius: 0 !important; box-shadow: none !important;
+    outline: none !important; border-radius: 0 !important; box-shadow: none !important;
+    margin-top: var(--gap-s);
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-input[type=number] { -moz-appearance: textfield; }
+.iti { width: 100% !important; display: block !important; margin-top: var(--gap-s) !important; }
 
-/* Librería de Teléfono (IntlTelInput) */
-.iti { width: 100% !important; display: block !important; margin-bottom: 15px !important; }
-.iti input[type="tel"] { 
-    border: none !important; border-bottom: 1px solid var(--color-border) !important; border-radius: 0 !important; 
-    width: 100% !important; padding: 16px 0 16px 95px !important; background-color: transparent !important; 
-    font-size: 16px !important; font-family: inherit !important; color: var(--color-text-main) !important; 
-    outline: none !important; box-shadow: none !important; margin: 0 !important;
+/* Quizzes y Bitácora */
+.option-btn { 
+    width: 100%; background-color: var(--color-bg-card); border: 2px solid transparent; 
+    padding: 20px; border-radius: var(--radius-standard); color: var(--color-text-sec); 
+    font-size: 16px; font-weight: 500; text-align: left; cursor: pointer; transition: 0.2s; 
+    margin-top: var(--gap-s); /* Espaciado entre opciones hermanas */
 }
-.iti__selected-flag { background-color: transparent !important; padding-left: 0 !important; }
+.option-btn:first-child { margin-top: 0; } /* La primera opción no empuja dentro de su caja */
 
-/* Botones de Opción y Textarea */
-.option-btn { width: 100%; background-color: var(--color-bg-card); border: 2px solid transparent; padding: 20px; border-radius: var(--radius-standard); color: var(--color-text-sec); font-size: 16px; font-weight: 500; text-align: left; cursor: pointer; transition: 0.2s; font-family: inherit; }
 .option-btn.selected { border-color: var(--color-text-main); color: var(--color-text-main); background: var(--color-bg-main); }
-textarea { width: 100%; background: transparent; border: none; resize: none; font-family: inherit; font-size: 16px; color: var(--color-text-main); outline: none; min-height: 120px; line-height: 1.5; }
 
-/* Estados Bloqueados */
-.option-btn.locked { pointer-events: none; opacity: 0.6; }
-textarea.locked, .input-line.locked, .iti input[type="tel"].locked { pointer-events: none !important; opacity: 0.6 !important; background-color: transparent !important; color: var(--color-text-sec) !important; -webkit-text-fill-color: var(--color-text-sec) !important; border-bottom-color: transparent !important; }
-.iti.locked { pointer-events: none !important; opacity: 0.6 !important; }
+textarea { 
+    width: 100%; background: transparent; border: none; resize: none; 
+    font-family: inherit; font-size: 16px; color: var(--color-text-main); 
+    outline: none; min-height: 120px; line-height: 1.5; 
+}
 
 /* =========================================================
    SISTEMA DE BOTONES (MANDOS)
@@ -173,103 +186,73 @@ textarea.locked, .input-line.locked, .iti input[type="tel"].locked { pointer-eve
     font-size: 16px; 
     font-weight: 600; 
     cursor: pointer; 
-    margin-top: var(--margin-btn-top); 
+    margin-top: var(--gap-l); /* Hito de acción principal */
+    margin-bottom: var(--gap-xl); /* Única excepción: ancla de salida */
     transition: transform 0.1s; 
-    -webkit-appearance: none; 
     text-align: center;
 }
 .btn-mando:active { transform: scale(0.98); }
 
 .btn-ghost { 
     background: transparent; border: none; color: var(--color-text-sec); 
-    font-size: 14px; width: 100%; margin-top: 20px; cursor: pointer; 
+    font-size: 14px; width: 100%; 
+    margin-top: var(--gap-s); /* Relación directa con el principal */
+    margin-bottom: var(--gap-xl); /* Si es el último, empuja el final */
+    cursor: pointer; 
     font-family: inherit; text-align: center; 
 }
 
-/* Modificador de Alerta/Upsell */
+/* Si hay un botón ghost, el principal pierde su margen inferior para que el ghost sea el ancla */
+.btn-mando:has(+ .btn-ghost) { margin-bottom: 0; }
+
 .btn-status-alert { 
     background-color: var(--color-alert-bg) !important; 
     color: var(--color-alert-text) !important; 
     border: 1px solid var(--color-alert-text) !important; 
-    font-weight: 700 !important;
-    animation: btnElastic 4s ease-in-out infinite; 
 }
 
-/* Utilidades de Margen para modo repaso */
-.mt-standard { margin-top: var(--gap-standard) !important; } /* Usado para sumar 15px en combo de repaso */
-
 /* =========================================================
-   MULTIMEDIA Y CARRUSELES
+   MULTIMEDIA Y AUDIO
 ========================================================= */
+.video-container, .evidence-image, .carousel-container { 
+    margin-top: var(--gap-l); 
+}
+
 .video-container { width: 100%; position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: var(--radius-standard); overflow: hidden; }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 .evidence-image { width: 100%; height: auto; display: block; border-radius: var(--radius-standard); }
 
-.carousel-container {
-    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 16px; width: 100%; 
-    padding: 0 0 10px 0; -webkit-overflow-scrolling: touch; scrollbar-width: none;
-    mask-image: linear-gradient(to right, black 85%, transparent 100%); 
-    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
-    cursor: grab;
-}
-.carousel-container::-webkit-scrollbar { display: none; }
-.carousel-item { flex: 0 0 85%; scroll-snap-align: start; display: flex; flex-direction: column; gap: 12px; }
-.carousel-container:active { cursor: grabbing; }
-
-/* =========================================================
-   CÁPSULA DE AUDIO
-========================================================= */
 .audio-capsule {
     display: inline-flex; align-items: center; align-self: flex-start;
     background: var(--color-bg-card); border: none; border-radius: var(--radius-pill);
-    padding: 0 16px; margin-bottom: 20px; cursor: pointer; transition: all 0.3s ease;
-    gap: 12px; height: 34px; overflow: hidden;
+    padding: 0 16px; height: 34px; overflow: hidden;
+    margin-top: var(--gap-l); /* Hito multimedia */
 }
-.audio-capsule span { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-sec); white-space: nowrap; }
-.capsule-controls { display: none; align-items: center; gap: 12px; }
-.capsule-btn { background: transparent; border: none; color: var(--color-text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; padding: 0 4px; -webkit-appearance: none; }
-.capsule-btn-main { background: var(--color-text-main); color: var(--color-bg-main); width: 26px; height: 26px; border-radius: 50%; }
-.audio-capsule.active { padding: 0 10px; }
-.audio-capsule.active span, .audio-capsule.active .icon-play-simple { display: none !important; }
-.audio-capsule.active .capsule-controls { display: flex; }
 
 /* =========================================================
-   MÓDULOS TÁCTICOS (Principios y Reporte)
+   MÓDULOS TÁCTICOS
 ========================================================= */
-/* Revelación de Reliquias */
-.interruption-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; cursor: pointer; text-align: center; }
-.relic-image { width: 100%; height: auto; margin-bottom: 30px; animation: softFloat 4s ease-in-out infinite; }
-.revelation-screen { display: none; width: 100%; animation: fadeIn 0.8s ease forwards; }
-body.revealed .interruption-screen { display: none !important; }
-body.revealed .revelation-screen { display: block !important; width: 100%; }
+.status-badge { 
+    background-color: var(--color-alert-bg); color: var(--color-alert-text); 
+    padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; 
+    display: inline-block; border: 1px solid var(--color-alert-text); 
+    text-transform: uppercase; 
+    margin-top: var(--gap-l);
+}
 
-/* Reporte de Fin de Descenso */
-.nombre-exp { font-size: 11px; font-weight: 600; color: var(--color-text-sec); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; line-height: 1; display: block; }
-.status-badge { background-color: var(--color-alert-bg); color: var(--color-alert-text); padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; margin-bottom: 25px; border: 1px solid var(--color-alert-text); text-transform: uppercase; }
-.stats-container { display: flex; flex-direction: row; gap: 10px; width: 100%; margin-top: 20px; }
+.stats-container { 
+    display: flex; flex-direction: row; gap: 10px; width: 100%; 
+    margin-top: var(--gap-m); /* Complemento del texto de cierre */
+}
+
 .stat-box { flex: 1; background-color: var(--color-bg-card); padding: 22px 5px; border-radius: var(--radius-standard); text-align: center; }
-.stat-value { font-size: 24px; font-weight: 800; color: var(--color-text-main); line-height: 1; display: block; }
-.stat-label { font-size: 9px; font-weight: 700; color: var(--color-text-sec); margin-top: 8px; display: block; text-transform: uppercase; }
 
 /* =========================================================
-   ANIMACIONES Y LOADING
+   ANIMACIONES Y RESPONSIVE
 ========================================================= */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes softFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
 @keyframes btnElastic { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.97); } }
-@keyframes pulse-loading { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.85); opacity: 0.4; } }
-@keyframes pulse-lock { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.97); opacity: 0.8; } }
 
-#loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: var(--color-bg-main); position: fixed; top: 0; left: 0; z-index: 9999; }
-#loading-screen img { height: 60px; width: auto; animation: pulse-loading 2.5s infinite ease-in-out; }
-.relic-image-lock { width: 100%; border-radius: var(--radius-standard); margin-bottom: 20px; animation: pulse-lock 3.5s infinite ease-in-out; }
-
-/* =========================================================
-   DESKTOP OPTIMIZATIONS (>= 768px)
-========================================================= */
 @media (min-width: 768px) {
     .container { max-width: var(--max-width-desktop); }
     .title { font-size: 34px; }
-    .relic-image { max-width: 380px; margin-left: auto; margin-right: auto; }
-    .relic-image-lock { width: 100%; max-width: 450px; height: auto; display: block; margin: 0 auto 20px auto; }
 }
