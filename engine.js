@@ -148,19 +148,50 @@ auth.onAuthStateChanged((user) => {
                 .then(() => window.location.href = `bunker.html?id=${leccionData.siguienteId}`);
             };
 
-        } else if (leccionData.tipo === "candado") {
+       } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            workArea.innerHTML = `<img src="img/candado.webp" class="relic-image-lock"><p class="text-base" style="text-align:center;">Liberación en:</p><div id="countdown" style="display:flex; justify-content:center; gap:12px; margin-top:10px;"><div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="hrs" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Hrs</span></div><div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="min" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Min</span></div><div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="seg" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Seg</span></div></div>`;
-            btnMando.style.display = "block"; btnMando.innerText = "Actualizar Protocolo →";
+            
+            // Aseguramos que el área de trabajo ocupe el 100%
+            workArea.style.width = "100%";
+
+            workArea.innerHTML = `
+                <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                    <img src="img/candado.webp" class="relic-image-lock">
+                    <p class="text-base" style="text-align:center; width:100%; margin-bottom: 10px;">Liberación en:</p>
+                    <div id="countdown" style="display:flex; justify-content:center; gap:12px; width:100%;">
+                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;">
+                            <span id="hrs" style="display:block; font-size:26px; font-weight:800; color:#333;">00</span>
+                            <span style="font-size:10px; color:#878787; text-transform:uppercase;">Hrs</span>
+                        </div>
+                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;">
+                            <span id="min" style="display:block; font-size:26px; font-weight:800; color:#333;">00</span>
+                            <span style="font-size:10px; color:#878787; text-transform:uppercase;">Min</span>
+                        </div>
+                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;">
+                            <span id="seg" style="display:block; font-size:26px; font-weight:800; color:#333;">00</span>
+                            <span style="font-size:10px; color:#878787; text-transform:uppercase;">Seg</span>
+                        </div>
+                    </div>
+                </div>`;
+
+            btnMando.style.display = "block"; 
+            btnMando.innerText = "Actualizar Protocolo →";
             btnMando.onclick = () => window.location.reload(true);
+            
             const release = new Date(leccionData.fechaLiberacion).getTime();
             countdownInterval = setInterval(() => {
                 const dist = release - new Date().getTime();
-                if (dist < 0) { clearInterval(countdownInterval); btnMando.innerText = "Ingresar →"; btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; } }
-                else {
-                    document.getElementById("hrs").innerText = Math.floor(dist / 3600000).toString().padStart(2,"0");
-                    document.getElementById("min").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2,"0");
-                    document.getElementById("seg").innerText = Math.floor((dist % 60000) / 1000).toString().padStart(2,"0");
+                if (dist < 0) { 
+                    clearInterval(countdownInterval); 
+                    btnMando.innerText = "Ingresar →"; 
+                    btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; } 
+                } else {
+                    const h = Math.floor(dist / 3600000);
+                    const m = Math.floor((dist % 3600000) / 60000);
+                    const s = Math.floor((dist % 60000) / 1000);
+                    document.getElementById("hrs").innerText = h.toString().padStart(2,"0");
+                    document.getElementById("min").innerText = m.toString().padStart(2,"0");
+                    document.getElementById("seg").innerText = s.toString().padStart(2,"0");
                 }
             }, 1000);
 
