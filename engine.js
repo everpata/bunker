@@ -131,15 +131,20 @@ auth.onAuthStateChanged((user) => {
             btnMando.style.display = "block";
             btnMando.innerText = profileLocked ? "IDENTIDAD CONFIRMADA ✓" : (leccionData.btnTexto || "Registrar Identidad →");
             btnMando.onclick = () => {
-                console.log("Botón Perfil clickeado");
                 stopAllAudio();
                 if (profileLocked) { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; return; }
                 const edad = document.getElementById("p-edad").value;
                 const ocup = document.getElementById("p-ocupacion").value;
                 const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
                 if(!edad || !ocup || !tel) return alert("Datos incompletos.");
-                userRef.update({ edad: edad, ocupacion: ocup, telefono: tel, leccion_actual_DF: leccionData.siguienteId })
-                .then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
+                
+                // USAMOS SET MERGE PARA CREAR EL DOCUMENTO SI NO EXISTE
+                userRef.set({ 
+                    edad: edad, 
+                    ocupacion: ocup, 
+                    telefono: tel, 
+                    leccion_actual_DF: leccionData.siguienteId 
+                }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
             };
 
         } else if (leccionData.tipo === "candado") {
@@ -171,7 +176,7 @@ auth.onAuthStateChanged((user) => {
             }, 1000);
 
         } else if (leccionData.tipo === "reporte") {
-            userRef.update({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" });
+            userRef.set({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" }, { merge: true });
             [uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.innerHTML = `<h1 class="title">Máscara Rota.</h1><div class="work-area card" style="margin-bottom:35px;"><p class="text-base">Tu capacidad para mentirte ha sido neutralizada.</p></div><button id="btn-upsell" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>`;
             document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell; };
@@ -221,26 +226,30 @@ auth.onAuthStateChanged((user) => {
             }
 
             btnMando.onclick = () => {
-                console.log("Botón Estándar clickeado");
                 stopAllAudio();
                 let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
                 if (isLocked || ["texto", "video", "imagen", "carrusel"].includes(leccionData.tipo)) {
-                    if (data.estado !== "Finalizado_DF" && nA === nG) { userRef.update({ leccion_actual_DF: leccionData.siguienteId }).then(() => { window.location.href = urlSig; }); }
+                    if (data.estado !== "Finalizado_DF" && nA === nG) { 
+                        userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = urlSig; }); 
+                    }
                     else { window.location.href = urlSig; } return;
                 }
                 const txt = document.getElementById("input-dinamico") ? document.getElementById("input-dinamico").value : "";
                 const sel = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
                 if(leccionData.tipo === "bitacora" && !txt.trim()) return alert("Completa tu registro.");
                 if(leccionData.tipo === "quiz" && !sel.length) return alert("Toma una decisión.");
-                userRef.update({ [leccionData.tipo === "bitacora" ? `bitacora_${leccionId}` : `quiz_${leccionId}`]: leccionData.tipo === "bitacora" ? txt : sel, leccion_actual_DF: leccionData.siguienteId })
-                .then(() => { window.location.href = urlSig; });
+                
+                userRef.set({ 
+                    [leccionData.tipo === "bitacora" ? `bitacora_${leccionId}` : `quiz_${leccionId}`]: leccionData.tipo === "bitacora" ? txt : sel, 
+                    leccion_actual_DF: leccionData.siguienteId 
+                }, { merge: true }).then(() => { window.location.href = urlSig; });
             };
         }
 
         if (data.estado !== "Finalizado_DF" && nA > nG && !["perfil", "candado", "reporte"].includes(leccionData.tipo)) {
-            userRef.update({ leccion_actual_DF: leccionId });
+            userRef.set({ leccion_actual_DF: leccionId }, { merge: true });
         }
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
-    }).catch(err => { console.error("Error en Firestore:", err); document.getElementById("loading-screen").style.display = "none"; });
+    }).catch(err => { console.error("Error Firestore:", err); document.getElementById("loading-screen").style.display = "none"; });
 });
