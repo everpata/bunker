@@ -101,7 +101,7 @@ auth.onAuthStateChanged((user) => {
         const upsellLink = reportData.linkUpsell || "#";
         const hubLink = reportData.hubId ? `bunker.html?id=${reportData.hubId}` : `bunker.html?id=1`;
 
-        // --- RENDERIZADO POR TIPO (CERO ESTILOS EN LÍNEA) ---
+        // --- RENDERIZADO POR TIPO ---
 
         if (leccionData.tipo === "perfil") {
             [uiIndicator, uiProgress.parentElement].forEach(el => el && (el.style.display = "none"));
@@ -183,28 +183,29 @@ auth.onAuthStateChanged((user) => {
             
             let reviewBtnsHTML = "";
             if (data.estado === "Finalizado_DF") {
-                // NOTA: Se eliminó la clase mt-standard, el .btn-mando ya toma sus 45px del CSS nativamente.
                 reviewBtnsHTML = `
-                    <button class="btn-mando btn-status-alert" onclick="stopAllAudio(); window.location.href='${upsellLink}'">
-                        AVANZAR AL TRAMO 02 →
-                    </button>
-                    <button class="btn-ghost" onclick="stopAllAudio(); window.location.href='${hubLink}'">
-                        ← Volver al Hub del Descenso
-                    </button>
+                    <div class="work-area mt-l">
+                        <button class="btn-mando btn-status-alert" onclick="stopAllAudio(); window.location.href='${upsellLink}'">
+                            AVANZAR AL TRAMO 02 →
+                        </button>
+                        <button class="btn-ghost mt-s" onclick="stopAllAudio(); window.location.href='${hubLink}'">
+                            ← Volver al Hub del Descenso
+                        </button>
+                    </div>
                 `;
             }
 
             workArea.innerHTML = `
                 <div id="pantalla-reliquia" class="interruption-screen">
                     <img src="${leccionData.imgReliquia}" class="relic-image">
-                    <p class="indicator">Toca para desenterrar</p>
+                    <p class="indicator" style="margin-top: 0;">Toca para desenterrar</p>
                 </div>
                 <div class="revelation-screen">
-                    <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
-                    <p class="indicator">${leccionData.indicador}</p>
-                    <div class="work-area card">
+                    <div class="logo mt-xl"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
+                    <p class="indicator mt-l">${leccionData.indicador}</p>
+                    <div class="work-area card mt-s">
                         <span class="principle-statement">${leccionData.principio}</span>
-                        <p class="text-base">${leccionData.contenido}</p>
+                        <p class="text-base mt-s">${leccionData.contenido}</p>
                     </div>
                     ${reviewBtnsHTML}
                 </div>
@@ -235,7 +236,6 @@ auth.onAuthStateChanged((user) => {
                 btnMando.innerText = "AVANZAR AL TRAMO 02 →";
                 btnMando.onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
             } else {
-                // NOTA: Agregado mt-l para garantizar que respete el margen XL como botón único.
                 btnMando.className = "btn-ghost mt-l"; 
                 btnMando.innerText = "Volver al flujo →";
                 btnMando.onclick = () => { stopAllAudio(); userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
@@ -256,7 +256,6 @@ auth.onAuthStateChanged((user) => {
             } else if (leccionData.tipo === "imagen") {
                 workArea.innerHTML = `<img src="${leccionData.url}" class="evidence-image">`;
             } else if (leccionData.tipo === "video") {
-                // NOTA: Se reemplazó mt-standard por mt-m (30px)
                 workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="work-area card mt-m"><p class="text-base">${leccionData.postTexto}</p></div>` : ""}`;
             } else if (leccionData.tipo === "carrusel") {
                 workArea.innerHTML = `<div class="carousel-container">${leccionData.items.map(item => `<div class="carousel-item">${item.img ? `<img src="${item.img}" class="evidence-image">` : ""}<p class="text-base">${item.texto}</p></div>`).join("")}</div>`;
@@ -275,10 +274,9 @@ auth.onAuthStateChanged((user) => {
             if (data.estado === "Finalizado_DF") {
                 btnMando.style.display = "none";
                 const reviewButtons = document.createElement('div');
-                reviewButtons.className = "work-area";
-                // NOTA: Quitamos mt-standard, los botones toman su margen nativo
+                reviewButtons.className = "work-area mt-l"; // Inyectamos 45px al bloque de botones de cierre
                 reviewButtons.innerHTML = `
-                    <button id="btn-upsell-review" class="btn-mando btn-status-alert">
+                    <button id="btn-upsell-review" class="btn-mando btn-status-alert" style="margin-top:0;">
                         AVANZAR AL TRAMO 02 →
                     </button>
                     <button id="btn-back-hub-review" class="btn-ghost">
@@ -326,7 +324,6 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
     
     const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "EXPEDICIONARIO";
 
-    // NOTA: Actualizamos los mt-standard a mt-m y removimos márgenes redundantes en botones
     workArea.innerHTML = `
         <div class="work-area">
             <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
