@@ -97,12 +97,11 @@ auth.onAuthStateChanged((user) => {
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
 
-        // Extraer datos vitales del reporte por si se ocupan en el modo repaso
         const reportData = Object.values(DEEPFALL_DATA).find(l => l.tipo === "reporte") || {};
         const upsellLink = reportData.linkUpsell || "#";
         const hubLink = reportData.hubId ? `bunker.html?id=${reportData.hubId}` : `bunker.html?id=1`;
 
-        // --- RENDERIZADO POR TIPO ---
+        // --- RENDERIZADO POR TIPO (CERO ESTILOS EN LÍNEA) ---
 
         if (leccionData.tipo === "perfil") {
             [uiIndicator, uiProgress.parentElement].forEach(el => el && (el.style.display = "none"));
@@ -148,15 +147,14 @@ auth.onAuthStateChanged((user) => {
 
         } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            workArea.style.width = "100%";
             workArea.innerHTML = `
-                <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <div class="work-area">
                     <img src="img/candado.webp" class="relic-image-lock">
-                    <p class="text-base" style="text-align:center; width:100%; margin-bottom: 10px;">Liberación en:</p>
-                    <div id="countdown" style="display:flex; justify-content:center; gap:12px; width:100%;">
-                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="hrs" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Hrs</span></div>
-                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="min" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Min</span></div>
-                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="seg" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Seg</span></div>
+                    <p class="text-base text-center w-full">Liberación en:</p>
+                    <div id="countdown" class="stats-container">
+                        <div class="stat-box"><span id="hrs" class="stat-value">00</span><span class="stat-label">Hrs</span></div>
+                        <div class="stat-box"><span id="min" class="stat-value">00</span><span class="stat-label">Min</span></div>
+                        <div class="stat-box"><span id="seg" class="stat-value">00</span><span class="stat-label">Seg</span></div>
                     </div>
                 </div>`;
             btnMando.style.display = "block"; btnMando.innerText = "Actualizar Protocolo →";
@@ -183,14 +181,13 @@ auth.onAuthStateChanged((user) => {
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             
-            // Botones de Modo Repaso para la revelación
             let reviewBtnsHTML = "";
             if (data.estado === "Finalizado_DF") {
                 reviewBtnsHTML = `
-                    <button class="btn-mando btn-status-alert" style="margin-top: 35px; display: block !important;" onclick="stopAllAudio(); window.location.href='${upsellLink}'">
+                    <button class="btn-mando btn-status-alert mt-standard" onclick="stopAllAudio(); window.location.href='${upsellLink}'">
                         AVANZAR AL TRAMO 02 →
                     </button>
-                    <button class="btn-ghost" style="margin-top: 20px; width: 100%;" onclick="stopAllAudio(); window.location.href='${hubLink}'">
+                    <button class="btn-ghost" onclick="stopAllAudio(); window.location.href='${hubLink}'">
                         ← Volver al Hub del Descenso
                     </button>
                 `;
@@ -203,7 +200,7 @@ auth.onAuthStateChanged((user) => {
                 </div>
                 <div class="revelation-screen">
                     <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
-                    <p class="indicator" style="margin-bottom:32px;">${leccionData.indicador}</p>
+                    <p class="indicator">${leccionData.indicador}</p>
                     <div class="work-area card">
                         <span class="principle-statement">${leccionData.principio}</span>
                         <p class="text-base">${leccionData.contenido}</p>
@@ -223,7 +220,12 @@ auth.onAuthStateChanged((user) => {
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
             
-            let hubHTML = leccionData.lecciones.map(l => `<button class="option-btn" style="padding:20px; display:flex; justify-content:space-between;" onclick="stopAllAudio(); firebase.firestore().collection('usuarios').doc('${user.uid}').set({ leccion_actual_DF: '${l.id}' }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' });"><div><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="font-size:16px; font-weight:700;">${l.titulo}</span></div><span>→</span></button>`).join("");
+            let hubHTML = leccionData.lecciones.map(l => `
+                <button class="option-btn" onclick="stopAllAudio(); firebase.firestore().collection('usuarios').doc('${user.uid}').set({ leccion_actual_DF: '${l.id}' }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' });">
+                    <span class="indicator">${l.tag}</span><br>
+                    <span class="text-base"><b>${l.titulo} &rarr;</b></span>
+                </button>`).join("");
+            
             workArea.innerHTML = `<div class="work-area">${hubHTML}</div>`;
             
             btnMando.style.display = "block"; 
@@ -252,7 +254,7 @@ auth.onAuthStateChanged((user) => {
             } else if (leccionData.tipo === "imagen") {
                 workArea.innerHTML = `<img src="${leccionData.url}" class="evidence-image">`;
             } else if (leccionData.tipo === "video") {
-                workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="work-area card" style="margin-top:15px;"><p class="text-base">${leccionData.postTexto}</p></div>` : ""}`;
+                workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="work-area card mt-standard"><p class="text-base">${leccionData.postTexto}</p></div>` : ""}`;
             } else if (leccionData.tipo === "carrusel") {
                 workArea.innerHTML = `<div class="carousel-container">${leccionData.items.map(item => `<div class="carousel-item">${item.img ? `<img src="${item.img}" class="evidence-image">` : ""}<p class="text-base">${item.texto}</p></div>`).join("")}</div>`;
             } else if (leccionData.tipo === "bitacora") {
@@ -270,12 +272,12 @@ auth.onAuthStateChanged((user) => {
             if (data.estado === "Finalizado_DF") {
                 btnMando.style.display = "none";
                 const reviewButtons = document.createElement('div');
-                reviewButtons.style.width = "100%";
+                reviewButtons.className = "work-area";
                 reviewButtons.innerHTML = `
-                    <button id="btn-upsell-review" class="btn-mando btn-status-alert" style="margin-top: 15px; display: block !important;">
+                    <button id="btn-upsell-review" class="btn-mando btn-status-alert mt-standard">
                         AVANZAR AL TRAMO 02 →
                     </button>
-                    <button id="btn-back-hub-review" class="btn-ghost" style="margin-top: 20px; width: 100%;">
+                    <button id="btn-back-hub-review" class="btn-ghost">
                         ← Volver al Hub del Descenso
                     </button>
                 `;
@@ -303,7 +305,6 @@ auth.onAuthStateChanged((user) => {
             }
         }
 
-        // --- ACTUALIZAR PROGRESO AUTOMÁTICO ---
         if (data.estado !== "Finalizado_DF" && nA > nG && !["perfil", "candado", "reporte", "hub"].includes(leccionData.tipo)) {
             userRef.set({ leccion_actual_DF: leccionId }, { merge: true });
         }
@@ -318,27 +319,31 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
     userRef.set({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" }, { merge: true });
     
     [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-    workArea.style.width = "100%";
+    
     const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "EXPEDICIONARIO";
 
     workArea.innerHTML = `
-        <div style="width: 100%; display: flex; flex-direction: column; align-items: flex-start; text-align: left;">
-            <div class="logo" style="margin: 0 0 30px -12px;"><img src="DF.png" onerror="this.src='img/DF.png'" style="height: 55px;"></div>
+        <div class="work-area">
+            <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
             <span class="nombre-exp">EXPEDICIONARIO: ${nombreUsr}</span>
             <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
             <h1 class="title">Fin del Descenso.</h1>
             <p class="description">Análisis final del Tramo 01 completado.</p>
-            <div class="work-area card" style="width: 100%;">
+            
+            <div class="work-area card">
                 <p class="text-base"><b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br><b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.</p>
             </div>
-            <p class="text-base" style="margin-top: 35px; margin-bottom: 0px;"><b>La escotilla de acceso cierra en:</b></p>
+            
+            <p class="text-base mt-standard"><b>La escotilla de acceso cierra en:</b></p>
+            
             <div id="countdown-upsell" class="stats-container">
                 <div class="stat-box"><span class="stat-value" id="u-hrs">00</span><span class="stat-label">Horas</span></div>
                 <div class="stat-box"><span class="stat-value" id="u-min">00</span><span class="stat-label">Minutos</span></div>
                 <div class="stat-box"><span class="stat-value" id="u-seg">00</span><span class="stat-label">Segundos</span></div>
             </div>
-            <button id="btn-upsell" class="btn-mando btn-status-alert" style="margin-top: 35px; display: block !important;">AVANZAR AL TRAMO 02 →</button>
-            <button id="btn-repasar" class="btn-ghost" style="margin-top: 20px;">← Volver al Hub del Descenso</button>
+            
+            <button id="btn-upsell" class="btn-mando btn-status-alert mt-standard">AVANZAR AL TRAMO 02 →</button>
+            <button id="btn-repasar" class="btn-ghost">← Volver al Hub del Descenso</button>
         </div>`;
 
     document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell || "#"; };
@@ -350,7 +355,7 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
             const now = new Date().getTime(); const distance = targetDate - now;
             if (distance < 0) { 
                 clearInterval(countdownInterval);
-                document.getElementById("countdown-upsell").innerHTML = "<div style='padding:20px; background:#fce8e6; color:#d93025; border-radius:16px; width:100%; text-align:center; font-weight:800; font-size:16px;'>TIEMPO EXPIRADO</div>"; 
+                document.getElementById("countdown-upsell").innerHTML = "<div class='status-badge' style='width:100%; text-align:center; padding: 20px; font-size:16px;'>TIEMPO EXPIRADO</div>"; 
                 return; 
             }
             document.getElementById("u-hrs").innerText = Math.floor(distance / (1000 * 60 * 60)).toString().padStart(2, '0');
