@@ -104,7 +104,7 @@ const DEEPFALL_DATA = {
     "9": {
         "tipo": "candado",
         "fechaLiberacion": "May 4, 2026 21:25:00",
-        "siguienteId": "11"
+        "siguienteId": "10"
     },
 
     // 10. TIPO: REPORTE (Cierre y Upsell)
@@ -130,6 +130,6 @@ const DEEPFALL_DATA = {
             { "id": "8", "tag": "RITUAL", "titulo": "Principio" }
         ],
         "btnTexto": "Ir al final →",
-        "siguienteId": "11"
+        "siguienteId": "10"
     },
 }; 
