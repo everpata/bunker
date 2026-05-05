@@ -92,7 +92,7 @@ auth.onAuthStateChanged((user) => {
         const uiTitle = document.getElementById("ui-title");
         const uiDesc = document.getElementById("ui-desc");
 
-        // RESETEO Y CABECERA (Normalizado: JS actualiza la cabecera por defecto)
+        // RESETEO Y CABECERA
         document.body.classList.remove('revealed');
         [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
         
@@ -104,7 +104,7 @@ auth.onAuthStateChanged((user) => {
         const upsellLink = reportData.linkUpsell || "#";
         const hubLink = reportData.hubId ? `bunker.html?id=${reportData.hubId}` : `bunker.html?id=1`;
 
-        // --- RENDERIZADO POR TIPO (JS solo inyecta HTML de Work Area y tokens de margen) ---
+        // --- RENDERIZADO POR TIPO ---
 
         if (leccionData.tipo === "perfil") {
             [uiIndicator, uiProgress.parentElement].forEach(el => el && (el.style.display = "none"));
@@ -182,58 +182,71 @@ auth.onAuthStateChanged((user) => {
             renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc);
 
         } else if (leccionData.tipo === "principio") {
-            // 1. Apagamos TODOS los elementos globales externos para que no estorben
+            // 1. Apagamos TODOS los elementos globales permanentemente para esta tarjeta
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             
-            // 2. Quitamos el margen superior para que el hacha quede en el centro absoluto
+            // 2. Anulamos los márgenes globales del contenedor para no afectar la inyección local
             workArea.style.marginTop = "0px";
             
-            // Inject floating relic scene: floating hacha relic, and hidden revelation screen.
+            // 3. Construimos los botones
+            let botonesInternosHTML = "";
+            if (data.estado === "Finalizado_DF") {
+                botonesInternosHTML = `
+                    <button id="btn-p-upsell" class="btn-mando btn-status-alert" style="display:block; margin-top: var(--gap-l);">
+                        AVANZAR AL TRAMO 02 →
+                    </button>
+                    <button id="btn-p-hub" class="btn-ghost" style="display:block;">
+                        ← Volver al Hub del Descenso
+                    </button>
+                `;
+            } else {
+                botonesInternosHTML = `
+                    <button id="btn-p-continuar" class="btn-mando" style="display:block; margin-top: var(--gap-l);">
+                        ${leccionData.btnTexto || "Asimilado →"}
+                    </button>
+                `;
+            }
+
+            // 4. Inyectamos la estructura. 
+            // MAGIA 1: position fixed para centrado absoluto perfecto ignorando paddings.
+            // MAGIA 2: Inyectamos el logo y el indicador localmente para alinear perfecto.
             workArea.innerHTML = `
-                <div id="pantalla-reliquia" class="interruption-screen">
-                    <img src="${leccionData.imgReliquia}" class="relic-image">
-                    <p class="indicator" style="margin-top: var(--gap-m); text-align: center;">${leccionData.textoToque || 'Toca para desenterrar'}</p>
+                <div id="pantalla-reliquia" class="interruption-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--color-bg-main); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <img src="${leccionData.imgReliquia}" class="relic-image" style="margin-top: 0 !important;">
+                    <p class="indicator" style="text-align: center; margin-top: var(--gap-l);">${leccionData.textoToque || 'Toca para desenterrar'}</p>
                 </div>
-                <div class="revelation-screen">
-                    <div class="work-area card mt-l">
+                
+                <div class="revelation-screen" style="width: 100%; display: none;">
+                    <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
+                    <p class="indicator">${leccionData.indicador}</p>
+                    
+                    <div class="work-area card" style="margin-top: var(--gap-l);">
                         <span class="principle-statement">${leccionData.principio}</span>
                         <p class="text-base mt-s">${leccionData.contenido}</p>
                     </div>
+                    
+                    ${botonesInternosHTML}
                 </div>
             `;
             
-            // 3. The magic of the click
+            // 5. La magia del clic (ocultar overlay, mostrar revelación)
             document.getElementById("pantalla-reliquia").onclick = () => { 
-                document.body.classList.add('revealed'); 
-                
-                // 4. MAGIA: Restauramos el logo y el indicador tras el clic
-                workArea.style.marginTop = ""; // Devuelve el margen a la normalidad
-                uiLogo.style.display = "block";
-                uiIndicator.style.display = "block";
-                uiIndicator.innerText = leccionData.indicador;
-
-                if (data.estado !== "Finalizado_DF") { btnMando.style.display = "block"; }
-                else {
-                    // Mode review final: buttons are global and fixed
-                    const upsellBtn = document.createElement('button');
-                    upsellBtn.id = "btn-p-upsell";
-                    upsellBtn.className = "btn-mando btn-status-alert";
-                    upsellBtn.innerText = "AVANZAR AL TRAMO 02 →";
-                    upsellBtn.onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
-                    
-                    const hubBtn = document.createElement('button');
-                    hubBtn.id = "btn-p-hub";
-                    hubBtn.className = "btn-ghost mt-s";
-                    hubBtn.innerText = "← Volver al Hub del Descenso";
-                    hubBtn.onclick = () => { stopAllAudio(); window.location.href = hubLink; };
-                    
-                    document.getElementById('bunker-content').appendChild(upsellBtn);
-                    document.getElementById('bunker-content').appendChild(hubBtn);
-                }
+                document.body.classList.add('revealed');
+                // Forzamos ocultar/mostrar por JS para evitar fallos de especificidad en CSS
+                document.getElementById('pantalla-reliquia').style.display = "none";
+                document.querySelector('.revelation-screen').style.display = "block";
             };
             
-            btnMando.innerText = leccionData.btnTexto || "Asimilado →"; 
-            btnMando.onclick = () => { stopAllAudio(); userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
+            // 6. Asignamos acciones
+            if (data.estado === "Finalizado_DF") {
+                document.getElementById("btn-p-upsell").onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
+                document.getElementById("btn-p-hub").onclick = () => { stopAllAudio(); window.location.href = hubLink; };
+            } else {
+                document.getElementById("btn-p-continuar").onclick = () => { 
+                    stopAllAudio(); 
+                    userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
+                };
+            }
 
         } else if (leccionData.tipo === "hub") {
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
@@ -253,7 +266,6 @@ auth.onAuthStateChanged((user) => {
                 btnMando.innerText = "AVANZAR AL TRAMO 02 →";
                 btnMando.onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
             } else {
-                // Normalizado: Se fuerza mt-l para botón único.
                 btnMando.className = "btn-ghost mt-l"; 
                 btnMando.innerText = "Volver al flujo →";
                 btnMando.onclick = () => { stopAllAudio(); userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
@@ -332,7 +344,7 @@ auth.onAuthStateChanged((user) => {
     }).catch(err => { console.error("Error Firestore:", err); document.getElementById("loading-screen").style.display = "none"; });
 });
 
-// FUNCIÓN AUXILIAR REPORTE (Normalizado: el reporte limpia la cabecera por completo para su diseño único)
+// FUNCIÓN AUXILIAR REPORTE
 function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc) {
     const userRef = db.collection("usuarios").doc(auth.currentUser.uid);
     userRef.set({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" }, { merge: true });
@@ -341,7 +353,6 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
     
     const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "EXPEDICIONARIO";
 
-    // Normalizado: Eliminados tokens de margen de botones, la cascada inteligente los asume.
     workArea.innerHTML = `
         <div class="work-area">
             <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
