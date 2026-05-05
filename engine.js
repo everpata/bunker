@@ -182,9 +182,8 @@ auth.onAuthStateChanged((user) => {
             renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc);
 
         } else if (leccionData.tipo === "principio") {
-            // Normalizado: JS actualiza la cabecera narrativamente, luego inyecta Work Area.
-            [uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            uiIndicator.innerText = leccionData.indicador;
+            // 1. Apagamos TODA la cabecera para un escenario inmaculado
+            [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             
             let reviewBtnsHTML = "";
             if (data.estado === "Finalizado_DF") {
@@ -203,7 +202,7 @@ auth.onAuthStateChanged((user) => {
             workArea.innerHTML = `
                 <div id="pantalla-reliquia" class="interruption-screen">
                     <img src="${leccionData.imgReliquia}" class="relic-image">
-                    <p class="indicator" style="margin-top: 0;">Toca para desenterrar</p>
+                    <p class="indicator" style="margin-top: var(--gap-m); text-align: center;">${leccionData.textoToque || 'Toca para desenterrar'}</p>
                 </div>
                 <div class="revelation-screen">
                     <div class="work-area card mt-l">
@@ -216,9 +215,16 @@ auth.onAuthStateChanged((user) => {
             
             document.getElementById("pantalla-reliquia").onclick = () => { 
                 document.body.classList.add('revealed'); 
+                
+                // 2. MAGIA: Restauramos el logo y el indicador tras el clic
+                uiLogo.style.display = "block";
+                uiIndicator.style.display = "block";
+                uiIndicator.innerText = leccionData.indicador;
+
                 if (data.estado !== "Finalizado_DF") { btnMando.style.display = "block"; }
             };
-            btnMando.innerText = "Asimilado →"; 
+            
+            btnMando.innerText = leccionData.btnTexto || "Asimilado →"; 
             btnMando.onclick = () => { stopAllAudio(); userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
 
         } else if (leccionData.tipo === "hub") {
