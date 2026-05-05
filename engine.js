@@ -301,11 +301,11 @@ auth.onAuthStateChanged((user) => {
                 } else { document.querySelectorAll(".option-btn").forEach(b => b.onclick = () => toggleOption(b)); }
             }
 
-            // --- LÓGICA DE MODO REPASO EN TARJETAS ESTÁNDAR ---
+          // --- LÓGICA DE MODO REPASO EN TARJETAS ESTÁNDAR ---
             if (data.estado === "Finalizado_DF") {
                 btnMando.style.display = "none";
                 const reviewButtons = document.createElement('div');
-                reviewButtons.className = "work-area mt-l";
+                reviewButtons.className = "work-area"; // <--- CORREGIDO: Sin margen doble
                 reviewButtons.innerHTML = `
                     <button id="btn-upsell-review" class="btn-mando btn-status-alert">
                         AVANZAR AL TRAMO 02 →
