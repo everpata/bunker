@@ -50,7 +50,7 @@ html, body {
     font-family: var(--font-family);
     display: flex; 
     justify-content: center; 
-    align-items: flex-start;
+    align-items: center; /* MAGIA: Esto centra la tarjeta verticalmente de forma segura en cualquier pantalla */
     -webkit-text-size-adjust: 100%;
 }
 
@@ -63,7 +63,6 @@ html, body {
     flex-direction: column; 
     align-items: flex-start; 
     transition: max-width 0.4s ease; 
-    margin: auto 0; /* MAGIA: Esto centra la tarjeta verticalmente de forma segura */
 }
 
 /* =========================================================
@@ -285,7 +284,7 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
     background: var(--color-text-main); 
     color: var(--color-bg-main); 
     border: none; 
-    padding: 22px; 
+    padding: 18px; /* REDUCIDO: Mejora balance de asimetría */
     border-radius: var(--radius-standard); 
     font-size: 16px; 
     font-weight: 600; 
@@ -295,6 +294,7 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
     transition: transform 0.1s; 
     text-align: center;
     -webkit-appearance: none;
+    line-height: 1; /* Estricto control de asimetría */
 }
 .btn-mando:active { transform: scale(0.98); }
 
@@ -305,6 +305,8 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
     margin-bottom: var(--gap-xl); /* ANCLA: Si el ghost es el último, él empuja */
     cursor: pointer; 
     font-family: inherit; text-align: center; 
+    padding: 0; /* Estricto control de asimetría */
+    line-height: 1; /* Estricto control de asimetría */
 }
 
 /* Si el ghost va justo después de un botón principal, se pega a 15px */
