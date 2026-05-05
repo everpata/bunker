@@ -50,7 +50,7 @@ html, body {
     font-family: var(--font-family);
     display: flex; 
     justify-content: center; 
-    align-items: flex-start;
+    align-items: flex-start; /* Se mantiene para evitar recortes en móviles */
     -webkit-text-size-adjust: 100%;
 }
 
@@ -63,6 +63,7 @@ html, body {
     flex-direction: column; 
     align-items: flex-start; 
     transition: max-width 0.4s ease; 
+    margin: auto 0; /* MAGIA: Esto centra la tarjeta verticalmente de forma segura */
 }
 
 /* =========================================================
@@ -125,6 +126,11 @@ html, body {
     font-weight: 700; 
 }
 
+/* Complemento después de media o audio */
+.work-area.card .text-base, .mt-m {
+    margin-top: var(--gap-m); 
+}
+
 .principle-statement { 
     font-size: 22px; 
     font-weight: 800; 
@@ -142,6 +148,11 @@ html, body {
     flex-direction: column; 
     align-items: center; 
     margin-top: var(--gap-l); /* Hito: Inicio de contenido principal */
+}
+
+/* Evita que el primer elemento (ej. audio) sume su margen al del contenedor */
+#dynamic-work-area > :first-child {
+    margin-top: 0 !important;
 }
 
 .work-area { width: 100%; display: flex; flex-direction: column; }
@@ -292,15 +303,16 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
 .btn-ghost { 
     background: transparent; border: none; color: var(--color-text-sec); 
     font-size: 14px; width: 100%; 
-    margin-top: var(--gap-s); /* Hermano: Unido al principal */
+    margin-top: var(--gap-l); /* POR DEFECTO: Asume 45px si está huérfano */
     margin-bottom: var(--gap-xl); /* ANCLA: Si el ghost es el último, él empuja */
     cursor: pointer; 
     font-family: inherit; text-align: center; 
 }
 
-/* Si el botón ghost aparece solo (sin un botón principal arriba), asume espaciado principal (45px) */
-.btn-ghost:first-child {
-    margin-top: var(--gap-l);
+/* Si el ghost va justo después de un botón principal, se pega a 15px */
+.btn-mando + .btn-ghost,
+.btn-status-alert + .btn-ghost {
+    margin-top: var(--gap-s) !important;
 }
 
 /* Magia de la Cascada: Si hay un ghost debajo, el mando cede su ancla inferior */
