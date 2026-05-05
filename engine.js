@@ -7,7 +7,7 @@ const firebaseConfig = {
     messagingSenderId: "207043962011", 
     appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
 };
-if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); } 
+if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -15,14 +15,11 @@ const urlParams = new URLSearchParams(window.location.search);
 let leccionId = urlParams.get("id");
 let countdownInterval;
 
-// --- UTILIDADES DE INTERACCIÓN Y AUDIO ---
+// --- UTILIDADES ---
 
 function stopAllAudio() {
     const players = document.querySelectorAll('audio');
-    players.forEach(p => {
-        p.pause();
-        p.currentTime = 0;
-    });
+    players.forEach(p => { p.pause(); p.currentTime = 0; });
 }
 
 window.activateAudio = (id) => {
@@ -37,13 +34,8 @@ window.togglePlay = () => {
     const a = document.getElementById('audio-player');
     const icon = document.getElementById('play-icon');
     if (a && icon) {
-        if (a.paused) {
-            a.play();
-            icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; 
-        } else {
-            a.pause();
-            icon.innerHTML = '<path d="M8 5v14l11-7z"/>'; 
-        }
+        if (a.paused) { a.play(); icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; }
+        else { a.pause(); icon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
     }
 };
 
@@ -105,7 +97,8 @@ auth.onAuthStateChanged((user) => {
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
 
-        // --- TIPO: PERFIL (CORREGIDO) ---
+        // --- RENDERIZADO POR TIPO ---
+
         if (leccionData.tipo === "perfil") {
             [uiIndicator, uiProgress.parentElement].forEach(el => el && (el.style.display = "none"));
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
@@ -118,8 +111,8 @@ auth.onAuthStateChanged((user) => {
                 </div>`;
 
             let phoneInput;
-            if(window.intlTelInput) {
-                const telEl = document.querySelector("#p-telefono");
+            const telEl = document.querySelector("#p-telefono");
+            if(window.intlTelInput && telEl) {
                 phoneInput = window.intlTelInput(telEl, {
                     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
                     initialCountry: "auto",
@@ -138,21 +131,17 @@ auth.onAuthStateChanged((user) => {
             btnMando.style.display = "block";
             btnMando.innerText = profileLocked ? "IDENTIDAD CONFIRMADA ✓" : (leccionData.btnTexto || "Registrar Identidad →");
             btnMando.onclick = () => {
+                console.log("Botón Perfil clickeado");
                 stopAllAudio();
                 if (profileLocked) { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; return; }
                 const edad = document.getElementById("p-edad").value;
                 const ocup = document.getElementById("p-ocupacion").value;
                 const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
                 if(!edad || !ocup || !tel) return alert("Datos incompletos.");
-                userRef.update({ 
-                    edad: edad, 
-                    ocupacion: ocup, // <--- CORREGIDO AQUÍ
-                    telefono: tel, 
-                    leccion_actual_DF: leccionData.siguienteId 
-                }).then(() => window.location.href = `bunker.html?id=${leccionData.siguienteId}`);
+                userRef.update({ edad: edad, ocupacion: ocup, telefono: tel, leccion_actual_DF: leccionData.siguienteId })
+                .then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
             };
 
-        // --- TIPO: CANDADO (CORREGIDO ANCHO) ---
         } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.style.width = "100%";
@@ -161,18 +150,9 @@ auth.onAuthStateChanged((user) => {
                     <img src="img/candado.webp" class="relic-image-lock">
                     <p class="text-base" style="text-align:center; width:100%; margin-bottom: 10px;">Liberación en:</p>
                     <div id="countdown" style="display:flex; justify-content:center; gap:12px; width:100%;">
-                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;">
-                            <span id="hrs" style="display:block; font-size:26px; font-weight:800; color:#333;">00</span>
-                            <span style="font-size:10px; color:#878787; text-transform:uppercase;">Hrs</span>
-                        </div>
-                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;">
-                            <span id="min" style="display:block; font-size:26px; font-weight:800; color:#333;">00</span>
-                            <span style="font-size:10px; color:#878787; text-transform:uppercase;">Min</span>
-                        </div>
-                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;">
-                            <span id="seg" style="display:block; font-size:26px; font-weight:800; color:#333;">00</span>
-                            <span style="font-size:10px; color:#878787; text-transform:uppercase;">Seg</span>
-                        </div>
+                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="hrs" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Hrs</span></div>
+                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="min" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Min</span></div>
+                        <div style="background:#f5f5f7; padding:20px 10px; border-radius:16px; text-align:center; flex:1;"><span id="seg" style="display:block; font-size:26px; font-weight:800;">00</span><span style="font-size:10px; color:#878787;">Seg</span></div>
                     </div>
                 </div>`;
             btnMando.style.display = "block"; btnMando.innerText = "Actualizar Protocolo →";
@@ -181,9 +161,8 @@ auth.onAuthStateChanged((user) => {
             countdownInterval = setInterval(() => {
                 const dist = release - new Date().getTime();
                 if (dist < 0) { 
-                    clearInterval(countdownInterval); 
-                    btnMando.innerText = "Ingresar →"; 
-                    btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; } 
+                    clearInterval(countdownInterval); btnMando.innerText = "Ingresar →"; 
+                    btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; };
                 } else {
                     document.getElementById("hrs").innerText = Math.floor(dist / 3600000).toString().padStart(2,"0");
                     document.getElementById("min").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2,"0");
@@ -194,14 +173,14 @@ auth.onAuthStateChanged((user) => {
         } else if (leccionData.tipo === "reporte") {
             userRef.update({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" });
             [uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            workArea.innerHTML = `<h1 class="title">Máscara Rota.</h1><div class="work-area card" style="margin-bottom:35px;"><p class="text-base"><b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada.</p></div><button id="btn-upsell" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>`;
-            document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell; }
+            workArea.innerHTML = `<h1 class="title">Máscara Rota.</h1><div class="work-area card" style="margin-bottom:35px;"><p class="text-base">Tu capacidad para mentirte ha sido neutralizada.</p></div><button id="btn-upsell" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>`;
+            document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell; };
 
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p></div><div class="revelation-screen"><div class="logo"><img src="img/DF.png"></div><p class="indicator" style="margin-bottom:32px;">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
+            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">Toca para desenterrar</p></div><div class="revelation-screen"><div class="logo"><img src="img/DF.png"></div><p class="indicator" style="margin-bottom:32px;">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
             document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); btnMando.style.display = "block"; };
-            btnMando.innerText = "Asimilado →"; btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }
+            btnMando.innerText = "Asimilado →"; btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; };
 
         } else if (leccionData.tipo === "hub") {
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
@@ -209,7 +188,7 @@ auth.onAuthStateChanged((user) => {
             let hubHTML = leccionData.lecciones.map(l => `<button class="option-btn" style="padding:20px; display:flex; justify-content:space-between;" onclick="stopAllAudio(); window.location.href='bunker.html?id=${l.id}'"><div><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="font-size:16px; font-weight:700;">${l.titulo}</span></div><span>→</span></button>`).join("");
             workArea.innerHTML = `<div class="work-area" style="margin-bottom:25px;">${hubHTML}</div>`;
             btnMando.style.display = "block"; btnMando.className = "btn-ghost"; btnMando.innerText = "Volver al flujo →";
-            btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }
+            btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; };
 
         } else {
             // TARJETAS ESTÁNDAR
@@ -221,18 +200,7 @@ auth.onAuthStateChanged((user) => {
             if (leccionData.tipo === "texto") {
                 let audioHTML = "";
                 if (leccionData.audio) {
-                    audioHTML = `
-                    <div id="capsule-${leccionId}" class="audio-capsule" onclick="window.activateAudio('${leccionId}')">
-                        <audio id="audio-player" src="${leccionData.audio}"></audio>
-                        <span>Escuchar lección</span>
-                        <div class="capsule-controls">
-                            <button class="capsule-btn" onclick="event.stopPropagation(); document.getElementById('audio-player').currentTime -= 15"> -15 </button>
-                            <button class="capsule-btn capsule-btn-main" onclick="event.stopPropagation(); window.togglePlay();">
-                                <svg id="play-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                            </button>
-                            <button class="capsule-btn" onclick="event.stopPropagation(); document.getElementById('audio-player').currentTime += 15"> +15 </button>
-                        </div>
-                    </div>`;
+                    audioHTML = `<div id="capsule-${leccionId}" class="audio-capsule" onclick="window.activateAudio('${leccionId}')"><audio id="audio-player" src="${leccionData.audio}"></audio><span>Escuchar lección</span><div class="capsule-controls"><button class="capsule-btn" onclick="event.stopPropagation(); document.getElementById('audio-player').currentTime -= 15"> -15 </button><button class="capsule-btn capsule-btn-main" onclick="event.stopPropagation(); window.togglePlay();"><svg id="play-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><button class="capsule-btn" onclick="event.stopPropagation(); document.getElementById('audio-player').currentTime += 15"> +15 </button></div></div>`;
                 }
                 workArea.innerHTML = `${audioHTML} <div class="work-area card">${leccionData.contenido}</div>`;
             } else if (leccionData.tipo === "imagen") {
@@ -253,10 +221,11 @@ auth.onAuthStateChanged((user) => {
             }
 
             btnMando.onclick = () => {
+                console.log("Botón Estándar clickeado");
                 stopAllAudio();
                 let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
                 if (isLocked || ["texto", "video", "imagen", "carrusel"].includes(leccionData.tipo)) {
-                    if (data.estado !== "Finalizado_DF" && nA === nG) { userRef.update({ leccion_actual_DF: leccionData.siguienteId }).then(() => window.location.href = urlSig); }
+                    if (data.estado !== "Finalizado_DF" && nA === nG) { userRef.update({ leccion_actual_DF: leccionData.siguienteId }).then(() => { window.location.href = urlSig; }); }
                     else { window.location.href = urlSig; } return;
                 }
                 const txt = document.getElementById("input-dinamico") ? document.getElementById("input-dinamico").value : "";
@@ -264,7 +233,7 @@ auth.onAuthStateChanged((user) => {
                 if(leccionData.tipo === "bitacora" && !txt.trim()) return alert("Completa tu registro.");
                 if(leccionData.tipo === "quiz" && !sel.length) return alert("Toma una decisión.");
                 userRef.update({ [leccionData.tipo === "bitacora" ? `bitacora_${leccionId}` : `quiz_${leccionId}`]: leccionData.tipo === "bitacora" ? txt : sel, leccion_actual_DF: leccionData.siguienteId })
-                .then(() => window.location.href = urlSig);
+                .then(() => { window.location.href = urlSig; });
             };
         }
 
@@ -273,5 +242,5 @@ auth.onAuthStateChanged((user) => {
         }
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
-    }).catch(err => { console.error(err); document.getElementById("loading-screen").style.display = "none"; });
+    }).catch(err => { console.error("Error en Firestore:", err); document.getElementById("loading-screen").style.display = "none"; });
 });
