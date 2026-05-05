@@ -266,6 +266,8 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
     display: inline-block; border: 1px solid var(--color-alert-text); 
     text-transform: uppercase; 
     margin-top: var(--gap-s); 
+    align-self: flex-start; /* CORRECCIÓN: Evita que se estire */
+    width: max-content; /* CORRECCIÓN: Se ajusta al texto */
 }
 
 .stats-container { 
@@ -319,10 +321,12 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
 .btn-mando:has(+ .btn-ghost) { margin-bottom: 0; }
 
 .btn-status-alert { 
+    display: block !important; /* CORRECCIÓN: Fuerza a que siempre sea visible */
     background-color: var(--color-alert-bg) !important; 
     color: var(--color-alert-text) !important; 
     border: 1px solid var(--color-alert-text) !important; 
     animation: btnElastic 4s ease-in-out infinite; 
+    margin-top: var(--gap-l) !important; /* Separa el botón del timer */
 }
 
 /* =========================================================
