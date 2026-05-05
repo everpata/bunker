@@ -182,50 +182,66 @@ auth.onAuthStateChanged((user) => {
             renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc);
 
         } else if (leccionData.tipo === "principio") {
-            // 1. Apagamos TODA la cabecera para un escenario inmaculado
+            // 1. Apagamos TODOS los elementos globales externos para que no estorben
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             
-            let reviewBtnsHTML = "";
+            // 2. Quitamos el margen superior para que el hacha quede en el centro absoluto
+            workArea.style.marginTop = "0px";
+            
+            // 3. Preparamos los botones internos replicando tu HTML suelto
+            let botonesInternosHTML = "";
             if (data.estado === "Finalizado_DF") {
-                reviewBtnsHTML = `
-                    <div class="work-area mt-l">
-                        <button class="btn-mando btn-status-alert" onclick="stopAllAudio(); window.location.href='${upsellLink}'">
-                            AVANZAR AL TRAMO 02 →
-                        </button>
-                        <button class="btn-ghost mt-s" onclick="stopAllAudio(); window.location.href='${hubLink}'">
-                            ← Volver al Hub del Descenso
-                        </button>
-                    </div>
+                botonesInternosHTML = `
+                    <button id="btn-p-upsell" class="btn-mando btn-status-alert" style="display:block;">
+                        AVANZAR AL TRAMO 02 →
+                    </button>
+                    <button id="btn-p-hub" class="btn-ghost" style="display:block;">
+                        ← Volver al Hub del Descenso
+                    </button>
+                `;
+            } else {
+                botonesInternosHTML = `
+                    <button id="btn-p-continuar" class="btn-mando" style="display:block; margin-top: var(--gap-l);">
+                        ${leccionData.btnTexto || "Asimilado →"}
+                    </button>
                 `;
             }
 
+            // 4. Inyectamos la estructura EXACTA de tu HTML funcional
             workArea.innerHTML = `
                 <div id="pantalla-reliquia" class="interruption-screen">
                     <img src="${leccionData.imgReliquia}" class="relic-image">
                     <p class="indicator" style="margin-top: var(--gap-m); text-align: center;">${leccionData.textoToque || 'Toca para desenterrar'}</p>
                 </div>
+                
                 <div class="revelation-screen">
+                    <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
+                    <p class="indicator">${leccionData.indicador}</p>
+                    
                     <div class="work-area card mt-l">
                         <span class="principle-statement">${leccionData.principio}</span>
                         <p class="text-base mt-s">${leccionData.contenido}</p>
                     </div>
-                    ${reviewBtnsHTML}
+                    
+                    ${botonesInternosHTML}
                 </div>
             `;
             
+            // 5. La magia del clic (tu lógica original)
             document.getElementById("pantalla-reliquia").onclick = () => { 
                 document.body.classList.add('revealed'); 
-                
-                // 2. MAGIA: Restauramos el logo y el indicador tras el clic
-                uiLogo.style.display = "block";
-                uiIndicator.style.display = "block";
-                uiIndicator.innerText = leccionData.indicador;
-
-                if (data.estado !== "Finalizado_DF") { btnMando.style.display = "block"; }
             };
             
-            btnMando.innerText = leccionData.btnTexto || "Asimilado →"; 
-            btnMando.onclick = () => { stopAllAudio(); userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
+            // 6. Asignamos las acciones a los botones recién inyectados
+            if (data.estado === "Finalizado_DF") {
+                document.getElementById("btn-p-upsell").onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
+                document.getElementById("btn-p-hub").onclick = () => { stopAllAudio(); window.location.href = hubLink; };
+            } else {
+                document.getElementById("btn-p-continuar").onclick = () => { 
+                    stopAllAudio(); 
+                    userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
+                };
+            }
 
         } else if (leccionData.tipo === "hub") {
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
