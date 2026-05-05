@@ -50,7 +50,7 @@ html, body {
     font-family: var(--font-family);
     display: flex; 
     justify-content: center; 
-    align-items: flex-start; /* Se mantiene para evitar recortes en móviles */
+    align-items: flex-start;
     -webkit-text-size-adjust: 100%;
 }
 
@@ -150,7 +150,7 @@ html, body {
     margin-top: var(--gap-l); /* Hito: Inicio de contenido principal */
 }
 
-/* Evita que el primer elemento (ej. audio) sume su margen al del contenedor */
+/* Evita que el primer elemento sume su margen al del contenedor */
 #dynamic-work-area > :first-child {
     margin-top: 0 !important;
 }
@@ -159,12 +159,10 @@ html, body {
 .work-area.card { background-color: var(--color-bg-card); padding: var(--padding-card); border-radius: var(--radius-standard); width: 100%; }
 
 /* --- CORRECCIÓN DE CAJAS GRISES --- */
-/* El primer elemento dentro de una caja gris jamás debe tener margen superior para respetar el padding interno */
 .work-area.card > :first-child {
     margin-top: 0 !important;
 }
 
-/* Si una caja gris va justo después de un video, imagen o audio, asume sus 30px (M) automáticamente */
 .video-container + .work-area.card, 
 .evidence-image + .work-area.card, 
 .audio-capsule + .work-area.card {
@@ -207,7 +205,7 @@ textarea {
     font-size: 16px; font-weight: 500; text-align: left; cursor: pointer; transition: 0.2s; 
     margin-top: var(--gap-s); /* Hermano: Opciones relacionadas */
 }
-.option-btn:first-child { margin-top: 0; } /* El primero no empuja dentro de su contenedor */
+.option-btn:first-child { margin-top: 0; } 
 .option-btn.selected { border-color: var(--color-text-main); color: var(--color-text-main); background: var(--color-bg-main); }
 
 /* Estados Bloqueados */
@@ -255,7 +253,7 @@ textarea.locked, .input-line.locked, .iti input[type="tel"].locked { pointer-eve
 /* =========================================================
    MÓDULOS TÁCTICOS Y REPORTE
 ========================================================= */
-.interruption-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; cursor: pointer; text-align: center; }
+.interruption-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; cursor: pointer; text-align: center; }
 .relic-image { width: 100%; height: auto; margin-top: var(--gap-l); animation: softFloat 4s ease-in-out infinite; }
 .revelation-screen { display: none; width: 100%; animation: fadeIn 0.8s ease forwards; }
 body.revealed .interruption-screen { display: none !important; }
