@@ -25,7 +25,6 @@ function stopAllAudio() {
     });
 }
 
-// Funciones globales para el control de la cápsula de audio
 window.activateAudio = (id) => {
     const cap = document.getElementById(`capsule-${id}`);
     if(cap && !cap.classList.contains('active')) {
@@ -37,13 +36,13 @@ window.activateAudio = (id) => {
 window.togglePlay = () => {
     const a = document.getElementById('audio-player');
     const icon = document.getElementById('play-icon');
-    if (a) {
+    if (a && icon) {
         if (a.paused) {
             a.play();
-            icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // Pausa
+            icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; 
         } else {
             a.pause();
-            icon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // Play
+            icon.innerHTML = '<path d="M8 5v14l11-7z"/>'; 
         }
     }
 };
@@ -106,8 +105,7 @@ auth.onAuthStateChanged((user) => {
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
 
-        // --- RENDERIZADO SEGÚN TIPO ---
-        
+        // --- TIPO: PERFIL (CORREGIDO) ---
         if (leccionData.tipo === "perfil") {
             [uiIndicator, uiProgress.parentElement].forEach(el => el && (el.style.display = "none"));
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
@@ -121,7 +119,8 @@ auth.onAuthStateChanged((user) => {
 
             let phoneInput;
             if(window.intlTelInput) {
-                phoneInput = window.intlTelInput(document.querySelector("#p-telefono"), {
+                const telEl = document.querySelector("#p-telefono");
+                phoneInput = window.intlTelInput(telEl, {
                     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
                     initialCountry: "auto",
                     geoIpLookup: function(success) { fetch("https://ipapi.co/json").then(res => res.json()).then(geo => success(geo.country_code)).catch(() => success("us")); },
@@ -132,7 +131,8 @@ auth.onAuthStateChanged((user) => {
                 setTimeout(() => {
                     const iti = document.querySelector(".iti");
                     if(iti) iti.classList.add("locked");
-                    document.querySelector(".iti__input").setAttribute("readonly", true);
+                    const inp = document.querySelector(".iti__input");
+                    if(inp) inp.setAttribute("readonly", true);
                 }, 50);
             }
             btnMando.style.display = "block";
@@ -144,16 +144,18 @@ auth.onAuthStateChanged((user) => {
                 const ocup = document.getElementById("p-ocupacion").value;
                 const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
                 if(!edad || !ocup || !tel) return alert("Datos incompletos.");
-                userRef.update({ edad, ocupacion, telefono: tel, leccion_actual_DF: leccionData.siguienteId })
-                .then(() => window.location.href = `bunker.html?id=${leccionData.siguienteId}`);
+                userRef.update({ 
+                    edad: edad, 
+                    ocupacion: ocup, // <--- CORREGIDO AQUÍ
+                    telefono: tel, 
+                    leccion_actual_DF: leccionData.siguienteId 
+                }).then(() => window.location.href = `bunker.html?id=${leccionData.siguienteId}`);
             };
 
-       } else if (leccionData.tipo === "candado") {
+        // --- TIPO: CANDADO (CORREGIDO ANCHO) ---
+        } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            
-            // Aseguramos que el área de trabajo ocupe el 100%
             workArea.style.width = "100%";
-
             workArea.innerHTML = `
                 <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
                     <img src="img/candado.webp" class="relic-image-lock">
@@ -173,11 +175,8 @@ auth.onAuthStateChanged((user) => {
                         </div>
                     </div>
                 </div>`;
-
-            btnMando.style.display = "block"; 
-            btnMando.innerText = "Actualizar Protocolo →";
+            btnMando.style.display = "block"; btnMando.innerText = "Actualizar Protocolo →";
             btnMando.onclick = () => window.location.reload(true);
-            
             const release = new Date(leccionData.fechaLiberacion).getTime();
             countdownInterval = setInterval(() => {
                 const dist = release - new Date().getTime();
@@ -186,12 +185,9 @@ auth.onAuthStateChanged((user) => {
                     btnMando.innerText = "Ingresar →"; 
                     btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; } 
                 } else {
-                    const h = Math.floor(dist / 3600000);
-                    const m = Math.floor((dist % 3600000) / 60000);
-                    const s = Math.floor((dist % 60000) / 1000);
-                    document.getElementById("hrs").innerText = h.toString().padStart(2,"0");
-                    document.getElementById("min").innerText = m.toString().padStart(2,"0");
-                    document.getElementById("seg").innerText = s.toString().padStart(2,"0");
+                    document.getElementById("hrs").innerText = Math.floor(dist / 3600000).toString().padStart(2,"0");
+                    document.getElementById("min").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2,"0");
+                    document.getElementById("seg").innerText = Math.floor((dist % 60000) / 1000).toString().padStart(2,"0");
                 }
             }, 1000);
 
@@ -203,7 +199,7 @@ auth.onAuthStateChanged((user) => {
 
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p></div><div class="revelation-screen"><div class="logo"><img src="DF.png"></div><p class="indicator" style="margin-bottom:32px;">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
+            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">${leccionData.textoToque || "Toca para desenterrar"}</p></div><div class="revelation-screen"><div class="logo"><img src="img/DF.png"></div><p class="indicator" style="margin-bottom:32px;">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
             document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); btnMando.style.display = "block"; };
             btnMando.innerText = "Asimilado →"; btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }
 
