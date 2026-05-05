@@ -224,7 +224,7 @@ auth.onAuthStateChanged((user) => {
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
             
             let hubHTML = leccionData.lecciones.map(l => `<button class="option-btn" style="padding:20px; display:flex; justify-content:space-between;" onclick="stopAllAudio(); firebase.firestore().collection('usuarios').doc('${user.uid}').set({ leccion_actual_DF: '${l.id}' }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' });"><div><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="font-size:16px; font-weight:700;">${l.titulo}</span></div><span>→</span></button>`).join("");
-            workArea.innerHTML = `<div class="work-area" style="margin-bottom:25px;">${hubHTML}</div>`;
+            workArea.innerHTML = `<div class="work-area">${hubHTML}</div>`;
             
             btnMando.style.display = "block"; 
             if (data.estado === "Finalizado_DF") {
