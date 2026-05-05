@@ -2,7 +2,7 @@
 const firebaseConfig = { 
     apiKey: "AIzaSyARmU6NUnRajN8dMB6Pi35WbSC2ZKJd-X8", 
     authDomain: "deepfall-b3601.firebaseapp.com", 
-    projectId: "deepfall-b3601",  
+    projectId: "deepfall-b3601", 
     storageBucket: "deepfall-b3601.firebasestorage.app", 
     messagingSenderId: "207043962011", 
     appId: "1:207043962011:web:681397c7d540b4b3d4523e" 
@@ -172,11 +172,72 @@ auth.onAuthStateChanged((user) => {
                 }
             }, 1000);
 
+        // --- TIPO REPORTE FINAL (NUEVO DISEÑO) ---
         } else if (leccionData.tipo === "reporte") {
             userRef.set({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" }, { merge: true });
-            [uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            workArea.innerHTML = `<h1 class="title">Máscara Rota.</h1><div class="work-area card" style="margin-bottom:35px;"><p class="text-base">Tu capacidad para mentirte ha sido neutralizada.</p></div><button id="btn-upsell" class="btn-status-alert">AVANZAR AL TRAMO 02 →</button>`;
-            document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell; };
+            
+            // Ocultamos la UI por defecto para dibujar todo a medida
+            [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
+            workArea.style.width = "100%";
+            
+            const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "DESCONOCIDO";
+
+            workArea.innerHTML = `
+                <div style="width: 100%; display: flex; flex-direction: column; align-items: flex-start; text-align: left;">
+                    <div class="logo" style="margin: 0 0 30px -12px;"><img src="DF.png" style="height: 55px;"></div>
+                    
+                    <span class="nombre-exp">EXPEDICIONARIO: ${nombreUsr}</span>
+                    <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
+                    
+                    <h1 class="title">Fin del Descenso.</h1>
+                    <p class="description">Análisis final del Tramo 01 completado.</p>
+
+                    <div class="work-area card" style="width: 100%;">
+                        <p class="text-base">
+                            <b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br>
+                            <b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.
+                        </p>
+                    </div>
+
+                    <p class="text-base" style="margin-top: 35px; margin-bottom: 0px;"><b>La escotilla de acceso cierra en:</b></p>
+                    
+                    <div id="countdown-upsell" class="stats-container">
+                        <div class="stat-box"><span class="stat-value" id="u-hrs">00</span><span class="stat-label">Horas</span></div>
+                        <div class="stat-box"><span class="stat-value" id="u-min">00</span><span class="stat-label">Minutos</span></div>
+                        <div class="stat-box"><span class="stat-value" id="u-seg">00</span><span class="stat-label">Segundos</span></div>
+                    </div>
+
+                    <button id="btn-upsell" class="btn-mando btn-status-alert" style="margin-top: 35px;">
+                        AVANZAR AL TRAMO 02 →
+                    </button>
+                    
+                    <button id="btn-repasar" class="btn-ghost" style="margin-top: 20px;">
+                        ← Volver al Hub del Descenso
+                    </button>
+                </div>
+            `;
+
+            document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell || "#"; };
+            document.getElementById("btn-repasar").onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.hubId || 1}`; };
+
+            // Lógica del Temporizador del Upsell
+            if (leccionData.fechaExpiracion) {
+                const targetDate = new Date(leccionData.fechaExpiracion).getTime();
+                countdownInterval = setInterval(() => {
+                    const now = new Date().getTime(); 
+                    const distance = targetDate - now;
+                    if (distance < 0) { 
+                        clearInterval(countdownInterval);
+                        document.getElementById("countdown-upsell").innerHTML = "<div style='padding:20px; background:#fce8e6; color:#d93025; border-radius:16px; width:100%; text-align:center; font-weight:800; font-size:16px;'>TIEMPO EXPIRADO</div>"; 
+                        return; 
+                    }
+                    document.getElementById("u-hrs").innerText = Math.floor(distance / (1000 * 60 * 60)).toString().padStart(2, '0');
+                    document.getElementById("u-min").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                    document.getElementById("u-seg").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+                }, 1000);
+            } else {
+                document.getElementById("countdown-upsell").style.display = "none";
+            }
 
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
@@ -191,7 +252,6 @@ auth.onAuthStateChanged((user) => {
         } else if (leccionData.tipo === "hub") {
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
-            // Los botones del HUB ahora guardan el ID destino antes de navegar
             let hubHTML = leccionData.lecciones.map(l => `<button class="option-btn" style="padding:20px; display:flex; justify-content:space-between;" onclick="stopAllAudio(); firebase.firestore().collection('usuarios').doc('${user.uid}').set({ leccion_actual_DF: '${l.id}' }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' });"><div><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="font-size:16px; font-weight:700;">${l.titulo}</span></div><span>→</span></button>`).join("");
             workArea.innerHTML = `<div class="work-area" style="margin-bottom:25px;">${hubHTML}</div>`;
             btnMando.style.display = "block"; btnMando.className = "btn-ghost"; btnMando.innerText = "Volver al flujo →";
