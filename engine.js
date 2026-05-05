@@ -272,7 +272,7 @@ auth.onAuthStateChanged((user) => {
                 const reviewButtons = document.createElement('div');
                 reviewButtons.style.width = "100%";
                 reviewButtons.innerHTML = `
-                    <button id="btn-upsell-review" class="btn-mando btn-status-alert" style="margin-top: 35px; display: block !important;">
+                    <button id="btn-upsell-review" class="btn-mando btn-status-alert" style="margin-top: 15px; display: block !important;">
                         AVANZAR AL TRAMO 02 →
                     </button>
                     <button id="btn-back-hub-review" class="btn-ghost" style="margin-top: 20px; width: 100%;">
