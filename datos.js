@@ -37,7 +37,7 @@ const DEEPFALL_DATA = {
 
     // 4. TIPO: CARRUSEL (Conceptos dinámicos)
     "4": {
-        "tipo": "carrusel",
+        "tipo": "carrusel", 
         "indicador": "03 / Pilares",
         "progreso": "30%",
         "titulo": "Los 3 Pilares del Fondo",
