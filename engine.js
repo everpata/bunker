@@ -150,10 +150,12 @@ auth.onAuthStateChanged((user) => {
 
         } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
+            
+            // CORRECCIÓN: Se agregan las clases align-center y text-center al contenedor
             workArea.innerHTML = `
-                <div class="work-area">
+                <div class="work-area align-center text-center">
                     <img src="img/candado.webp" class="relic-image-lock">
-                    <p class="text-base text-center w-full">Liberación en:</p>
+                    <p class="text-base text-center w-full mt-m">Liberación en:</p>
                     <div id="countdown" class="stats-container mt-m">
                         <div class="stat-box"><span id="hrs" class="stat-value">00</span><span class="stat-label">Hrs</span></div>
                         <div class="stat-box"><span id="min" class="stat-value">00</span><span class="stat-label">Min</span></div>
