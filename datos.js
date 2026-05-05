@@ -100,8 +100,24 @@ const DEEPFALL_DATA = {
         "siguienteId": "9"
     },
 
-    // 9. TIPO: HUB (Navegación por el día)
+    // 9. TIPO: CANDADO (Bloqueo temporal)
     "9": {
+        "tipo": "candado",
+        "fechaLiberacion": "May 4, 2026 21:25:00",
+        "siguienteId": "11"
+    },
+
+    // 10. TIPO: REPORTE (Cierre y Upsell)
+    "10": {
+    "tipo": "reporte",
+    "linkUpsell": "https://TU_LINK_DE_PAGO_AQUI.com",
+    "fechaExpiracion": "May 10, 2026 19:00:00 GMT-0500",
+    "hubId": "11" // Escribe aquí el número del ID de tu HUB (o a donde quieres que regresen)
+    
+    },
+
+    // 11. TIPO: HUB (Navegación por el día)
+    "11": {
         "tipo": "hub",
         "indicador": "08 / Mapa",
         "progreso": "80%",
@@ -114,20 +130,6 @@ const DEEPFALL_DATA = {
             { "id": "8", "tag": "RITUAL", "titulo": "Principio" }
         ],
         "btnTexto": "Ir al final →",
-        "siguienteId": "10"
-    },
-
-    // 10. TIPO: CANDADO (Bloqueo temporal)
-    "10": {
-        "tipo": "candado",
-        "fechaLiberacion": "May 4, 2026 21:25:00",
         "siguienteId": "11"
     },
-
-    // 11. TIPO: REPORTE (Cierre y Upsell)
-    "11": {
-        "tipo": "reporte",
-        "fechaExpiracion": "May 15, 2026 19:00:00",
-        "linkUpsell": "https://deepmersion.deepnessmen.com"
-    }
 }; 
