@@ -125,11 +125,6 @@ html, body {
     font-weight: 700; 
 }
 
-/* Complemento después de media o audio */
-.work-area.card .text-base, .mt-m {
-    margin-top: var(--gap-m); 
-}
-
 .principle-statement { 
     font-size: 22px; 
     font-weight: 800; 
@@ -151,6 +146,19 @@ html, body {
 
 .work-area { width: 100%; display: flex; flex-direction: column; }
 .work-area.card { background-color: var(--color-bg-card); padding: var(--padding-card); border-radius: var(--radius-standard); width: 100%; }
+
+/* --- CORRECCIÓN DE CAJAS GRISES --- */
+/* El primer elemento dentro de una caja gris jamás debe tener margen superior para respetar el padding interno */
+.work-area.card > :first-child {
+    margin-top: 0 !important;
+}
+
+/* Si una caja gris va justo después de un video, imagen o audio, asume sus 30px (M) automáticamente */
+.video-container + .work-area.card, 
+.evidence-image + .work-area.card, 
+.audio-capsule + .work-area.card {
+    margin-top: var(--gap-m);
+}
 
 /* Formulario e Identidad */
 .input-line {
@@ -180,7 +188,6 @@ textarea {
     width: 100%; background: transparent; border: none; resize: none; 
     font-family: inherit; font-size: 16px; color: var(--color-text-main); 
     outline: none; min-height: 120px; line-height: 1.5; 
-    /* El contenedor work-area.card ya le da el padding, no necesita margen extra interno si es único */
 }
 
 .option-btn { 
@@ -203,7 +210,7 @@ textarea.locked, .input-line.locked, .iti input[type="tel"].locked { pointer-eve
 .video-container, .evidence-image, .carousel-container { 
     margin-top: var(--gap-l); /* Hito: Bloque visual */
 }
-.video-container:first-child, .evidence-image:first-child, .carousel-container:first-child { margin-top: 0; } /* Si están dentro de un work-area que ya empujó */
+.video-container:first-child, .evidence-image:first-child, .carousel-container:first-child { margin-top: 0; } 
 
 .video-container { width: 100%; position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: var(--radius-standard); overflow: hidden; }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
@@ -237,14 +244,12 @@ textarea.locked, .input-line.locked, .iti input[type="tel"].locked { pointer-eve
 /* =========================================================
    MÓDULOS TÁCTICOS Y REPORTE
 ========================================================= */
-/* Revelación */
 .interruption-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; cursor: pointer; text-align: center; }
 .relic-image { width: 100%; height: auto; margin-top: var(--gap-l); animation: softFloat 4s ease-in-out infinite; }
 .revelation-screen { display: none; width: 100%; animation: fadeIn 0.8s ease forwards; }
 body.revealed .interruption-screen { display: none !important; }
 body.revealed .revelation-screen { display: block !important; width: 100%; }
 
-/* Reporte de Fin de Descenso */
 .nombre-exp { font-size: 11px; font-weight: 600; color: var(--color-text-sec); letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; display: block; margin-top: var(--gap-l); }
 
 .status-badge { 
@@ -293,6 +298,11 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
     font-family: inherit; text-align: center; 
 }
 
+/* Si el botón ghost aparece solo (sin un botón principal arriba), asume espaciado principal (45px) */
+.btn-ghost:first-child {
+    margin-top: var(--gap-l);
+}
+
 /* Magia de la Cascada: Si hay un ghost debajo, el mando cede su ancla inferior */
 .btn-mando:has(+ .btn-ghost) { margin-bottom: 0; }
 
@@ -322,3 +332,11 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
     .relic-image { max-width: 380px; margin-left: auto; margin-right: auto; }
     .relic-image-lock { width: 100%; max-width: 450px; height: auto; display: block; margin-left: auto; margin-right: auto; }
 }
+
+/* =========================================================
+   UTILIDADES DE CASCADA (Helpers para engine.js)
+========================================================= */
+.mt-xl { margin-top: var(--gap-xl) !important; }
+.mt-l  { margin-top: var(--gap-l) !important; }
+.mt-m  { margin-top: var(--gap-m) !important; }
+.mt-s  { margin-top: var(--gap-s) !important; }
