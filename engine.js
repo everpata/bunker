@@ -92,7 +92,10 @@ auth.onAuthStateChanged((user) => {
         const uiTitle = document.getElementById("ui-title");
         const uiDesc = document.getElementById("ui-desc");
 
+        // RESETEO Y CABECERA (Normalizado: JS actualiza la cabecera por defecto)
         document.body.classList.remove('revealed');
+        [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
+        
         if(btnMando) { btnMando.style.display = "none"; btnMando.className = "btn-mando"; }
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
@@ -101,7 +104,7 @@ auth.onAuthStateChanged((user) => {
         const upsellLink = reportData.linkUpsell || "#";
         const hubLink = reportData.hubId ? `bunker.html?id=${reportData.hubId}` : `bunker.html?id=1`;
 
-        // --- RENDERIZADO POR TIPO ---
+        // --- RENDERIZADO POR TIPO (JS solo inyecta HTML de Work Area y tokens de margen) ---
 
         if (leccionData.tipo === "perfil") {
             [uiIndicator, uiProgress.parentElement].forEach(el => el && (el.style.display = "none"));
@@ -151,7 +154,7 @@ auth.onAuthStateChanged((user) => {
                 <div class="work-area">
                     <img src="img/candado.webp" class="relic-image-lock">
                     <p class="text-base text-center w-full">Liberación en:</p>
-                    <div id="countdown" class="stats-container">
+                    <div id="countdown" class="stats-container mt-m">
                         <div class="stat-box"><span id="hrs" class="stat-value">00</span><span class="stat-label">Hrs</span></div>
                         <div class="stat-box"><span id="min" class="stat-value">00</span><span class="stat-label">Min</span></div>
                         <div class="stat-box"><span id="seg" class="stat-value">00</span><span class="stat-label">Seg</span></div>
@@ -179,7 +182,9 @@ auth.onAuthStateChanged((user) => {
             renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc);
 
         } else if (leccionData.tipo === "principio") {
-            [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
+            // Normalizado: JS actualiza la cabecera narrativamente, luego inyecta Work Area.
+            [uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
+            uiIndicator.innerText = leccionData.indicador;
             
             let reviewBtnsHTML = "";
             if (data.estado === "Finalizado_DF") {
@@ -201,9 +206,7 @@ auth.onAuthStateChanged((user) => {
                     <p class="indicator" style="margin-top: 0;">Toca para desenterrar</p>
                 </div>
                 <div class="revelation-screen">
-                    <div class="logo mt-xl"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
-                    <p class="indicator mt-l">${leccionData.indicador}</p>
-                    <div class="work-area card mt-s">
+                    <div class="work-area card mt-l">
                         <span class="principle-statement">${leccionData.principio}</span>
                         <p class="text-base mt-s">${leccionData.contenido}</p>
                     </div>
@@ -236,6 +239,7 @@ auth.onAuthStateChanged((user) => {
                 btnMando.innerText = "AVANZAR AL TRAMO 02 →";
                 btnMando.onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
             } else {
+                // Normalizado: Se fuerza mt-l para botón único.
                 btnMando.className = "btn-ghost mt-l"; 
                 btnMando.innerText = "Volver al flujo →";
                 btnMando.onclick = () => { stopAllAudio(); userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
@@ -243,7 +247,6 @@ auth.onAuthStateChanged((user) => {
 
         } else {
             // TARJETAS ESTÁNDAR
-            [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
             
@@ -258,7 +261,7 @@ auth.onAuthStateChanged((user) => {
             } else if (leccionData.tipo === "video") {
                 workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="work-area card mt-m"><p class="text-base">${leccionData.postTexto}</p></div>` : ""}`;
             } else if (leccionData.tipo === "carrusel") {
-                workArea.innerHTML = `<div class="carousel-container">${leccionData.items.map(item => `<div class="carousel-item">${item.img ? `<img src="${item.img}" class="evidence-image">` : ""}<p class="text-base">${item.texto}</p></div>`).join("")}</div>`;
+                workArea.innerHTML = `<div class="carousel-container">${leccionData.items.map(item => `<div class="carousel-item">${item.img ? `<img src="${item.img}" class="evidence-image">` : ""}<p class="text-base mt-s">${item.texto}</p></div>`).join("")}</div>`;
             } else if (leccionData.tipo === "bitacora") {
                 workArea.innerHTML = `<div class="work-area card"><textarea id="input-dinamico" placeholder="${leccionData.placeholder}"></textarea></div>`;
                 if(data[`bitacora_${leccionId}`]) { const i=document.getElementById("input-dinamico"); i.value=data[`bitacora_${leccionId}`]; i.readOnly=true; i.classList.add("locked"); isLocked=true; }
@@ -274,9 +277,9 @@ auth.onAuthStateChanged((user) => {
             if (data.estado === "Finalizado_DF") {
                 btnMando.style.display = "none";
                 const reviewButtons = document.createElement('div');
-                reviewButtons.className = "work-area mt-l"; // Inyectamos 45px al bloque de botones de cierre
+                reviewButtons.className = "work-area mt-l";
                 reviewButtons.innerHTML = `
-                    <button id="btn-upsell-review" class="btn-mando btn-status-alert" style="margin-top:0;">
+                    <button id="btn-upsell-review" class="btn-mando btn-status-alert">
                         AVANZAR AL TRAMO 02 →
                     </button>
                     <button id="btn-back-hub-review" class="btn-ghost">
@@ -315,7 +318,7 @@ auth.onAuthStateChanged((user) => {
     }).catch(err => { console.error("Error Firestore:", err); document.getElementById("loading-screen").style.display = "none"; });
 });
 
-// FUNCIÓN AUXILIAR REPORTE
+// FUNCIÓN AUXILIAR REPORTE (Normalizado: el reporte limpia la cabecera por completo para su diseño único)
 function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc) {
     const userRef = db.collection("usuarios").doc(auth.currentUser.uid);
     userRef.set({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" }, { merge: true });
@@ -324,15 +327,16 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
     
     const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "EXPEDICIONARIO";
 
+    // Normalizado: Eliminados tokens de margen de botones, la cascada inteligente los asume.
     workArea.innerHTML = `
         <div class="work-area">
             <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
             <span class="nombre-exp">EXPEDICIONARIO: ${nombreUsr}</span>
             <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
-            <h1 class="title">Fin del Descenso.</h1>
-            <p class="description">Análisis final del Tramo 01 completado.</p>
+            <h1 class="title mt-s">Fin del Descenso.</h1>
+            <p class="description mt-s">Análisis final del Tramo 01 completado.</p>
             
-            <div class="work-area card">
+            <div class="work-area card mt-l">
                 <p class="text-base"><b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br><b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.</p>
             </div>
             
