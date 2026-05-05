@@ -1,41 +1,138 @@
-/* Deepmersion V4.4 - Blindaje Estético, Responsivo y Seguridad Visual */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* =========================================================
+   DEEPFALL V4.5 - DESIGN SYSTEM (TOKENS MAESTROS)
+   Arquitectura limpia, mantenible y responsiva.
+========================================================= */
 
-html, body { 
-    width: 100%; min-height: 100vh; background-color: #ffffff; 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    display: flex; justify-content: center; align-items: center; -webkit-text-size-adjust: 100%;
+:root {
+    /* 1. PALETA DE COLORES */
+    --color-bg-main: #ffffff;
+    --color-bg-card: #f5f5f7;
+    --color-text-main: #333333;
+    --color-text-sec: #878787;
+    --color-border: #d1d1d6;
+    
+    /* Alerta / Táctico */
+    --color-alert-bg: #fce8e6;
+    --color-alert-text: #d93025;
+
+    /* 2. TIPOGRAFÍA */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    
+    /* 3. ESPACIADOS Y DIMENSIONES */
+    --max-width-mobile: 460px;
+    --max-width-desktop: 700px;
+    --padding-container-v: 60px;
+    --padding-container-h: 45px;
+    --padding-card: 26px;
+    
+    --gap-standard: 15px;
+    --margin-btn-top: 30px; /* Separación estándar antes del botón principal */
+    
+    --radius-standard: 16px;
+    --radius-pill: 50px;
 }
 
-/* El contenedor cambia de 460px a 700px en pantallas grandes */
+/* =========================================================
+   RESETEO Y BASE
+========================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body { 
+    width: 100%; 
+    min-height: 100vh; 
+    background-color: var(--color-bg-main); 
+    font-family: var(--font-family);
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; /* Permite el scroll natural */
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Contenedor Maestro */
 .container { 
     width: 100%; 
-    max-width: 460px; 
-    padding: 60px 45px;  
+    max-width: var(--max-width-mobile); 
+    padding: var(--padding-container-v) var(--padding-container-h);  
     display: flex; 
     flex-direction: column; 
     align-items: flex-start; 
     transition: max-width 0.4s ease; 
 }
 
-/* --- CABECERA --- */
+/* =========================================================
+   SISTEMA TIPOGRÁFICO
+========================================================= */
+.title { 
+    font-size: 28px; 
+    font-weight: 700; 
+    color: var(--color-text-main); 
+    margin-bottom: 16px; 
+    line-height: 1.1; 
+    letter-spacing: -0.8px; 
+    width: 100%; 
+}
+
+.description { 
+    font-size: 16px; 
+    color: var(--color-text-sec); 
+    margin-bottom: 32px; 
+    line-height: 1.5; 
+    width: 100%; 
+}
+
+.text-base { 
+    font-size: 16px; 
+    color: var(--color-text-sec); 
+    line-height: 1.6; 
+}
+
+.text-base b { 
+    color: var(--color-text-main); 
+    font-weight: 700; 
+}
+
+.indicator { 
+    font-size: 11px; 
+    font-weight: 600; 
+    color: var(--color-text-sec); 
+    margin-bottom: 10px; 
+    letter-spacing: 1.5px; 
+    text-transform: uppercase; 
+    width: 100%; 
+    line-height: 1; 
+}
+
+.principle-statement { 
+    font-size: 22px; 
+    font-weight: 800; 
+    color: var(--color-text-main); 
+    line-height: 1.2; 
+    margin-bottom: 12px; 
+    display: block; 
+}
+
+/* =========================================================
+   ESTRUCTURA Y COMPONENTES
+========================================================= */
 .logo { margin: 0 0 30px -12px; flex-shrink: 0; width: 100%; text-align: left; }
 .logo img { height: 55px; width: auto; display: block; }
-.indicator { font-size: 11px; font-weight: 600; color: #878787; margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase; width: 100%; line-height: 1; }
-.progress-container { width: 100%; height: 2px; background-color: #f5f5f7; margin-bottom: 32px; border-radius: 2px; }
-.progress-fill { height: 100%; background-color: #333333; transition: width 0.8s ease; }
-.title { font-size: 28px; font-weight: 700; color: #333333; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.8px; width: 100%; }
-.description { font-size: 16px; color: #878787; margin-bottom: 32px; line-height: 1.5; width: 100%; }
 
-/* --- ÁREAS DE TRABAJO --- */
-#dynamic-work-area { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.progress-container { width: 100%; height: 2px; background-color: var(--color-bg-card); margin-bottom: 32px; border-radius: 2px; }
+.progress-fill { height: 100%; background-color: var(--color-text-main); transition: width 0.8s ease; }
+
+/* Áreas de Trabajo */
+#dynamic-work-area { width: 100%; display: flex; flex-direction: column; align-items: center; gap: var(--gap-standard); }
 .work-area { width: 100%; display: flex; flex-direction: column; gap: 12px; }
-.work-area.card { background-color: #f5f5f7; padding: 26px; border-radius: 16px; width: 100%; }
+.work-area.card { background-color: var(--color-bg-card); padding: var(--padding-card); border-radius: var(--radius-standard); width: 100%; }
 
-/* --- FORMULARIO DE DATOS --- */
+/* Formulario */
 .input-line {
-    width: 100%; background: transparent !important; border: none !important; border-bottom: 1px solid #d1d1d6 !important;
-    padding: 16px 0 !important; font-size: 16px !important; font-family: inherit !important; color: #333 !important; 
+    width: 100%; background: transparent !important; border: none !important; border-bottom: 1px solid var(--color-border) !important;
+    padding: 16px 0 !important; font-size: 16px !important; font-family: inherit !important; color: var(--color-text-main) !important; 
     outline: none !important; margin-bottom: 15px !important; border-radius: 0 !important; box-shadow: none !important;
 }
 
@@ -43,211 +140,136 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=number] { -moz-appearance: textfield; }
 
-/* Control absoluto sobre la librería de banderas */
+/* Librería de Teléfono (IntlTelInput) */
 .iti { width: 100% !important; display: block !important; margin-bottom: 15px !important; }
 .iti input[type="tel"] { 
-    border: none !important; border-bottom: 1px solid #d1d1d6 !important; border-radius: 0 !important; 
-    width: 100% !important; 
-    padding-top: 16px !important; 
-    padding-bottom: 16px !important; 
-    padding-right: 0 !important;
-    padding-left: 95px !important; 
-    background-color: transparent !important; 
-    font-size: 16px !important; font-family: inherit !important; color: #333 !important; 
+    border: none !important; border-bottom: 1px solid var(--color-border) !important; border-radius: 0 !important; 
+    width: 100% !important; padding: 16px 0 16px 95px !important; background-color: transparent !important; 
+    font-size: 16px !important; font-family: inherit !important; color: var(--color-text-main) !important; 
     outline: none !important; box-shadow: none !important; margin: 0 !important;
 }
 .iti__selected-flag { background-color: transparent !important; padding-left: 0 !important; }
 
-/* --- CARRUSEL --- */
-.carousel-container {
-    display: flex; 
-    overflow-x: auto; 
-    scroll-snap-type: x mandatory; 
-    gap: 16px; 
+/* Botones de Opción y Textarea */
+.option-btn { width: 100%; background-color: var(--color-bg-card); border: 2px solid transparent; padding: 20px; border-radius: var(--radius-standard); color: var(--color-text-sec); font-size: 16px; font-weight: 500; text-align: left; cursor: pointer; transition: 0.2s; font-family: inherit; }
+.option-btn.selected { border-color: var(--color-text-main); color: var(--color-text-main); background: var(--color-bg-main); }
+textarea { width: 100%; background: transparent; border: none; resize: none; font-family: inherit; font-size: 16px; color: var(--color-text-main); outline: none; min-height: 120px; line-height: 1.5; }
+
+/* Estados Bloqueados */
+.option-btn.locked { pointer-events: none; opacity: 0.6; }
+textarea.locked, .input-line.locked, .iti input[type="tel"].locked { pointer-events: none !important; opacity: 0.6 !important; background-color: transparent !important; color: var(--color-text-sec) !important; -webkit-text-fill-color: var(--color-text-sec) !important; border-bottom-color: transparent !important; }
+.iti.locked { pointer-events: none !important; opacity: 0.6 !important; }
+
+/* =========================================================
+   SISTEMA DE BOTONES (MANDOS)
+========================================================= */
+.btn-mando { 
     width: 100%; 
-    padding: 0 0 10px 0;
-    -webkit-overflow-scrolling: touch; 
-    scrollbar-width: none;
+    background: var(--color-text-main); 
+    color: var(--color-bg-main); 
+    border: none; 
+    padding: 22px; 
+    border-radius: var(--radius-standard); 
+    font-size: 16px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    margin-top: var(--margin-btn-top); 
+    transition: transform 0.1s; 
+    -webkit-appearance: none; 
+    text-align: center;
+}
+.btn-mando:active { transform: scale(0.98); }
+
+.btn-ghost { 
+    background: transparent; border: none; color: var(--color-text-sec); 
+    font-size: 14px; width: 100%; margin-top: 20px; cursor: pointer; 
+    font-family: inherit; text-align: center; 
+}
+
+/* Modificador de Alerta/Upsell */
+.btn-status-alert { 
+    background-color: var(--color-alert-bg) !important; 
+    color: var(--color-alert-text) !important; 
+    border: 1px solid var(--color-alert-text) !important; 
+    font-weight: 700 !important;
+    animation: btnElastic 4s ease-in-out infinite; 
+}
+
+/* Utilidades de Margen para modo repaso */
+.mt-standard { margin-top: var(--gap-standard) !important; } /* Usado para sumar 15px en combo de repaso */
+
+/* =========================================================
+   MULTIMEDIA Y CARRUSELES
+========================================================= */
+.video-container { width: 100%; position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: var(--radius-standard); overflow: hidden; }
+.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+.evidence-image { width: 100%; height: auto; display: block; border-radius: var(--radius-standard); }
+
+.carousel-container {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 16px; width: 100%; 
+    padding: 0 0 10px 0; -webkit-overflow-scrolling: touch; scrollbar-width: none;
     mask-image: linear-gradient(to right, black 85%, transparent 100%); 
     -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
     cursor: grab;
 }
 .carousel-container::-webkit-scrollbar { display: none; }
-.carousel-item { 
-    flex: 0 0 85%; 
-    scroll-snap-align: start; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 12px; 
-}
-.carousel-item .evidence-image { border-radius: 16px; width: 100%; }
+.carousel-item { flex: 0 0 85%; scroll-snap-align: start; display: flex; flex-direction: column; gap: 12px; }
 .carousel-container:active { cursor: grabbing; }
 
-/* --- COMPONENTES DE INTERACCIÓN --- */
-.option-btn { width: 100%; background-color: #f5f5f7; border: 2px solid transparent; padding: 20px; border-radius: 16px; color: #878787; font-size: 16px; font-weight: 500; text-align: left; cursor: pointer; transition: 0.2s; font-family: inherit; }
-.option-btn.selected { border-color: #333333; color: #333333; background: #ffffff; }
-textarea { width: 100%; background: transparent; border: none; resize: none; font-family: inherit; font-size: 16px; color: #333; outline: none; min-height: 120px; line-height: 1.5; }
-
-/* --- ESTADO BLOQUEADO --- */
-.option-btn.locked { pointer-events: none; opacity: 0.6; }
-textarea.locked, .input-line.locked, .iti input[type="tel"].locked { 
-    pointer-events: none !important; opacity: 0.6 !important; background-color: transparent !important; 
-    color: #878787 !important; -webkit-text-fill-color: #878787 !important; border-bottom-color: transparent !important; 
+/* =========================================================
+   CÁPSULA DE AUDIO
+========================================================= */
+.audio-capsule {
+    display: inline-flex; align-items: center; align-self: flex-start;
+    background: var(--color-bg-card); border: none; border-radius: var(--radius-pill);
+    padding: 0 16px; margin-bottom: 20px; cursor: pointer; transition: all 0.3s ease;
+    gap: 12px; height: 34px; overflow: hidden;
 }
-.iti.locked { pointer-events: none !important; opacity: 0.6 !important; }
+.audio-capsule span { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-sec); white-space: nowrap; }
+.capsule-controls { display: none; align-items: center; gap: 12px; }
+.capsule-btn { background: transparent; border: none; color: var(--color-text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; padding: 0 4px; -webkit-appearance: none; }
+.capsule-btn-main { background: var(--color-text-main); color: var(--color-bg-main); width: 26px; height: 26px; border-radius: 50%; }
+.audio-capsule.active { padding: 0 10px; }
+.audio-capsule.active span, .audio-capsule.active .icon-play-simple { display: none !important; }
+.audio-capsule.active .capsule-controls { display: flex; }
 
-/* --- RITUAL DE PRINCIPIOS --- */
+/* =========================================================
+   MÓDULOS TÁCTICOS (Principios y Reporte)
+========================================================= */
+/* Revelación de Reliquias */
 .interruption-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; cursor: pointer; text-align: center; }
 .relic-image { width: 100%; height: auto; margin-bottom: 30px; animation: softFloat 4s ease-in-out infinite; }
-@keyframes softFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
-
 .revelation-screen { display: none; width: 100%; animation: fadeIn 0.8s ease forwards; }
 body.revealed .interruption-screen { display: none !important; }
 body.revealed .revelation-screen { display: block !important; width: 100%; }
 
-/* --- BOTONES DE MANDO --- */
-.btn-mando, .btn-status-alert { width: 100%; background: #333; color: #fff; border: none; padding: 22px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 30px; transition: transform 0.1s; -webkit-appearance: none; }
-.btn-mando:active { transform: scale(0.98); }
-.btn-status-alert { background-color: #fce8e6 !important; color: #d93025 !important; border: 1px solid #d93025 !important; animation: btnElastic 4s ease-in-out infinite; }
-@keyframes btnElastic { 0%, 100% { padding: 20px; } 50% { padding: 26px 20px; } }
-.btn-ghost { background: transparent; border: none; color: #878787; font-size: 14px; width: 100%; margin-top: 20px; cursor: pointer; font-family: inherit; text-align: center; }
+/* Reporte de Fin de Descenso */
+.nombre-exp { font-size: 11px; font-weight: 600; color: var(--color-text-sec); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; line-height: 1; display: block; }
+.status-badge { background-color: var(--color-alert-bg); color: var(--color-alert-text); padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; margin-bottom: 25px; border: 1px solid var(--color-alert-text); text-transform: uppercase; }
+.stats-container { display: flex; flex-direction: row; gap: 10px; width: 100%; margin-top: 20px; }
+.stat-box { flex: 1; background-color: var(--color-bg-card); padding: 22px 5px; border-radius: var(--radius-standard); text-align: center; }
+.stat-value { font-size: 24px; font-weight: 800; color: var(--color-text-main); line-height: 1; display: block; }
+.stat-label { font-size: 9px; font-weight: 700; color: var(--color-text-sec); margin-top: 8px; display: block; text-transform: uppercase; }
 
-/* --- MULTIMEDIA --- */
-.video-container { width: 100%; position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 16px; overflow: hidden; }
-.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-.evidence-image { width: 100%; height: auto; display: block; border-radius: 16px; }
-
-/* --- LOADING Y ANIMACIONES --- */
-.text-base { font-size: 16px; color: #878787; line-height: 1.6; }
-.text-base b { color: #333333; font-weight: 700; }
-.principle-statement { font-size: 22px; font-weight: 800; color: #333333; line-height: 1.2; margin-bottom: 12px; display: block; }
-
+/* =========================================================
+   ANIMACIONES Y LOADING
+========================================================= */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-#loading-screen img { height: 60px; width: auto; animation: pulse-loading 2.5s infinite ease-in-out; }
+@keyframes softFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+@keyframes btnElastic { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.97); } }
 @keyframes pulse-loading { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.85); opacity: 0.4; } }
-
-.relic-image-lock { width: 100%; border-radius: 16px; margin-bottom: 20px; animation: pulse-lock 3.5s infinite ease-in-out; }
 @keyframes pulse-lock { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.97); opacity: 0.8; } }
 
-#loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: #fff; position: fixed; top: 0; left: 0; z-index: 9999; }
+#loading-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; background: var(--color-bg-main); position: fixed; top: 0; left: 0; z-index: 9999; }
+#loading-screen img { height: 60px; width: auto; animation: pulse-loading 2.5s infinite ease-in-out; }
+.relic-image-lock { width: 100%; border-radius: var(--radius-standard); margin-bottom: 20px; animation: pulse-lock 3.5s infinite ease-in-out; }
 
-/* --- CÁPSULA DE AUDIO ULTRA-MINIMALISTA V2 --- */
-.audio-capsule {
-    display: inline-flex;
-    align-items: center;
-    align-self: flex-start;
-    background: #f5f5f7;
-    border: none;
-    border-radius: 50px;
-    padding: 0 16px;
-    margin-bottom: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    gap: 12px;
-    height: 34px;
-    overflow: hidden;
-}
-
-.audio-capsule span {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #878787;
-    white-space: nowrap;
-}
-
-.capsule-controls {
-    display: none;
-    align-items: center;
-    gap: 12px;
-}
-
-.capsule-btn {
-    background: transparent;
-    border: none;
-    color: #333;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 0 4px;
-    -webkit-appearance: none; /* Fuerza a iOS a respetar el diseño del botón */
-}
-
-.capsule-btn-main {
-    background: #333;
-    color: #fff;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-}
-
-.audio-capsule.active { 
-    padding: 0 10px; 
-}
-
-.audio-capsule.active span, 
-.audio-capsule.active .icon-play-simple { 
-    display: none !important; 
-}
-
-.audio-capsule.active .capsule-controls { 
-    display: flex; 
-}
-
-/* --- AJUSTE PARA COMPUTADORA (DESKTOP) --- */
+/* =========================================================
+   DESKTOP OPTIMIZATIONS (>= 768px)
+========================================================= */
 @media (min-width: 768px) {
-    .container {
-        max-width: 700px;
-    }
-    
-    .title {
-        font-size: 34px;
-    }
-
-    /* Reducimos las imágenes de "Reliquia" (Principios) en PC */
-    .relic-image {
-        max-width: 380px; 
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    /* Reducimos la imagen del Candado en PC */
-    .relic-image-lock {
-        width: 100%;
-        max-width: 450px;
-        height: auto;
-        display: block;
-        margin: 0 auto 20px auto; 
-        border-radius: 16px;
-        animation: pulse-lock 3.5s infinite ease-in-out;
-    }
-
-    /* --- REPORTE FINAL TÁCTICO --- */
-.nombre-exp { 
-    font-size: 11px; font-weight: 600; color: #878787; 
-    letter-spacing: 1.5px; text-transform: uppercase; 
-    margin-bottom: 18px; line-height: 1; display: block; 
-}
-.status-badge { 
-    background-color: #fce8e6; color: #d93025; 
-    padding: 6px 12px; border-radius: 6px; 
-    font-size: 10px; font-weight: 800; display: inline-block; 
-    margin-bottom: 25px; border: 1px solid #d93025; 
-    text-transform: uppercase; 
-}
-.stats-container { 
-    display: flex; flex-direction: row; gap: 10px; 
-    width: 100%; margin-top: 20px; 
-}
-.stat-box { 
-    flex: 1; background-color: #f5f5f7; padding: 22px 5px; 
-    border-radius: 16px; text-align: center; 
-}
-.stat-value { font-size: 24px; font-weight: 800; color: #333; line-height: 1; display: block; }
-.stat-label { font-size: 9px; font-weight: 700; color: #878787; margin-top: 8px; display: block; text-transform: uppercase; }
+    .container { max-width: var(--max-width-desktop); }
+    .title { font-size: 34px; }
+    .relic-image { max-width: 380px; margin-left: auto; margin-right: auto; }
+    .relic-image-lock { width: 100%; max-width: 450px; height: auto; display: block; margin: 0 auto 20px auto; }
 }
