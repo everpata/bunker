@@ -183,8 +183,9 @@ auth.onAuthStateChanged((user) => {
             
             let reviewBtnsHTML = "";
             if (data.estado === "Finalizado_DF") {
+                // NOTA: Se eliminó la clase mt-standard, el .btn-mando ya toma sus 45px del CSS nativamente.
                 reviewBtnsHTML = `
-                    <button class="btn-mando btn-status-alert mt-standard" onclick="stopAllAudio(); window.location.href='${upsellLink}'">
+                    <button class="btn-mando btn-status-alert" onclick="stopAllAudio(); window.location.href='${upsellLink}'">
                         AVANZAR AL TRAMO 02 →
                     </button>
                     <button class="btn-ghost" onclick="stopAllAudio(); window.location.href='${hubLink}'">
@@ -234,7 +235,8 @@ auth.onAuthStateChanged((user) => {
                 btnMando.innerText = "AVANZAR AL TRAMO 02 →";
                 btnMando.onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
             } else {
-                btnMando.className = "btn-ghost"; 
+                // NOTA: Agregado mt-l para garantizar que respete el margen XL como botón único.
+                btnMando.className = "btn-ghost mt-l"; 
                 btnMando.innerText = "Volver al flujo →";
                 btnMando.onclick = () => { stopAllAudio(); userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
             }
@@ -254,7 +256,8 @@ auth.onAuthStateChanged((user) => {
             } else if (leccionData.tipo === "imagen") {
                 workArea.innerHTML = `<img src="${leccionData.url}" class="evidence-image">`;
             } else if (leccionData.tipo === "video") {
-                workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="work-area card mt-standard"><p class="text-base">${leccionData.postTexto}</p></div>` : ""}`;
+                // NOTA: Se reemplazó mt-standard por mt-m (30px)
+                workArea.innerHTML = `<div class="video-container"><iframe src="${leccionData.url}" allowfullscreen></iframe></div>${leccionData.postTexto ? `<div class="work-area card mt-m"><p class="text-base">${leccionData.postTexto}</p></div>` : ""}`;
             } else if (leccionData.tipo === "carrusel") {
                 workArea.innerHTML = `<div class="carousel-container">${leccionData.items.map(item => `<div class="carousel-item">${item.img ? `<img src="${item.img}" class="evidence-image">` : ""}<p class="text-base">${item.texto}</p></div>`).join("")}</div>`;
             } else if (leccionData.tipo === "bitacora") {
@@ -273,8 +276,9 @@ auth.onAuthStateChanged((user) => {
                 btnMando.style.display = "none";
                 const reviewButtons = document.createElement('div');
                 reviewButtons.className = "work-area";
+                // NOTA: Quitamos mt-standard, los botones toman su margen nativo
                 reviewButtons.innerHTML = `
-                    <button id="btn-upsell-review" class="btn-mando btn-status-alert mt-standard">
+                    <button id="btn-upsell-review" class="btn-mando btn-status-alert">
                         AVANZAR AL TRAMO 02 →
                     </button>
                     <button id="btn-back-hub-review" class="btn-ghost">
@@ -322,6 +326,7 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
     
     const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "EXPEDICIONARIO";
 
+    // NOTA: Actualizamos los mt-standard a mt-m y removimos márgenes redundantes en botones
     workArea.innerHTML = `
         <div class="work-area">
             <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
@@ -334,7 +339,7 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
                 <p class="text-base"><b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br><b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.</p>
             </div>
             
-            <p class="text-base mt-standard"><b>La escotilla de acceso cierra en:</b></p>
+            <p class="text-base mt-m"><b>La escotilla de acceso cierra en:</b></p>
             
             <div id="countdown-upsell" class="stats-container">
                 <div class="stat-box"><span class="stat-value" id="u-hrs">00</span><span class="stat-label">Horas</span></div>
@@ -342,7 +347,7 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
                 <div class="stat-box"><span class="stat-value" id="u-seg">00</span><span class="stat-label">Segundos</span></div>
             </div>
             
-            <button id="btn-upsell" class="btn-mando btn-status-alert mt-standard">AVANZAR AL TRAMO 02 →</button>
+            <button id="btn-upsell" class="btn-mando btn-status-alert">AVANZAR AL TRAMO 02 →</button>
             <button id="btn-repasar" class="btn-ghost">← Volver al Hub del Descenso</button>
         </div>`;
 
