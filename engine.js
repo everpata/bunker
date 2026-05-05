@@ -254,11 +254,18 @@ auth.onAuthStateChanged((user) => {
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
             
-            let hubHTML = leccionData.lecciones.map(l => `
-                <button class="option-btn" onclick="stopAllAudio(); firebase.firestore().collection('usuarios').doc('${user.uid}').set({ leccion_actual_DF: '${l.id}' }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' });">
+            // MAGIA: El Hub respeta si el usuario ya se graduó para no arruinar su anclaje al Reporte.
+            let hubHTML = leccionData.lecciones.map(l => {
+                let actionOnClick = data.estado === "Finalizado_DF" 
+                    ? `window.location.href='bunker.html?id=${l.id}'` 
+                    : `firebase.firestore().collection('usuarios').doc('${user.uid}').set({ leccion_actual_DF: '${l.id}' }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' })`;
+                
+                return `
+                <button class="option-btn" onclick="stopAllAudio(); ${actionOnClick};">
                     <span class="indicator">${l.tag}</span><br>
                     <span class="text-base"><b>${l.titulo} &rarr;</b></span>
-                </button>`).join("");
+                </button>`;
+            }).join("");
             
             workArea.innerHTML = `<div class="work-area">${hubHTML}</div>`;
             
