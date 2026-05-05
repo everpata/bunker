@@ -137,14 +137,8 @@ auth.onAuthStateChanged((user) => {
                 const ocup = document.getElementById("p-ocupacion").value;
                 const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
                 if(!edad || !ocup || !tel) return alert("Datos incompletos.");
-                
-                // USAMOS SET MERGE PARA CREAR EL DOCUMENTO SI NO EXISTE
-                userRef.set({ 
-                    edad: edad, 
-                    ocupacion: ocup, 
-                    telefono: tel, 
-                    leccion_actual_DF: leccionData.siguienteId 
-                }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
+                userRef.set({ edad: edad, ocupacion: ocup, telefono: tel, leccion_actual_DF: leccionData.siguienteId }, { merge: true })
+                .then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
             };
 
         } else if (leccionData.tipo === "candado") {
@@ -167,7 +161,10 @@ auth.onAuthStateChanged((user) => {
                 const dist = release - new Date().getTime();
                 if (dist < 0) { 
                     clearInterval(countdownInterval); btnMando.innerText = "Ingresar →"; 
-                    btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; };
+                    btnMando.onclick = () => { 
+                        stopAllAudio(); 
+                        userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
+                    };
                 } else {
                     document.getElementById("hrs").innerText = Math.floor(dist / 3600000).toString().padStart(2,"0");
                     document.getElementById("min").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2,"0");
@@ -183,17 +180,25 @@ auth.onAuthStateChanged((user) => {
 
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">Toca para desenterrar</p></div><div class="revelation-screen"><div class="logo"><img src="img/DF.png"></div><p class="indicator" style="margin-bottom:32px;">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
+            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator">Toca para desenterrar</p></div><div class="revelation-screen"><div class="logo"><img src="DF.png"></div><p class="indicator" style="margin-bottom:32px;">${leccionData.indicador}</p><div class="work-area card"><span class="principle-statement">${leccionData.principio}</span><p class="text-base">${leccionData.contenido}</p></div></div>`;
             document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); btnMando.style.display = "block"; };
-            btnMando.innerText = "Asimilado →"; btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; };
+            btnMando.innerText = "Asimilado →"; 
+            btnMando.onclick = () => { 
+                stopAllAudio(); 
+                userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
+            };
 
         } else if (leccionData.tipo === "hub") {
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
-            let hubHTML = leccionData.lecciones.map(l => `<button class="option-btn" style="padding:20px; display:flex; justify-content:space-between;" onclick="stopAllAudio(); window.location.href='bunker.html?id=${l.id}'"><div><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="font-size:16px; font-weight:700;">${l.titulo}</span></div><span>→</span></button>`).join("");
+            // Los botones del HUB ahora guardan el ID destino antes de navegar
+            let hubHTML = leccionData.lecciones.map(l => `<button class="option-btn" style="padding:20px; display:flex; justify-content:space-between;" onclick="stopAllAudio(); firebase.firestore().collection('usuarios').doc('${user.uid}').set({ leccion_actual_DF: '${l.id}' }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' });"><div><span style="display:block; font-size:10px; color:#878787; margin-bottom:5px;">${l.tag}</span><span style="font-size:16px; font-weight:700;">${l.titulo}</span></div><span>→</span></button>`).join("");
             workArea.innerHTML = `<div class="work-area" style="margin-bottom:25px;">${hubHTML}</div>`;
             btnMando.style.display = "block"; btnMando.className = "btn-ghost"; btnMando.innerText = "Volver al flujo →";
-            btnMando.onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.siguienteId}`; };
+            btnMando.onclick = () => { 
+                stopAllAudio(); 
+                userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
+            };
 
         } else {
             // TARJETAS ESTÁNDAR
