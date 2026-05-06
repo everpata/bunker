@@ -48,7 +48,7 @@ auth.onAuthStateChanged((user) => {
         let inicioTramoMaximo = Object.keys(DEEPFALL_DATA).find(k => DEEPFALL_DATA[k].tramo === tramoMaximo) || "1";
 
         // Parche Local: Sincroniza al instante para evitar el bucle de latencia
-        if (!data[varProgresoMax] || (data.estado === `Finalizado_DF` && tramoMaximo !== "DF")) {
+        if (!data[varProgresoMax] || data[varProgresoMax] === "undefined") {
             data[varProgresoMax] = inicioTramoMaximo;
             userRef.set({ [varProgresoMax]: inicioTramoMaximo, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
         }
@@ -64,6 +64,7 @@ auth.onAuthStateChanged((user) => {
                 destino = idReporte || idHub || inicioTramoMaximo;
             }
             // Usa 'replace' para no crear historial basura y evitar bucles de navegación
+            if (!destino || destino === "undefined") { destino = inicioTramoMaximo; }
             window.location.replace(`bunker.html?id=${destino}`);
             return;
         }
