@@ -67,7 +67,7 @@ const observer = new MutationObserver(() => {
 });
 observer.observe(document.getElementById('dynamic-work-area'), { childList: true, subtree: true });
 
-// --- LÓGICA CORE Y CEREBRO MULTITRAMO ---
+// --- CEREBRO MULTITRAMO (ANTI-BUCLES) ---
 
 auth.onAuthStateChanged((user) => {
     if (!user) { window.location.href = "index.html"; return; }
@@ -76,74 +76,55 @@ auth.onAuthStateChanged((user) => {
     userRef.get().then((doc) => {
         const data = doc.exists ? doc.data() : {};
         
-        // 1. DETERMINAR FASE OPERATIVA POR PERMISOS (GATING)
-        let faseOperativa = "DF"; // Por defecto todos empiezan en Deepfall
-        if (data.access_DQ === true) {
-            faseOperativa = "DQ";
-        } else if (data.access_DM === true) {
-            faseOperativa = "DM";
+        // 1. TRAMO MÁXIMO PERMITIDO (Gating por accesos VIP)
+        let tramoMaximo = "DF"; 
+        if (data.access_DQ === true) tramoMaximo = "DQ";
+        else if (data.access_DM === true) tramoMaximo = "DM";
+
+        let varProgresoMax = `leccion_actual_${tramoMaximo}`;
+        let inicioTramoMaximo = Object.keys(DEEPFALL_DATA).find(k => DEEPFALL_DATA[k].tramo === tramoMaximo) || "1";
+
+        // Inicializador en Frío: Evita el bucle local simulando el guardado instantáneo
+        if (!data[varProgresoMax]) {
+            data[varProgresoMax] = inicioTramoMaximo;
+            userRef.set({ [varProgresoMax]: inicioTramoMaximo, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
         }
 
-        // Variable dinámica para Firebase según el tramo activo
-        const varProgreso = `leccion_actual_${faseOperativa}`;
-        
-        // 2. DETECTOR AUTOMÁTICO DE INICIO DE TRAMO
-        // Si tiene permiso para el tramo pero su variable de progreso no existe
-        if (data[varProgreso] === undefined || data[varProgreso] === null) {
-            const primerIDTramo = Object.keys(DEEPFALL_DATA).find(key => 
-                DEEPFALL_DATA[key].tramo === faseOperativa
-            );
-            
-            if (primerIDTramo) {
-                userRef.set({ 
-                    [varProgreso]: primerIDTramo,
-                    ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-                
-                if (!leccionId) {
-                    window.location.href = `bunker.html?id=${primerIDTramo}`;
-                    return;
-                }
+        // 2. LÓGICA DE ENTRADA SIN ID (Anclaje de Ventas)
+        if (!leccionId) {
+            let esGraduadoDeMaximo = (data.estado === `Finalizado_${tramoMaximo}`);
+            let destino = data[varProgresoMax];
+
+            if (esGraduadoDeMaximo) {
+                let idReporte = Object.keys(DEEPFALL_DATA).find(k => DEEPFALL_DATA[k].tipo === "reporte" && DEEPFALL_DATA[k].tramo === tramoMaximo);
+                let idHub = Object.keys(DEEPFALL_DATA).find(k => DEEPFALL_DATA[k].tipo === "hub" && DEEPFALL_DATA[k].tramo === tramoMaximo);
+                destino = idReporte || idHub || inicioTramoMaximo;
             }
-        }
-
-        let nA = parseInt(leccionId) || 0;
-        let nG = data[varProgreso] ? (parseInt(data[varProgreso].toString().match(/\d+/)) || 0) : 0;
-
-        // 3. ANCLAJE PARA GRADUADOS (Si terminó el tramo operativo actual)
-        let tramoGraduado = "";
-        if (data.estado === `Finalizado_${faseOperativa}`) tramoGraduado = faseOperativa;
-
-        let idReporteAnclaje = null;
-        let idHubAnclaje = null;
-        Object.keys(DEEPFALL_DATA).forEach(key => {
-            const item = DEEPFALL_DATA[key];
-            if (item.tramo === faseOperativa) {
-                if (item.tipo === "reporte") idReporteAnclaje = key;
-                if (item.tipo === "hub") idHubAnclaje = key;
-            }
-        });
-
-        // 4. LÓGICA DE ENTRADA (Manejo de rutas sin ID)
-        if (!leccionId) { 
-            let destino;
-            if (tramoGraduado !== "") {
-                destino = idReporteAnclaje || idHubAnclaje || 1;
-            } else {
-                destino = nG > 0 ? nG : 1;
-            }
-            window.location.href = `bunker.html?id=${destino}`; 
-            return; 
-        }
-
-        // 5. ESCUDO ANTI-SALTOS
-        if (tramoGraduado === "" && nA > nG && !(nA === 1 && nG === 0)) {
-            window.location.href = `bunker.html?id=${nG > 0 ? nG : 1}`; return;
+            window.location.href = `bunker.html?id=${destino}`;
+            return;
         }
 
         const leccionData = DEEPFALL_DATA[leccionId];
-        if(!leccionData) { document.getElementById("loading-screen").style.display = "none"; return; }
+        if (!leccionData) { document.getElementById("loading-screen").style.display = "none"; return; }
 
+        // 3. ANÁLISIS DE LA TARJETA ACTUAL (Escudo Quirúrgico)
+        let tramoVisto = leccionData.tramo || "DF";
+        let varProgresoVisto = `leccion_actual_${tramoVisto}`;
+        let inicioTramoVisto = Object.keys(DEEPFALL_DATA).find(k => DEEPFALL_DATA[k].tramo === tramoVisto) || "1";
+        
+        let nA = parseInt(leccionId) || 0;
+        let nG = data[varProgresoVisto] ? parseInt(data[varProgresoVisto].toString().match(/\d+/)) : parseInt(inicioTramoVisto);
+
+        // ¿Es un tramo que ya terminó? (Porque está en uno superior o porque tiene el estado finalizado)
+        let esTramoSuperado = (tramoVisto !== tramoMaximo) || (data.estado === `Finalizado_${tramoVisto}`);
+
+        // ESCUDO ANTI-SALTOS: Solo frena si NO ha superado el tramo y quiere ver el futuro
+        if (!esTramoSuperado && nA > nG) {
+            window.location.href = `bunker.html?id=${nG}`;
+            return;
+        }
+
+        // --- RENDERIZADO DE LA INTERFAZ ---
         const workArea = document.getElementById("dynamic-work-area");
         const btnMando = document.getElementById("btn-mando");
         const uiLogo = document.getElementById("ui-logo");
@@ -152,17 +133,14 @@ auth.onAuthStateChanged((user) => {
         const uiTitle = document.getElementById("ui-title");
         const uiDesc = document.getElementById("ui-desc");
 
-        // RESETEO VISUAL
         document.body.classList.remove('revealed');
         [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "block"));
         if(btnMando) { btnMando.style.display = "none"; btnMando.className = "btn-mando"; }
         if(countdownInterval) clearInterval(countdownInterval);
 
-        // Variables para Repaso
-        const upsellLink = leccionData.linkUpsell || (idReporteAnclaje ? DEEPFALL_DATA[idReporteAnclaje].linkUpsell : "#");
-        const hubLink = idHubAnclaje ? `bunker.html?id=${idHubAnclaje}` : `bunker.html?id=1`;
-
-        // --- RENDERIZADO ---
+        const reportObj = Object.values(DEEPFALL_DATA).find(l => l.tipo === "reporte" && l.tramo === tramoVisto) || {};
+        const upsellLink = reportObj.linkUpsell || "#";
+        const hubLink = reportObj.hubId ? `bunker.html?id=${reportObj.hubId}` : `bunker.html?id=1`;
 
         if (leccionData.tipo === "perfil") {
             [uiIndicator, uiProgress.parentElement].forEach(el => el && (el.style.display = "none"));
@@ -184,7 +162,7 @@ auth.onAuthStateChanged((user) => {
                 if (profileLocked) { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; return; }
                 const edad = document.getElementById("p-edad").value; const ocup = document.getElementById("p-ocupacion").value; const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
                 if(!edad || !ocup || !tel) return alert("Datos incompletos.");
-                userRef.set({ edad: edad, ocupacion: ocup, telefono: tel, [varProgreso]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
+                userRef.set({ edad: edad, ocupacion: ocup, telefono: tel, [varProgresoVisto]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
             };
 
         } else if (leccionData.tipo === "candado") {
@@ -197,7 +175,7 @@ auth.onAuthStateChanged((user) => {
                 const dist = release - new Date().getTime();
                 if (dist < 0) { 
                     clearInterval(countdownInterval); btnMando.innerText = "Ingresar →"; 
-                    btnMando.onclick = () => { stopAllAudio(); userRef.set({ [varProgreso]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
+                    btnMando.onclick = () => { stopAllAudio(); userRef.set({ [varProgresoVisto]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
                 } else {
                     document.getElementById("hrs").innerText = Math.floor(dist / 3600000).toString().padStart(2,"0");
                     document.getElementById("min").innerText = Math.floor((dist % 3600000) / 60000).toString().padStart(2,"0");
@@ -206,13 +184,12 @@ auth.onAuthStateChanged((user) => {
             }, 1000);
 
         } else if (leccionData.tipo === "reporte") {
-            // Pasamos varProgreso y faseOperativa a la función auxiliar
-            renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc, faseOperativa, varProgreso, hubLink);
+            renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc, tramoVisto, varProgresoVisto, hubLink);
 
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             workArea.style.marginTop = "0px";
-            let btnRitualHTML = (tramoGraduado !== "") 
+            let btnRitualHTML = esTramoSuperado 
                 ? `<button id="btn-p-upsell" class="btn-mando btn-status-alert">AVANZAR AL TRAMO SIGUIENTE →</button><button id="btn-p-hub" class="btn-ghost">← Volver al Hub</button>` 
                 : `<button id="btn-p-continuar" class="btn-mando" style="margin-top:var(--gap-l);">${leccionData.btnTexto || "Asimilado →"}</button>`;
 
@@ -220,11 +197,11 @@ auth.onAuthStateChanged((user) => {
             
             document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); document.getElementById('pantalla-reliquia').style.display = "none"; document.querySelector('.revelation-screen').style.display = "block"; };
             
-            if (tramoGraduado !== "") {
+            if (esTramoSuperado) {
                 document.getElementById("btn-p-upsell").onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
                 document.getElementById("btn-p-hub").onclick = () => { stopAllAudio(); window.location.href = hubLink; };
             } else {
-                document.getElementById("btn-p-continuar").onclick = () => { stopAllAudio(); userRef.set({ [varProgreso]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
+                document.getElementById("btn-p-continuar").onclick = () => { stopAllAudio(); userRef.set({ [varProgresoVisto]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
             }
 
         } else if (leccionData.tipo === "hub") {
@@ -232,20 +209,20 @@ auth.onAuthStateChanged((user) => {
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
             
             let hubHTML = leccionData.lecciones.map(l => {
-                let actionOnClick = (tramoGraduado !== "") 
+                let actionOnClick = esTramoSuperado 
                     ? `window.location.href='bunker.html?id=${l.id}'` 
-                    : `firebase.firestore().collection('usuarios').doc('${user.uid}').set({ [varProgreso]: '${l.id}', ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' })`;
+                    : `firebase.firestore().collection('usuarios').doc('${user.uid}').set({ [varProgresoVisto]: '${l.id}', ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' })`;
                 return `<button class="option-btn" onclick="stopAllAudio(); ${actionOnClick};"><span class="indicator">${l.tag}</span><br><span class="text-base"><b>${l.titulo} &rarr;</b></span></button>`;
             }).join("");
             
             workArea.innerHTML = `<div class="work-area">${hubHTML}</div>`;
             btnMando.style.display = "block"; 
-            if (tramoGraduado !== "") {
+            if (esTramoSuperado) {
                 btnMando.className = "btn-mando btn-status-alert"; btnMando.innerText = "AVANZAR AL TRAMO SIGUIENTE →";
                 btnMando.onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
             } else {
                 btnMando.className = "btn-ghost mt-l"; btnMando.innerText = "Volver al flujo →";
-                btnMando.onclick = () => { stopAllAudio(); userRef.set({ [varProgreso]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
+                btnMando.onclick = () => { stopAllAudio(); userRef.set({ [varProgresoVisto]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
             }
 
         } else {
@@ -271,11 +248,11 @@ auth.onAuthStateChanged((user) => {
                 else { document.querySelectorAll(".option-btn").forEach(b => b.onclick = () => toggleOption(b)); }
             }
 
-            if (tramoGraduado !== "") {
+            if (esTramoSuperado) {
                 btnMando.style.display = "none";
                 const reviewButtons = document.createElement('div');
                 reviewButtons.className = "work-area";
-                reviewButtons.innerHTML = `<button id="btn-upsell-review" class="btn-mando btn-status-alert">AVANZAR AL TRAMO SIGUIENTE →</button><button id="btn-back-hub-review" class="btn-ghost">← Volver al Hub</button>`;
+                reviewButtons.innerHTML = `<button id="btn-upsell-review" class="btn-mando btn-status-alert">AVANZAR AL SIGUIENTE TRAMO →</button><button id="btn-back-hub-review" class="btn-ghost">← Volver al Hub</button>`;
                 workArea.appendChild(reviewButtons);
                 document.getElementById("btn-upsell-review").onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
                 document.getElementById("btn-back-hub-review").onclick = () => { stopAllAudio(); window.location.href = hubLink; };
@@ -287,57 +264,34 @@ auth.onAuthStateChanged((user) => {
                     stopAllAudio();
                     let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
                     if (isAnswered || ["texto", "video", "imagen", "carrusel"].includes(leccionData.tipo)) {
-                        if (nA === nG) { userRef.set({ [varProgreso]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = urlSig; }); }
+                        if (nA === nG) { userRef.set({ [varProgresoVisto]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = urlSig; }); }
                         else { window.location.href = urlSig; } return;
                     }
                     const txt = document.getElementById("input-dinamico") ? document.getElementById("input-dinamico").value : "";
                     const sel = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
                     if(leccionData.tipo === "bitacora" && !txt.trim()) return alert("Completa tu registro.");
                     if(leccionData.tipo === "quiz" && !sel.length) return alert("Toma una decisión.");
-                    userRef.set({ [leccionData.tipo === "bitacora" ? `bitacora_${leccionId}` : `quiz_${leccionId}`]: leccionData.tipo === "bitacora" ? txt : sel, [varProgreso]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = urlSig; });
+                    userRef.set({ [leccionData.tipo === "bitacora" ? `bitacora_${leccionId}` : `quiz_${leccionId}`]: leccionData.tipo === "bitacora" ? txt : sel, [varProgresoVisto]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = urlSig; });
                 };
             }
         }
 
-        if (tramoGraduado === "" && nA > nG && !["perfil", "candado", "reporte", "hub"].includes(leccionData.tipo)) {
-            userRef.set({ [varProgreso]: leccionId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        if (!esTramoSuperado && nA > nG && !["perfil", "candado", "reporte", "hub"].includes(leccionData.tipo)) {
+            userRef.set({ [varProgresoVisto]: leccionId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
         }
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
     }).catch(err => { console.error("Error Firestore:", err); document.getElementById("loading-screen").style.display = "none"; });
 });
 
-// FUNCIÓN AUXILIAR REPORTE (Ajustada para múltiples tramos)
-function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc, faseOperativa, varProgreso, hubLink) {
+function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc, tramoVisto, varProgresoVisto, hubLink) {
     const userRef = db.collection("usuarios").doc(auth.currentUser.uid);
-    userRef.set({ 
-        [varProgreso]: leccionId, 
-        estado: `Finalizado_${faseOperativa}`, 
-        ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() 
-    }, { merge: true });
+    userRef.set({ [varProgresoVisto]: leccionId, estado: `Finalizado_${tramoVisto}`, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
     
     [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
     const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "EXPEDICIONARIO";
 
-    workArea.innerHTML = `
-        <div class="work-area">
-            <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
-            <span class="nombre-exp">EXPEDICIONARIO: ${nombreUsr}</span>
-            <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
-            <h1 class="title mt-s">${leccionData.titulo || "Fin del Descenso."}</h1>
-            <p class="description mt-s">${leccionData.descripcion || "Análisis final completado."}</p>
-            <div class="work-area card mt-l">
-                <p class="text-base">${leccionData.contenido || "<b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada.<br><br><b>Orden:</b> Iniciar la siguiente Inmersión de inmediato para evitar el colapso operativo."}</p>
-            </div>
-            <p class="text-base mt-m text-center w-full"><b>La escotilla de acceso cierra en:</b></p>
-            <div id="countdown-upsell" class="stats-container">
-                <div class="stat-box"><span class="stat-value" id="u-hrs">00</span><span class="stat-label">Horas</span></div>
-                <div class="stat-box"><span class="stat-value" id="u-min">00</span><span class="stat-label">Minutos</span></div>
-                <div class="stat-box"><span id="u-seg" class="stat-value">00</span><span class="stat-label">Segundos</span></div>
-            </div>
-            <button id="btn-upsell" class="btn-mando btn-status-alert">AVANZAR AL TRAMO SIGUIENTE →</button>
-            <button id="btn-repasar" class="btn-ghost">← Volver al Hub</button>
-        </div>`;
+    workArea.innerHTML = `<div class="work-area"><div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div><span class="nombre-exp">EXPEDICIONARIO: ${nombreUsr}</span><div class="status-badge">ESTATUS: MÁSCARA ROTA</div><h1 class="title mt-s">${leccionData.titulo || "Fin del Descenso."}</h1><p class="description mt-s">${leccionData.descripcion || "Análisis final completado."}</p><div class="work-area card mt-l"><p class="text-base">${leccionData.contenido || "<b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada.<br><br><b>Orden:</b> Iniciar la siguiente Inmersión de inmediato para evitar el colapso operativo."}</p></div><p class="text-base mt-m text-center w-full"><b>La escotilla de acceso cierra en:</b></p><div id="countdown-upsell" class="stats-container"><div class="stat-box"><span class="stat-value" id="u-hrs">00</span><span class="stat-label">Horas</span></div><div class="stat-box"><span class="stat-value" id="u-min">00</span><span class="stat-label">Minutos</span></div><div class="stat-box"><span id="u-seg" class="stat-value">00</span><span class="stat-label">Segundos</span></div></div><button id="btn-upsell" class="btn-mando btn-status-alert">AVANZAR AL TRAMO SIGUIENTE →</button><button id="btn-repasar" class="btn-ghost">← Volver al Hub</button></div>`;
 
     document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell || "#"; };
     document.getElementById("btn-repasar").onclick = () => { stopAllAudio(); window.location.href = hubLink; };
