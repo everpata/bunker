@@ -68,8 +68,12 @@ html, body {
 /* =========================================================
    BLOQUE DE CABECERA Y TIPOGRAFÍA
 ========================================================= */
+/* =========================================================
+   BLOQUE DE CABECERA Y TIPOGRAFÍA
+========================================================= */
 .logo { 
     margin-top: var(--gap-xl); /* Hito: Borde superior */
+    margin-bottom: var(--gap-l); /* NUEVO: El logo empuja su propio espacio de 45px hacia abajo */
     margin-left: -12px;
     flex-shrink: 0; 
     width: 100%; 
@@ -85,7 +89,7 @@ html, body {
     text-transform: uppercase; 
     width: 100%; 
     line-height: 1;
-    margin-top: var(--gap-l); /* Hito: Ubicación espacial */
+    margin-top: 0; /* CORRECCIÓN: Como el logo ya empuja 45px, el indicador arranca desde cero */
 }
 
 .progress-container { 
@@ -107,6 +111,11 @@ html, body {
     margin-top: var(--gap-s); /* Hermano: Unido a la barra */
 }
 
+/* MAGIA CSS (EL DETECTOR): Si el indicador es ocultado por el JS (como en el Perfil o Reporte), 
+   esta regla le quita el margen extra de 15px al título para que quede a exactamente 45px del logo. */
+#ui-indicator[style*="none"] ~ #ui-title {
+    margin-top: 0;
+}
 .description { 
     font-size: 16px; 
     color: var(--color-text-sec); 
