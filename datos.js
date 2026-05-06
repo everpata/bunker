@@ -1,6 +1,6 @@
 const DEEPFALL_DATA = {
     // 1. TIPO: PERFIL (Identificación obligatoria)
-    "1": { 
+    "DF1": { 
         "tipo": "perfil",
         "tramo": "DF",
         "indicador": "00 / Acceso",
@@ -8,11 +8,11 @@ const DEEPFALL_DATA = {
         "titulo": "Protocolo de Identidad.",
         "descripcion": "Antes de descender, el búnker requiere tus coordenadas biográficas.",
         "btnTexto": "Registrar Identidad →",
-        "siguienteId": "2"
+        "siguienteId": "DF2"
     },
 
     // 2. TIPO: TEXTO (Apertura y narrativa)
-    "2": {
+    "DF2": {
         "tipo": "texto",
         "tramo": "DF",
         "indicador": "01 / Narrativa",
@@ -22,11 +22,11 @@ const DEEPFALL_DATA = {
         "descripcion": "Ayer allanamos el terreno, hoy toca construir.",
         "contenido": `<p class="text-base">El día de ayer logramos tres hitos importantes: descubriste la <b>máscara</b>, conociste los criterios para dejar de ser un <b>hombre de superficie</b> y realizaste tu primer <b>acto de renuncia</b>.</p>`,
         "btnTexto": "Siguiente →",
-        "siguienteId": "3"
+        "siguienteId": "DF3"
     },
 
     // 3. TIPO: IMAGEN (Evidencia visual fija)
-    "3": {
+    "DF3": {
         "tipo": "imagen",
         "tramo": "DF",
         "indicador": "02 / Evidencia",
@@ -35,11 +35,11 @@ const DEEPFALL_DATA = {
         "descripcion": "Las coordenadas exactas de la interacción.",
         "url": "mariano.webp", 
         "btnTexto": "Analizar entorno →",
-        "siguienteId": "4"
+        "siguienteId": "DF4"
     },
 
     // 4. TIPO: CARRUSEL (Conceptos dinámicos)
-    "4": {
+    "DF4": {
         "tipo": "carrusel", 
         "tramo": "DF",
         "indicador": "03 / Pilares",
@@ -52,11 +52,11 @@ const DEEPFALL_DATA = {
             { "texto": "<b>Osadía:</b> La capacidad de actuar con miedo.", "img": "perro.webp" }
         ],
         "btnTexto": "Entendido →",
-        "siguienteId": "5"
+        "siguienteId": "DF5"
     },
 
     // 5. TIPO: QUIZ (Toma de decisiones)
-    "5": {
+    "DF5": {
         "tipo": "quiz",
         "tramo": "DF",
         "indicador": "04 / Decisión",
@@ -65,11 +65,11 @@ const DEEPFALL_DATA = {
         "descripcion": "¿Cómo crees que reacciona un hombre de fondo?",
         "opciones": ["Contuve el impulso.", "Me sentí mal.", "Actué siguiendo el impulso."],
         "btnTexto": "Ver resultado →",
-        "siguienteId": "6"
+        "siguienteId": "DF6"
     },
 
     // 6. TIPO: VIDEO (Reproductor Bunny.net)
-    "6": {
+    "DF6": {
         "tipo": "video",
         "tramo": "DF",
         "indicador": "05 / Acción",
@@ -79,11 +79,11 @@ const DEEPFALL_DATA = {
         "url": "https://player.mediadelivery.net/embed/649829/1d9c53ab-54e0-4abc-8b7e-5538c44fdc03", 
         "postTexto": "<b>No importa lo que dices, sino desde dónde lo dices.</b>",
         "btnTexto": "Extraer lección →",
-        "siguienteId": "7"
+        "siguienteId": "DF7"
     },
 
     // 7. TIPO: BITÁCORA (Captura de reflexión)
-    "7": {
+    "DF7": {
         "tipo": "bitacora",
         "tramo": "DF",
         "indicador": "06 / Reflexión",
@@ -92,11 +92,11 @@ const DEEPFALL_DATA = {
         "descripcion": "Sin el mundo de la forma ¿qué la hace atractiva?",
         "placeholder": "Escribe las cualidades internas aquí...",
         "btnTexto": "Sellar respuesta →",
-        "siguienteId": "8"
+        "siguienteId": "DF8"
     },
 
     // 8. TIPO: PRINCIPIO (Ritual de revelación mística)
-    "8": {
+    "DF8": {
         "tipo": "principio",
         "tramo": "DF",
         "imgReliquia": "hacha.png",
@@ -105,29 +105,29 @@ const DEEPFALL_DATA = {
         "principio": "\"Afilamos el hacha aunque no vayamos a cortar ningún árbol.\"",
         "contenido": "El entrenamiento es el estado natural del hombre profundo.",
         "btnTexto": "Asimilado →",
-        "siguienteId": "9"
+        "siguienteId": "DF9"
     },
 
     // 9. TIPO: CANDADO (Bloqueo temporal)
-    "9": {
+    "DF9": {
         "tipo": "candado",
         "tramo": "DF",
         "fechaLiberacion": "May 5, 2026 13:49:00",
-        "siguienteId": "10"
+        "siguienteId": "DF10"
     },
 
     // 10. TIPO: REPORTE (Cierre y Upsell)
-    "10": {
+    "DF10": {
     "tipo": "reporte",
     "tramo": "DF",
     "linkUpsell": "https://TU_LINK_DE_PAGO_AQUI.com",
     "fechaExpiracion": "May 10, 2026 19:00:00 GMT-0500",
-    "hubId": "11" 
+    "hubId": "DF11" 
         
     },
 
     // 11. TIPO: HUB (Navegación por el día)
-    "11": {
+    "DF11": {
         "tipo": "hub",
         "tramo": "DF",
         "indicador": "08 / Mapa",
@@ -141,12 +141,12 @@ const DEEPFALL_DATA = {
             { "id": "8", "tag": "RITUAL", "titulo": "Principio" }
         ],
         "btnTexto": "Ir al final →",
-        "siguienteId": "12"
+        "siguienteId": "DM12"
     },
 
     // --- TRAMO 02: DEEPMERSION ---
 
-    "12": {
+    "DM12": {
         "tipo": "texto",
         "tramo": "DM",
         "indicador": "00 / INMERSIÓN",
@@ -155,6 +155,6 @@ const DEEPFALL_DATA = {
         "descripcion": "Has cruzado el umbral del Tramo 02.",
         "contenido": "<p class=\"text-base\">Esta es la prueba definitiva de que el Cerebro detectó tu permiso VIP y te trajo al inicio de este nuevo tramo automáticamente.</p>",
         "btnTexto": "Continuar Inmersión →",
-        "siguienteId": "13"
+        "siguienteId": "DM13"
     }
 }; 
