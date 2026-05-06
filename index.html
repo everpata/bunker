@@ -116,7 +116,7 @@ auth.onAuthStateChanged((user) => {
                             nombre: name, 
                             email: email, 
                             estado: "Registrado",
-                            leccion_actual_DF: "DF1", // <--- ¡CORREGIDO! Solo la etiqueta
+                            leccion_actual_DF: "1", // <--- ¡CORREGIDO! Solo la etiqueta
                             ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
                         });
                     })
