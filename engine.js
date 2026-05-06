@@ -48,7 +48,7 @@ auth.onAuthStateChanged((user) => {
         let inicioTramoMaximo = Object.keys(DEEPFALL_DATA).find(k => DEEPFALL_DATA[k].tramo === tramoMaximo) || "1";
 
         // Parche Local: Sincroniza al instante para evitar el bucle de latencia
-        if (!data[varProgresoMax]) {
+        if (!data[varProgresoMax] || (data.estado === `Finalizado_DF` && tramoMaximo !== "DF")) {
             data[varProgresoMax] = inicioTramoMaximo;
             userRef.set({ [varProgresoMax]: inicioTramoMaximo, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
         }
