@@ -267,7 +267,7 @@ textarea.locked, .input-line.locked, .iti input[type="tel"].locked { pointer-eve
 body.revealed .interruption-screen { display: none !important; }
 body.revealed .revelation-screen { display: block !important; width: 100%; }
 
-.nombre-exp { font-size: 11px; font-weight: 600; color: var(--color-text-sec); letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; display: block; margin-top: var(--gap-l); }
+.nombre-exp { font-size: 11px; font-weight: 600; color: var(--color-text-sec); letter-spacing: 1.5px; text-transform: uppercase; line-height: 1; display: block; margin-top: 0; }
 
 .status-badge { 
     background-color: var(--color-alert-bg); color: var(--color-alert-text); 
