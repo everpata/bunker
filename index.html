@@ -97,9 +97,9 @@ auth.onAuthStateChanged((user) => {
         });
 
         document.getElementById('btnAuth').addEventListener('click', () => {
-            const email = document.getElementById('userEmail').value;
-            const pass = document.getElementById('userPass').value;
-            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value.trim();
+            const pass = document.getElementById('userPass').value.trim();
+            const name = document.getElementById('userName').value.trim();
 
             if (!email || !pass) { alert("Completa los campos."); return; }
 
@@ -110,9 +110,9 @@ auth.onAuthStateChanged((user) => {
                 
                 // 1. Creamos las credenciales
                 auth.createUserWithEmailAndPassword(email, pass)
-                    .then((res) => {
-                        // 2. Escribimos la Memoria (Ahora con el ID alfanumérico correcto)
-                        return db.collection("usuarios").doc(res.user.uid).set({
+    .then((res) => {
+        const uid = res.user.uid;
+        return db.collection("usuarios").doc(uid).set({
                             nombre: name, 
                             email: email, 
                             estado: "Registrado",
