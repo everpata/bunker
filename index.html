@@ -131,15 +131,22 @@ auth.onAuthStateChanged((user) => {
                 auth.signInWithEmailAndPassword(email, pass).catch(err => alert("Error de acceso: " + err.message));
             } else {
                 if (!name) { alert("El nombre es obligatorio para el registro."); return; }
+                
+                // 1. Creamos las credenciales
                 auth.createUserWithEmailAndPassword(email, pass)
                     .then((res) => {
+                        // 2. Escribimos la Memoria (Ahora con el ID alfanumérico correcto)
                         return db.collection("usuarios").doc(res.user.uid).set({
                             nombre: name, 
                             email: email, 
                             estado: "Registrado",
-                            // Inyectamos la primera coordenada inmediatamente
-                            leccion_actual_DF: "bunker.html?id=1" 
+                            leccion_actual_DF: "DF1", // <--- ¡CORREGIDO! Solo la etiqueta
+                            ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
                         });
+                    })
+                    // 3. IMPORTANTE: No lo teletransportamos hasta que el guardado sea exitoso
+                    .then(() => {
+                        window.location.replace("bunker.html");
                     })
                     .catch(err => alert("Error de registro: " + err.message));
             }
