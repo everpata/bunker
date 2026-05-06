@@ -122,8 +122,8 @@ const DEEPFALL_DATA = {
     "tramo": "DF",
     "linkUpsell": "https://TU_LINK_DE_PAGO_AQUI.com",
     "fechaExpiracion": "May 10, 2026 19:00:00 GMT-0500",
-    "hubId": "11" // Escribe aquí el número del ID de tu HUB (o a donde quieres que regresen)
-    
+    "hubId": "11" 
+        
     },
 
     // 11. TIPO: HUB (Navegación por el día)
