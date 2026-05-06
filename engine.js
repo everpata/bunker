@@ -75,36 +75,41 @@ auth.onAuthStateChanged((user) => {
         const data = doc.exists ? doc.data() : {};
         let nA = parseInt(leccionId) || 0;
         let nG = data.leccion_actual_DF ? (parseInt(data.leccion_actual_DF.toString().match(/\d+/)) || 0) : 0;
-        
-        // 1. Identificamos en qué tramo se graduó el usuario
-        let tramoGraduado = "";
-        if (data.estado === "Finalizado_DF") tramoGraduado = "DF";
-        if (data.estado === "Finalizado_DM") tramoGraduado = "DM";
-        if (data.estado === "Finalizado_DQ") tramoGraduado = "DQ";
 
-        // 2. Buscamos el Reporte y Hub que correspondan EXACTAMENTE a ese tramo en datos.js
-        const idReporte = Object.keys(DEEPFALL_DATA).find(key => 
-            DEEPFALL_DATA[key].tipo === "reporte" && DEEPFALL_DATA[key].tramo === tramoGraduado
-        );
-        const idHub = Object.keys(DEEPFALL_DATA).find(key => 
-            DEEPFALL_DATA[key].tipo === "hub" && DEEPFALL_DATA[key].tramo === tramoGraduado
-        );
+        // 1. IDENTIFICAR TRAMO BASADO EN EL ESTADO DEL USUARIO
+        let tramoActual = "";
+        if (data.estado === "Finalizado_DF") tramoActual = "DF";
+        else if (data.estado === "Finalizado_DM") tramoActual = "DM";
+        else if (data.estado === "Finalizado_DQ") tramoActual = "DQ";
+
+        // 2. BÚSQUEDA ROBUSTA (Ignora espacios y mayúsculas accidentales)
+        const idReporte = Object.keys(DEEPFALL_DATA).find(key => {
+            const leccion = DEEPFALL_DATA[key];
+            return leccion.tipo === "reporte" && leccion.tramo.trim().toUpperCase() === tramoActual;
+        });
+
+        const idHub = Object.keys(DEEPFALL_DATA).find(key => {
+            const leccion = DEEPFALL_DATA[key];
+            return leccion.tipo === "hub" && leccion.tramo.trim().toUpperCase() === tramoActual;
+        });
 
         // 3. LÓGICA DE ANCLAJE AL ENTRAR (Sin ID en la URL)
         if (!leccionId) { 
             let destino;
-            if (tramoGraduado !== "") {
-                // Si es graduado, lo mandamos directo a su Reporte
-                destino = idReporte || idHub || 1; 
+            if (tramoActual !== "") {
+                // Si ya terminó el tramo, intentamos mandarlo al Reporte. Si no hay, al Hub.
+                destino = idReporte ? idReporte : (idHub ? idHub : 1);
+                console.log(`[BÚNKER] Usuario Graduado (${tramoActual}). Destino: ${destino}`);
             } else {
-                // Si es explorador, lo mandamos a su progreso real
+                // Si es un explorador activo, a su progreso real
                 destino = nG > 0 ? nG : 1;
+                console.log(`[BÚNKER] Explorador en Descenso. Destino: ${destino}`);
             }
             window.location.href = `bunker.html?id=${destino}`; 
             return; 
         }
 
-        // 4. ESCUDO ANTI-SALTOS (Se mantiene intacto)
+        // 4. ESCUDO ANTI-SALTOS (Solo para los que no han terminado)
         if (data.estado !== "Finalizado_DF" && nA > nG && !(nA === 1 && nG === 0)) {
             window.location.href = `bunker.html?id=${nG > 0 ? nG : 1}`; return;
         }
@@ -128,7 +133,8 @@ auth.onAuthStateChanged((user) => {
         if(countdownInterval) clearInterval(countdownInterval);
         let isLocked = false;
 
-        const reportData = Object.values(DEEPFALL_DATA).find(l => l.tipo === "reporte") || {};
+        // Variables para los enlaces del Reporte
+        const reportData = Object.values(DEEPFALL_DATA).find(l => l.tipo === "reporte" && l.tramo === tramoActual) || {};
         const upsellLink = reportData.linkUpsell || "#";
         const hubLink = reportData.hubId ? `bunker.html?id=${reportData.hubId}` : `bunker.html?id=1`;
 
@@ -172,20 +178,14 @@ auth.onAuthStateChanged((user) => {
                 const ocup = document.getElementById("p-ocupacion").value;
                 const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
                 if(!edad || !ocup || !tel) return alert("Datos incompletos.");
-                // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
                 userRef.set({ 
-                    edad: edad, 
-                    ocupacion: ocup, 
-                    telefono: tel, 
-                    leccion_actual_DF: leccionData.siguienteId,
+                    edad: edad, ocupacion: ocup, telefono: tel, leccion_actual_DF: leccionData.siguienteId,
                     ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true })
-                .then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
+                }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
             };
 
         } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            
             workArea.innerHTML = `
                 <div class="work-area align-center text-center">
                     <img src="img/candado.webp" class="relic-image-lock">
@@ -205,7 +205,6 @@ auth.onAuthStateChanged((user) => {
                     clearInterval(countdownInterval); btnMando.innerText = "Ingresar →"; 
                     btnMando.onclick = () => { 
                         stopAllAudio(); 
-                        // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
                         userRef.set({ 
                             leccion_actual_DF: leccionData.siguienteId,
                             ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
@@ -271,7 +270,6 @@ auth.onAuthStateChanged((user) => {
             } else {
                 document.getElementById("btn-p-continuar").onclick = () => { 
                     stopAllAudio(); 
-                    // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
                     userRef.set({ 
                         leccion_actual_DF: leccionData.siguienteId,
                         ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
@@ -307,7 +305,6 @@ auth.onAuthStateChanged((user) => {
                 btnMando.innerText = "Volver al flujo →";
                 btnMando.onclick = () => { 
                     stopAllAudio(); 
-                    // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
                     userRef.set({ 
                         leccion_actual_DF: leccionData.siguienteId,
                         ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
@@ -348,12 +345,8 @@ auth.onAuthStateChanged((user) => {
                 const reviewButtons = document.createElement('div');
                 reviewButtons.className = "work-area";
                 reviewButtons.innerHTML = `
-                    <button id="btn-upsell-review" class="btn-mando btn-status-alert">
-                        AVANZAR AL TRAMO 02 →
-                    </button>
-                    <button id="btn-back-hub-review" class="btn-ghost">
-                        ← Volver al Hub del Descenso
-                    </button>
+                    <button id="btn-upsell-review" class="btn-mando btn-status-alert">AVANZAR AL TRAMO 02 →</button>
+                    <button id="btn-back-hub-review" class="btn-ghost">← Volver al Hub del Descenso</button>
                 `;
                 workArea.appendChild(reviewButtons);
                 document.getElementById("btn-upsell-review").onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
@@ -366,20 +359,17 @@ auth.onAuthStateChanged((user) => {
                     let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
                     if (isLocked || ["texto", "video", "imagen", "carrusel"].includes(leccionData.tipo)) {
                         if (nA === nG) { 
-                            // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
                             userRef.set({ 
                                 leccion_actual_DF: leccionData.siguienteId,
                                 ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
                             }, { merge: true }).then(() => { window.location.href = urlSig; }); 
-                        }
-                        else { window.location.href = urlSig; } return;
+                        } else { window.location.href = urlSig; } return;
                     }
                     const txt = document.getElementById("input-dinamico") ? document.getElementById("input-dinamico").value : "";
                     const sel = Array.from(document.querySelectorAll(".option-btn.selected")).map(b => b.innerText.trim());
                     if(leccionData.tipo === "bitacora" && !txt.trim()) return alert("Completa tu registro.");
                     if(leccionData.tipo === "quiz" && !sel.length) return alert("Toma una decisión.");
                     
-                    // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
                     userRef.set({ 
                         [leccionData.tipo === "bitacora" ? `bitacora_${leccionId}` : `quiz_${leccionId}`]: leccionData.tipo === "bitacora" ? txt : sel, 
                         leccion_actual_DF: leccionData.siguienteId,
@@ -390,11 +380,7 @@ auth.onAuthStateChanged((user) => {
         }
 
         if (data.estado !== "Finalizado_DF" && nA > nG && !["perfil", "candado", "reporte", "hub"].includes(leccionData.tipo)) {
-            // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
-            userRef.set({ 
-                leccion_actual_DF: leccionId,
-                ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
+            userRef.set({ leccion_actual_DF: leccionId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
         }
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
@@ -403,7 +389,6 @@ auth.onAuthStateChanged((user) => {
 
 function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc) {
     const userRef = db.collection("usuarios").doc(auth.currentUser.uid);
-    // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
     userRef.set({ 
         leccion_actual_DF: leccionId, 
         estado: "Finalizado_DF",
@@ -413,6 +398,7 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
     [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
     
     const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "EXPEDICIONARIO";
+    const hubLink = leccionData.hubId ? `bunker.html?id=${leccionData.hubId}` : `bunker.html?id=1`;
 
     workArea.innerHTML = `
         <div class="work-area">
@@ -421,25 +407,21 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
             <div class="status-badge">ESTATUS: MÁSCARA ROTA</div>
             <h1 class="title mt-s">Fin del Descenso.</h1>
             <p class="description mt-s">Análisis final del Tramo 01 completado.</p>
-            
             <div class="work-area card mt-l">
                 <p class="text-base"><b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada. La máscara ha sido fracturada.<br><br><b>Orden:</b> Iniciar la Inmersión (Tramo 02) de inmediato para evitar el colapso operativo.</p>
             </div>
-            
-            <p class="text-base mt-m"><b>La escotilla de acceso cierra en:</b></p>
-            
+            <p class="text-base mt-m text-center w-full"><b>La escotilla de acceso cierra en:</b></p>
             <div id="countdown-upsell" class="stats-container">
                 <div class="stat-box"><span class="stat-value" id="u-hrs">00</span><span class="stat-label">Horas</span></div>
                 <div class="stat-box"><span class="stat-value" id="u-min">00</span><span class="stat-label">Minutos</span></div>
                 <div class="stat-box"><span class="stat-value" id="u-seg">00</span><span class="stat-label">Segundos</span></div>
             </div>
-            
             <button id="btn-upsell" class="btn-mando btn-status-alert">AVANZAR AL TRAMO 02 →</button>
             <button id="btn-repasar" class="btn-ghost">← Volver al Hub del Descenso</button>
         </div>`;
 
     document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = leccionData.linkUpsell || "#"; };
-    document.getElementById("btn-repasar").onclick = () => { stopAllAudio(); window.location.href = `bunker.html?id=${leccionData.hubId || 1}`; };
+    document.getElementById("btn-repasar").onclick = () => { stopAllAudio(); window.location.href = hubLink; };
 
     if (leccionData.fechaExpiracion) {
         const targetDate = new Date(leccionData.fechaExpiracion).getTime();
