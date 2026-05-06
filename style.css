@@ -295,7 +295,7 @@ body.revealed .revelation-screen { display: block !important; width: 100%; }
     background: var(--color-text-main); 
     color: var(--color-bg-main); 
     border: none; 
-    padding: 18px; /* REDUCIDO: Mejora balance de asimetría */
+    padding: 22px; /* REDUCIDO: Mejora balance de asimetría */
     border-radius: var(--radius-standard); 
     font-size: 16px; 
     font-weight: 600; 
