@@ -110,6 +110,7 @@ const DEEPFALL_DATA = {
     // 10. TIPO: REPORTE (Cierre y Upsell)
     "10": {
     "tipo": "reporte",
+    "tramo": "DF",
     "linkUpsell": "https://TU_LINK_DE_PAGO_AQUI.com",
     "fechaExpiracion": "May 10, 2026 19:00:00 GMT-0500",
     "hubId": "11" // Escribe aquí el número del ID de tu HUB (o a donde quieres que regresen)
@@ -119,6 +120,7 @@ const DEEPFALL_DATA = {
     // 11. TIPO: HUB (Navegación por el día)
     "11": {
         "tipo": "hub",
+        "tramo": "DF",
         "indicador": "08 / Mapa",
         "progreso": "80%",
         "titulo": "Centro de Control",
