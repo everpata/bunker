@@ -144,14 +144,20 @@ auth.onAuthStateChanged((user) => {
                 const ocup = document.getElementById("p-ocupacion").value;
                 const tel = phoneInput ? phoneInput.getNumber() : document.getElementById("p-telefono").value;
                 if(!edad || !ocup || !tel) return alert("Datos incompletos.");
-                userRef.set({ edad: edad, ocupacion: ocup, telefono: tel, leccion_actual_DF: leccionData.siguienteId }, { merge: true })
+                // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
+                userRef.set({ 
+                    edad: edad, 
+                    ocupacion: ocup, 
+                    telefono: tel, 
+                    leccion_actual_DF: leccionData.siguienteId,
+                    ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true })
                 .then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; });
             };
 
         } else if (leccionData.tipo === "candado") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
             
-            // CORRECCIÓN: Se agregan las clases align-center y text-center al contenedor
             workArea.innerHTML = `
                 <div class="work-area align-center text-center">
                     <img src="img/candado.webp" class="relic-image-lock">
@@ -171,7 +177,11 @@ auth.onAuthStateChanged((user) => {
                     clearInterval(countdownInterval); btnMando.innerText = "Ingresar →"; 
                     btnMando.onclick = () => { 
                         stopAllAudio(); 
-                        userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
+                        // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
+                        userRef.set({ 
+                            leccion_actual_DF: leccionData.siguienteId,
+                            ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
                     };
                 } else {
                     document.getElementById("hrs").innerText = Math.floor(dist / 3600000).toString().padStart(2,"0");
@@ -184,13 +194,9 @@ auth.onAuthStateChanged((user) => {
             renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc);
 
         } else if (leccionData.tipo === "principio") {
-            // 1. Apagamos TODOS los elementos globales permanentemente para esta tarjeta
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
-            
-            // 2. Anulamos los márgenes globales del contenedor para no afectar la inyección local
             workArea.style.marginTop = "0px";
             
-            // 3. Construimos los botones
             let botonesInternosHTML = "";
             if (data.estado === "Finalizado_DF") {
                 botonesInternosHTML = `
@@ -209,44 +215,39 @@ auth.onAuthStateChanged((user) => {
                 `;
             }
 
-            // 4. Inyectamos la estructura. 
-            // MAGIA 1: position fixed para centrado absoluto perfecto ignorando paddings.
-            // MAGIA 2: Inyectamos el logo y el indicador localmente para alinear perfecto.
             workArea.innerHTML = `
                 <div id="pantalla-reliquia" class="interruption-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--color-bg-main); z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                     <img src="${leccionData.imgReliquia}" class="relic-image" style="margin-top: 0 !important;">
                     <p class="indicator" style="text-align: center; margin-top: var(--gap-l);">${leccionData.textoToque || 'Toca para desenterrar'}</p>
                 </div>
-                
                 <div class="revelation-screen" style="width: 100%; display: none;">
                     <div class="logo"><img src="DF.png" onerror="this.src='img/DF.png'"></div>
                     <p class="indicator">${leccionData.indicador}</p>
-                    
                     <div class="work-area card" style="margin-top: var(--gap-l);">
                         <span class="principle-statement">${leccionData.principio}</span>
                         <p class="text-base mt-s">${leccionData.contenido}</p>
                     </div>
-                    
                     ${botonesInternosHTML}
                 </div>
             `;
             
-            // 5. La magia del clic (ocultar overlay, mostrar revelación)
             document.getElementById("pantalla-reliquia").onclick = () => { 
                 document.body.classList.add('revealed');
-                // Forzamos ocultar/mostrar por JS para evitar fallos de especificidad en CSS
                 document.getElementById('pantalla-reliquia').style.display = "none";
                 document.querySelector('.revelation-screen').style.display = "block";
             };
             
-            // 6. Asignamos acciones
             if (data.estado === "Finalizado_DF") {
                 document.getElementById("btn-p-upsell").onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
                 document.getElementById("btn-p-hub").onclick = () => { stopAllAudio(); window.location.href = hubLink; };
             } else {
                 document.getElementById("btn-p-continuar").onclick = () => { 
                     stopAllAudio(); 
-                    userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
+                    // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
+                    userRef.set({ 
+                        leccion_actual_DF: leccionData.siguienteId,
+                        ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
                 };
             }
 
@@ -254,11 +255,10 @@ auth.onAuthStateChanged((user) => {
             uiIndicator.innerText = leccionData.indicador; uiProgress.style.width = leccionData.progreso;
             uiTitle.innerHTML = leccionData.titulo; uiDesc.innerHTML = leccionData.descripcion || "";
             
-            // MAGIA: El Hub respeta si el usuario ya se graduó para no arruinar su anclaje al Reporte.
             let hubHTML = leccionData.lecciones.map(l => {
                 let actionOnClick = data.estado === "Finalizado_DF" 
                     ? `window.location.href='bunker.html?id=${l.id}'` 
-                    : `firebase.firestore().collection('usuarios').doc('${user.uid}').set({ leccion_actual_DF: '${l.id}' }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' })`;
+                    : `firebase.firestore().collection('usuarios').doc('${user.uid}').set({ leccion_actual_DF: '${l.id}', ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href='bunker.html?id=${l.id}' })`;
                 
                 return `
                 <button class="option-btn" onclick="stopAllAudio(); ${actionOnClick};">
@@ -277,7 +277,14 @@ auth.onAuthStateChanged((user) => {
             } else {
                 btnMando.className = "btn-ghost mt-l"; 
                 btnMando.innerText = "Volver al flujo →";
-                btnMando.onclick = () => { stopAllAudio(); userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); };
+                btnMando.onclick = () => { 
+                    stopAllAudio(); 
+                    // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
+                    userRef.set({ 
+                        leccion_actual_DF: leccionData.siguienteId,
+                        ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); 
+                };
             }
 
         } else {
@@ -308,11 +315,10 @@ auth.onAuthStateChanged((user) => {
                 } else { document.querySelectorAll(".option-btn").forEach(b => b.onclick = () => toggleOption(b)); }
             }
 
-          // --- LÓGICA DE MODO REPASO EN TARJETAS ESTÁNDAR ---
             if (data.estado === "Finalizado_DF") {
                 btnMando.style.display = "none";
                 const reviewButtons = document.createElement('div');
-                reviewButtons.className = "work-area"; // <--- CORREGIDO: Sin margen doble
+                reviewButtons.className = "work-area";
                 reviewButtons.innerHTML = `
                     <button id="btn-upsell-review" class="btn-mando btn-status-alert">
                         AVANZAR AL TRAMO 02 →
@@ -322,7 +328,6 @@ auth.onAuthStateChanged((user) => {
                     </button>
                 `;
                 workArea.appendChild(reviewButtons);
-
                 document.getElementById("btn-upsell-review").onclick = () => { stopAllAudio(); window.location.href = upsellLink; };
                 document.getElementById("btn-back-hub-review").onclick = () => { stopAllAudio(); window.location.href = hubLink; };
             } else {
@@ -332,7 +337,13 @@ auth.onAuthStateChanged((user) => {
                     stopAllAudio();
                     let urlSig = `bunker.html?id=${leccionData.siguienteId}`;
                     if (isLocked || ["texto", "video", "imagen", "carrusel"].includes(leccionData.tipo)) {
-                        if (nA === nG) { userRef.set({ leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = urlSig; }); }
+                        if (nA === nG) { 
+                            // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
+                            userRef.set({ 
+                                leccion_actual_DF: leccionData.siguienteId,
+                                ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
+                            }, { merge: true }).then(() => { window.location.href = urlSig; }); 
+                        }
                         else { window.location.href = urlSig; } return;
                     }
                     const txt = document.getElementById("input-dinamico") ? document.getElementById("input-dinamico").value : "";
@@ -340,23 +351,36 @@ auth.onAuthStateChanged((user) => {
                     if(leccionData.tipo === "bitacora" && !txt.trim()) return alert("Completa tu registro.");
                     if(leccionData.tipo === "quiz" && !sel.length) return alert("Toma una decisión.");
                     
-                    userRef.set({ [leccionData.tipo === "bitacora" ? `bitacora_${leccionId}` : `quiz_${leccionId}`]: leccionData.tipo === "bitacora" ? txt : sel, leccion_actual_DF: leccionData.siguienteId }, { merge: true }).then(() => { window.location.href = urlSig; });
+                    // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
+                    userRef.set({ 
+                        [leccionData.tipo === "bitacora" ? `bitacora_${leccionId}` : `quiz_${leccionId}`]: leccionData.tipo === "bitacora" ? txt : sel, 
+                        leccion_actual_DF: leccionData.siguienteId,
+                        ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true }).then(() => { window.location.href = urlSig; });
                 };
             }
         }
 
         if (data.estado !== "Finalizado_DF" && nA > nG && !["perfil", "candado", "reporte", "hub"].includes(leccionData.tipo)) {
-            userRef.set({ leccion_actual_DF: leccionId }, { merge: true });
+            // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
+            userRef.set({ 
+                leccion_actual_DF: leccionId,
+                ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
         }
         document.getElementById("loading-screen").style.display = "none";
         document.getElementById("bunker-content").style.display = "flex";
     }).catch(err => { console.error("Error Firestore:", err); document.getElementById("loading-screen").style.display = "none"; });
 });
 
-// FUNCIÓN AUXILIAR REPORTE
 function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiProgress, uiTitle, uiDesc) {
     const userRef = db.collection("usuarios").doc(auth.currentUser.uid);
-    userRef.set({ leccion_actual_DF: leccionId, estado: "Finalizado_DF" }, { merge: true });
+    // ACTUALIZACIÓN: Se agrega ultima_sincronizacion
+    userRef.set({ 
+        leccion_actual_DF: leccionId, 
+        estado: "Finalizado_DF",
+        ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
     
     [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
     
