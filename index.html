@@ -64,10 +64,9 @@
 
         let isLoginMode = false;
 // BUSCA ESTA SECCIÓN DENTRO DEL <script> DE TU index.html Y REEMPLÁZALA:
+let registrando = false;
 auth.onAuthStateChanged((user) => {
-    if (user) {
-        // La puerta de entrada: Si hay sesión, lo mandamos al Búnker. 
-        // El Cerebro (engine.js) decidirá su destino exacto.
+    if (user && !registrando) {
         window.location.replace("bunker.html");
     }
 });
@@ -109,7 +108,8 @@ auth.onAuthStateChanged((user) => {
                 if (!name) { alert("El nombre es obligatorio para el registro."); return; }
                 
                 // 1. Creamos las credenciales
-                auth.createUserWithEmailAndPassword(email, pass)
+                registrando = true;
+auth.createUserWithEmailAndPassword(email, pass)
     .then((res) => {
         const uid = res.user.uid;
         return db.collection("usuarios").doc(uid).set({
