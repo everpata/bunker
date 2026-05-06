@@ -75,13 +75,14 @@ auth.onAuthStateChanged((user) => {
             return; 
         }
 
-        // 3. ESCUDO ANTI-SALTOS ESTRICTO
+       // 3. ESCUDO ANTI-SALTOS ESTRICTO
         let tramoVisto = leccionData.tramo || "DF";
         let varProgresoVisto = `leccion_actual_${tramoVisto}`;
         let inicioTramoVisto = Object.keys(DEEPFALL_DATA).find(k => DEEPFALL_DATA[k].tramo === tramoVisto) || "1";
         
-        let nA = parseInt(leccionId) || 0;
-        let nG = data[varProgresoVisto] ? parseInt(data[varProgresoVisto].toString().match(/\d+/)) : parseInt(inicioTramoVisto);
+        // 🔥 CORRECCIÓN ALFANUMÉRICA: Extrae solo los números (ej: de "DF2" saca "2")
+        let nA = leccionId ? (parseInt(leccionId.toString().match(/\d+/)) || 0) : 0;
+        let nG = data[varProgresoVisto] ? (parseInt(data[varProgresoVisto].toString().match(/\d+/)) || 0) : (parseInt(inicioTramoVisto.toString().match(/\d+/)) || 0);
         let esTramoSuperado = (tramoVisto !== tramoMaximo) || (data.estado === `Finalizado_${tramoVisto}`);
 
         if (!esTramoSuperado && nA > nG) {
