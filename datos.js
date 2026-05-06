@@ -2,6 +2,7 @@ const DEEPFALL_DATA = {
     // 1. TIPO: PERFIL (Identificación obligatoria)
     "1": { 
         "tipo": "perfil",
+        "tramo": "DF",
         "indicador": "00 / Acceso",
         "progreso": "1%",
         "titulo": "Protocolo de Identidad.",
@@ -13,6 +14,7 @@ const DEEPFALL_DATA = {
     // 2. TIPO: TEXTO (Apertura y narrativa)
     "2": {
         "tipo": "texto",
+        "tramo": "DF",
         "indicador": "01 / Narrativa",
         "progreso": "10%",
         "titulo": "Recap de victorias.",
@@ -26,6 +28,7 @@ const DEEPFALL_DATA = {
     // 3. TIPO: IMAGEN (Evidencia visual fija)
     "3": {
         "tipo": "imagen",
+        "tramo": "DF",
         "indicador": "02 / Evidencia",
         "progreso": "20%",
         "titulo": "El Escenario.",
@@ -38,6 +41,7 @@ const DEEPFALL_DATA = {
     // 4. TIPO: CARRUSEL (Conceptos dinámicos)
     "4": {
         "tipo": "carrusel", 
+        "tramo": "DF",
         "indicador": "03 / Pilares",
         "progreso": "30%",
         "titulo": "Los 3 Pilares del Fondo",
@@ -54,6 +58,7 @@ const DEEPFALL_DATA = {
     // 5. TIPO: QUIZ (Toma de decisiones)
     "5": {
         "tipo": "quiz",
+        "tramo": "DF",
         "indicador": "04 / Decisión",
         "progreso": "40%",
         "titulo": "La prueba de fuego.",
@@ -66,6 +71,7 @@ const DEEPFALL_DATA = {
     // 6. TIPO: VIDEO (Reproductor Bunny.net)
     "6": {
         "tipo": "video",
+        "tramo": "DF",
         "indicador": "05 / Acción",
         "progreso": "50%",
         "titulo": "Evidencia: Desde dónde.",
@@ -79,6 +85,7 @@ const DEEPFALL_DATA = {
     // 7. TIPO: BITÁCORA (Captura de reflexión)
     "7": {
         "tipo": "bitacora",
+        "tramo": "DF",
         "indicador": "06 / Reflexión",
         "progreso": "60%",
         "titulo": "¿Qué cualidades valoras?",
@@ -91,6 +98,7 @@ const DEEPFALL_DATA = {
     // 8. TIPO: PRINCIPIO (Ritual de revelación mística)
     "8": {
         "tipo": "principio",
+        "tramo": "DF",
         "imgReliquia": "hacha.png",
         "textoToque": "Toca para desenterrar el Principio",
         "indicador": "07 / Revelación",
@@ -103,6 +111,7 @@ const DEEPFALL_DATA = {
     // 9. TIPO: CANDADO (Bloqueo temporal)
     "9": {
         "tipo": "candado",
+        "tramo": "DF",
         "fechaLiberacion": "May 5, 2026 13:49:00",
         "siguienteId": "10"
     },
