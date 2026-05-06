@@ -76,7 +76,35 @@ auth.onAuthStateChanged((user) => {
         let nA = parseInt(leccionId) || 0;
         let nG = data.leccion_actual_DF ? (parseInt(data.leccion_actual_DF.toString().match(/\d+/)) || 0) : 0;
         
-        if (!leccionId) { window.location.href = `bunker.html?id=${nG > 0 ? nG : 1}`; return; }
+        // 1. Identificamos en qué tramo se graduó el usuario
+        let tramoGraduado = "";
+        if (data.estado === "Finalizado_DF") tramoGraduado = "DF";
+        if (data.estado === "Finalizado_DM") tramoGraduado = "DM";
+        if (data.estado === "Finalizado_DQ") tramoGraduado = "DQ";
+
+        // 2. Buscamos el Reporte y Hub que correspondan EXACTAMENTE a ese tramo en datos.js
+        const idReporte = Object.keys(DEEPFALL_DATA).find(key => 
+            DEEPFALL_DATA[key].tipo === "reporte" && DEEPFALL_DATA[key].tramo === tramoGraduado
+        );
+        const idHub = Object.keys(DEEPFALL_DATA).find(key => 
+            DEEPFALL_DATA[key].tipo === "hub" && DEEPFALL_DATA[key].tramo === tramoGraduado
+        );
+
+        // 3. LÓGICA DE ANCLAJE AL ENTRAR (Sin ID en la URL)
+        if (!leccionId) { 
+            let destino;
+            if (tramoGraduado !== "") {
+                // Si es graduado, lo mandamos directo a su Reporte
+                destino = idReporte || idHub || 1; 
+            } else {
+                // Si es explorador, lo mandamos a su progreso real
+                destino = nG > 0 ? nG : 1;
+            }
+            window.location.href = `bunker.html?id=${destino}`; 
+            return; 
+        }
+
+        // 4. ESCUDO ANTI-SALTOS (Se mantiene intacto)
         if (data.estado !== "Finalizado_DF" && nA > nG && !(nA === 1 && nG === 0)) {
             window.location.href = `bunker.html?id=${nG > 0 ? nG : 1}`; return;
         }
