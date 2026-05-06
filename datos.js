@@ -141,6 +141,20 @@ const DEEPFALL_DATA = {
             { "id": "8", "tag": "RITUAL", "titulo": "Principio" }
         ],
         "btnTexto": "Ir al final →",
-        "siguienteId": "10"
+        "siguienteId": "12"
     },
+
+    // --- TRAMO 02: DEEPMERSION ---
+
+    "12": {
+        "tipo": "texto",
+        "tramo": "DM",
+        "indicador": "00 / INMERSIÓN",
+        "progreso": "5%",
+        "titulo": "Bienvenido a Deepmersion.",
+        "descripcion": "Has cruzado el umbral del Tramo 02.",
+        "contenido": "<p class=\"text-base\">Esta es la prueba definitiva de que el Cerebro detectó tu permiso VIP y te trajo al inicio de este nuevo tramo automáticamente.</p>",
+        "btnTexto": "Continuar Inmersión →",
+        "siguienteId": "13"
+    }
 }; 
