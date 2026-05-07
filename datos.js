@@ -99,6 +99,7 @@ const DEEPFALL_DATA = {
     "DF8": {
         "tipo": "principio",
         "tramo": "DF",
+        "logo": "DF.png", // <--- Dinámico
         "imgReliquia": "hacha.png",
         "textoToque": "Toca para desenterrar el Principio",
         "indicador": "07 / Revelación",
@@ -116,14 +117,19 @@ const DEEPFALL_DATA = {
         "siguienteId": "DF10"
     },
 
-    // 10. TIPO: REPORTE (Cierre y Upsell)
+    // 10. TIPO: REPORTE (Cierre y Upsell Personalizado)
     "DF10": {
-    "tipo": "reporte",
-    "tramo": "DF",
-    "linkUpsell": "https://TU_LINK_DE_PAGO_AQUI.com",
-    "fechaExpiracion": "May 10, 2026 19:00:00 GMT-0500",
-    "hubId": "DF11" 
-        
+        "tipo": "reporte",
+        "tramo": "DF",
+        "logo": "DF.png",
+        "titulo": "Fin del Descenso.", // Título principal
+        "descripcion": "Análisis final completado.", // Subtítulo debajo del título
+        "contenido": "<b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada.<br><br><b>Orden:</b> Iniciar la siguiente Inmersión de inmediato para evitar el colapso operativo.", // Caja de texto gris
+        "btnVip": "INICIAR INMERSIÓN (TRAMO 02) →", // Texto si ya tiene access_DM
+        "btnUpsell": "REVISAR REPORTE DE DAÑOS →", // Texto si NO tiene acceso
+        "linkUpsell": "https://TU_PAGINA_DE_VENTAS.com", // Link de pago
+        "fechaExpiracion": "May 10, 2026 19:00:00 GMT-0500",
+        "hubId": "DF11" 
     },
 
     // 11. TIPO: HUB (Navegación por el día)
@@ -156,5 +162,20 @@ const DEEPFALL_DATA = {
         "contenido": "<p class=\"text-base\">Esta es la prueba definitiva de que el Cerebro detectó tu permiso VIP y te trajo al inicio de este nuevo tramo automáticamente.</p>",
         "btnTexto": "Continuar Inmersión →",
         "siguienteId": "DM2"
+    },
+
+    // Agregas aquí de DM2 a DM9...
+
+    "DM10": {
+        "tipo": "reporte",
+        "tramo": "DM",
+        "logo": "DM.png", 
+        "titulo": "Fin de la Inmersión.",
+        "descripcion": "Tu nivel de densidad ha aumentado un 40%.", 
+        "contenido": "<b>Diagnóstico:</b> El hombre de superficie ha muerto.<br><br><b>Siguiente paso:</b> Dominar la técnica en el Tramo 03.",
+        "btnVip": "INICIAR PROTOCOLO DQ (TRAMO 03) →", 
+        "btnUpsell": "DESCUBRIR TRAMO 03 →", 
+        "linkUpsell": "https://tusitio.com/ventas-dq",
+        "hubId": "DM11" // Recuerda crear la tarjeta DM11 si quieres un Hub para este tramo
     }
-}; 
+};
