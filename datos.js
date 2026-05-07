@@ -135,10 +135,10 @@ const DEEPFALL_DATA = {
         "titulo": "Centro de Control",
         "descripcion": "Repasa los hitos o avanza al cierre.",
         "lecciones": [
-            { "id": "2", "tag": "INTRO", "titulo": "Apertura" },
-            { "id": "5", "tag": "QUIZ", "titulo": "Decisión" },
-            { "id": "6", "tag": "VIDEO", "titulo": "Evidencia" },
-            { "id": "8", "tag": "RITUAL", "titulo": "Principio" }
+            { "id": "DF2", "tag": "INTRO", "titulo": "Apertura" },
+            { "id": "DF5", "tag": "QUIZ", "titulo": "Decisión" },
+            { "id": "DF6", "tag": "VIDEO", "titulo": "Evidencia" },
+            { "id": "DF8", "tag": "RITUAL", "titulo": "Principio" }
         ],
         "btnTexto": "Ir al final →",
         "siguienteId": "DM1"
