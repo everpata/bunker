@@ -11,6 +11,9 @@ if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// MAPA DE ORDEN: Aquí defines la jerarquía matemática de los tramos
+const TRAMOS_ORDER = { "DF": 0, "DM": 1, "DQ": 2, "DX": 3 };
+
 const urlParams = new URLSearchParams(window.location.search);
 let leccionId = urlParams.get("id");
 let countdownInterval;
@@ -80,13 +83,23 @@ auth.onAuthStateChanged((user) => {
         let varProgresoVisto = `leccion_actual_${tramoVisto}`;
         let inicioTramoVisto = Object.keys(DEEPFALL_DATA).find(k => DEEPFALL_DATA[k].tramo === tramoVisto) || "1";
         
-        // 🔥 CORRECCIÓN ALFANUMÉRICA: Extrae solo los números (ej: de "DF2" saca "2")
+        // CORRECCIÓN ALFANUMÉRICA: Extrae solo los números (ej: de "DF2" saca "2")
         let nA = leccionId ? (parseInt(leccionId.toString().match(/\d+/)) || 0) : 0;
         let nG = data[varProgresoVisto] ? (parseInt(data[varProgresoVisto].toString().match(/\d+/)) || 0) : (parseInt(inicioTramoVisto.toString().match(/\d+/)) || 0);
-        let esTramoSuperado = (tramoVisto !== tramoMaximo) || (data.estado === `Finalizado_${tramoVisto}`);
+        
+        // SEGURIDAD MATEMÁTICA USANDO EL MAPA
+        let esTramoAnterior = TRAMOS_ORDER[tramoVisto] < TRAMOS_ORDER[tramoMaximo];
+        let esTramoSuperado = esTramoAnterior || (data.estado === `Finalizado_${tramoVisto}`);
 
+        // Bloqueo si intenta ir a un tramo que no tiene (ej: está en DF e intenta ir a DM)
+        if (TRAMOS_ORDER[tramoVisto] > TRAMOS_ORDER[tramoMaximo]) {
+            window.location.replace(`bunker.html?id=${data[varProgresoMax] || inicioTramoMaximo}`);
+            return;
+        }
+
+        // Bloqueo si salta lecciones en su tramo actual
         if (!esTramoSuperado && nA > nG) {
-            let destinoForzado = nG.toString();
+            let destinoForzado = data[varProgresoVisto] || inicioTramoVisto; // CORREGIDO PARA ALFANUMÉRICO
             // BLOQUEO ABSOLUTO DE BUCLE: Solo redirige si es una página distinta
             if (leccionId !== destinoForzado) {
                 window.location.replace(`bunker.html?id=${destinoForzado}`);
@@ -133,7 +146,7 @@ auth.onAuthStateChanged((user) => {
         } else if (leccionData.tipo === "principio") {
             [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none")); workArea.style.marginTop = "0px";
             let btnRitualHTML = esTramoSuperado ? `<button id="btn-p-upsell" class="btn-mando btn-status-alert">REVISAR REPORTE DE DAÑOS →</button><button id="btn-p-hub" class="btn-ghost">← Volver al Hub</button>` : `<button id="btn-p-continuar" class="btn-mando" style="margin-top:var(--gap-l);">${leccionData.btnTexto || "Asimilado →"}</button>`;
-            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--color-bg-main); z-index:100; display:flex; flex-direction:column; justify-content:center; align-items:center;"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator" style="text-align:center; margin-top:var(--gap-l);">${leccionData.textoToque || 'Toca para desenterrar'}</p></div><div class="revelation-screen" style="width:100%; display:none;"><div class="logo"><img src="${leccionData.logo || 'DF.png'}" onerror="this.src='img/DF.png'"></div></div><p class="indicator">${leccionData.indicador}</p><div class="work-area card mt-l"><span class="principle-statement">${leccionData.principio}</span><p class="text-base mt-s">${leccionData.contenido}</p></div>${btnRitualHTML}</div>`;
+            workArea.innerHTML = `<div id="pantalla-reliquia" class="interruption-screen" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--color-bg-main); z-index:100; display:flex; flex-direction:column; justify-content:center; align-items:center;"><img src="${leccionData.imgReliquia}" class="relic-image"><p class="indicator" style="text-align:center; margin-top:var(--gap-l);">${leccionData.textoToque || 'Toca para desenterrar'}</p></div><div class="revelation-screen" style="width:100%; display:none;"><div class="logo"><img src="${leccionData.logo || 'DF.png'}" onerror="this.src='img/DF.png'"></div><p class="indicator">${leccionData.indicador}</p><div class="work-area card mt-l"><span class="principle-statement">${leccionData.principio}</span><p class="text-base mt-s">${leccionData.contenido}</p></div>${btnRitualHTML}</div>`;
             document.getElementById("pantalla-reliquia").onclick = () => { document.body.classList.add('revealed'); document.getElementById('pantalla-reliquia').style.display = "none"; document.querySelector('.revelation-screen').style.display = "block"; };
             if (esTramoSuperado) { document.getElementById("btn-p-upsell").onclick = () => { stopAllAudio(); window.location.href = linkReporte; }; document.getElementById("btn-p-hub").onclick = () => { stopAllAudio(); window.location.href = hubLink; }; } else { document.getElementById("btn-p-continuar").onclick = () => { stopAllAudio(); userRef.set({ [varProgresoVisto]: leccionData.siguienteId, ultima_sincronizacion: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(() => { window.location.href = `bunker.html?id=${leccionData.siguienteId}`; }); }; }
 
@@ -173,13 +186,12 @@ function renderReportCard(data, leccionData, workArea, uiLogo, uiIndicator, uiPr
     [uiLogo, uiIndicator, uiProgress.parentElement, uiTitle, uiDesc].forEach(el => el && (el.style.display = "none"));
     const nombreUsr = data.nombre ? data.nombre.toUpperCase() : "EXPEDICIONARIO";
 
-    // Lógica VIP: Evaluamos si ya compró el siguiente nivel
-    let tieneAccesoAlSiguiente = (tramoVisto !== tramoMaximo);
-    // Lógica dinámica para los textos de los botones desde datos.js
+    // Lógica VIP: Evaluamos si ya compró el siguiente nivel (usando el mapa)
+    let tieneAccesoAlSiguiente = TRAMOS_ORDER[tramoVisto] < TRAMOS_ORDER[tramoMaximo];
     let btnPrincipalTexto = tieneAccesoAlSiguiente ? (leccionData.btnVip || "INICIAR SIGUIENTE TRAMO →") : (leccionData.btnUpsell || "AVANZAR AL SIGUIENTE TRAMO →");
     let destinoUpsell = tieneAccesoAlSiguiente ? `bunker.html?id=${inicioTramoMaximo}` : (leccionData.linkUpsell || "#");
 
-    // Lógica dinámica para el logo
+    // Lógica dinámica para el logo y los textos
     workArea.innerHTML = `<div class="work-area"><div class="logo"><img src="${leccionData.logo || 'DF.png'}" onerror="this.src='img/DF.png'"></div><span class="nombre-exp">EXPEDICIONARIO: ${nombreUsr}</span><div style="display: flex; align-items: center; gap: 8px; margin-top: var(--gap-s);"><span class="nombre-exp" style="margin-top: 0 !important;">ESTATUS:</span><div class="status-badge" style="margin-top: 0;">MÁSCARA ROTA</div></div><h1 class="title mt-s">${leccionData.titulo || "Fin del Descenso."}</h1><p class="description mt-s">${leccionData.descripcion || "Análisis final completado."}</p><div class="work-area card mt-l"><p class="text-base">${leccionData.contenido || "<b>Diagnóstico:</b> Tu capacidad para mentirte ha sido neutralizada.<br><br><b>Orden:</b> Iniciar la siguiente Inmersión de inmediato para evitar el colapso operativo."}</p></div><p class="text-base mt-m w-full" id="txt-escotilla"><b>La escotilla de acceso cierra en:</b></p><div id="countdown-upsell" class="stats-container"><div class="stat-box"><span class="stat-value" id="u-hrs">00</span><span class="stat-label">Horas</span></div><div class="stat-box"><span class="stat-value" id="u-min">00</span><span class="stat-label">Min</span></div><div class="stat-box"><span id="u-seg" class="stat-value">00</span><span class="stat-label">Segundos</span></div></div><button id="btn-upsell" class="btn-mando btn-status-alert">${btnPrincipalTexto}</button><button id="btn-repasar" class="btn-ghost">← Volver al Hub</button></div>`;
     
     document.getElementById("btn-upsell").onclick = () => { stopAllAudio(); window.location.href = destinoUpsell; };
